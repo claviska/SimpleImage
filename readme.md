@@ -1,36 +1,33 @@
-The Simple_Image PHP class - v1.0
+# TThe Simple_Image PHP class
 
-By Cory LaViska - http://abeautifulsite.net/
+_Copyright 2011 Cory LaViska for A Beautiful Site, LLC. (http://abeautifulsite.net/)_
 
-Overview
-
-	This class attempts to make basic image manipulation easier in PHP.  Each method is called 
-	as a static function:
-	
-	  Simple_Image::[method-name]($arg1, $arg2, $arg3, ...)
-	
-	All methods require a $src file and a $dest file.  If you're not worried about preserving
-	the original image, $src and $dest can be the same file.
-	
-	Many of the arguments are self explanatory.  The $quality parameter can always be omitted,
-	but if you need to set it then use 0-9 for PNG compression and 0-100 for JPEG quality (it
-	is ignored for GIF files).
+_Dual licensed under the MIT / GPLv2 licenses_
 
 
-Requirements
+## Overview
 
-	This class requires the PHP GD library.  Some methods (i.e. colorize and pixelate) 
-	require	a more recent version of PHP.  The rest can be used with any recent version 
-	of PHP + GD.
+This class attempts to make basic image manipulation easier in PHP.  Each method is called 
+as a static function:
+
+	Simple_Image::[method-name]($arg1, $arg2, $arg3, ...)
+
+All methods require a $src file and a $dest file.  If you're not worried about preserving
+the original image, $src and $dest can be the same file.
+
+Many of the arguments are self explanatory.  The $quality parameter can always be omitted,
+but if you need to set it then use 0-9 for PNG compression and 0-100 for JPEG quality (it
+is ignored for GIF files).
 
 
-License
-	
-	This software is dual-licensed under the GNU General Public License and the MIT License 
-	and is copyright A Beautiful Site, LLC.
+## Requirements
+
+This class requires the PHP GD library.  Some methods (i.e. colorize and pixelate) 
+require	a more recent version of PHP.  The rest can be used with any recent version 
+of PHP + GD.
 
 
-Usage
+## Usage
 
 	Simple_Image::convert('image.jpg', 'image.gif');
 	
