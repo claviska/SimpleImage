@@ -20,6 +20,17 @@ Those two lines of code load **image.jpg**, flip it horizontally, rotate
 it 90 degrees, shrink it to fit within a 320x200 box, apply a sepia
 effect, convert it to a GIF, and write it to **result.gif**.
 
+With this class, you can effortlessly:
+-	Resize images (free resize, resize to width, resize to height, resize to fit)
+-	Crop images
+-	Flip/rotate/adjust orientation
+-	Adjust brightness & contrast
+-	Desaturate, colorize, pixelate, blur, etc.
+-	Overlay one image onto another (watermarking)
+-	Add text using a font of your choice
+-	Convert between GIF, JPEG, and PNG formats
+-	Strip EXIF data
+
 Requirements
 ------------
 
