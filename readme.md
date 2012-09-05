@@ -13,18 +13,18 @@ This class makes image manipulation in PHP as simple as possible. The
 examples are the best way to learn how to use it, but here it is in a
 nutshell:
 
-try {
-	
-	// Load and manipulate image.jpg
-    $img = new SimpleImage('image.jpg');
-    $img->flip('x')->rotate(90)->best_fit(320, 200)->sepia()->save('result.gif');
-    
-} catch(Exception $e) {
-	
-	// If an error occurs...
-	echo 'Error: ' . $e->getMessage();
-	
-}
+	try {
+		
+		// Load and manipulate image.jpg
+	    $img = new SimpleImage('image.jpg');
+	    $img->flip('x')->rotate(90)->best_fit(320, 200)->sepia()->save('result.gif');
+	    
+	} catch(Exception $e) {
+		
+		// If an error occurs...
+		echo 'Error: ' . $e->getMessage();
+		
+	}
 
 The two lines inside the _try_ block load **image.jpg**, flip it horizontally, rotate
 it 90 degrees, shrink it to fit within a 320x200 box, apply a sepia
