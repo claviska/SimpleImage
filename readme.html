@@ -1,0 +1,67 @@
+<h1>The SimpleImage PHP class</h1>
+<p><em>By Cory LaViska for A Beautiful Site, LLC. (http://www.abeautifulsite.net/)</em></p>
+<p><em>Dual licensed under the MIT / GPLv2 licenses</em></p>
+<h2>Overview</h2>
+<p>This class makes image manipulation in PHP as simple as possible. The examples are the best way to learn how to use it, but here it is in a nutshell:</p>
+<pre>$img = new SimpleImage('image.jpg');<br />$img-&gt;flip('x')-&gt;rotate(90)-&gt;best_fit(320, 200)-&gt;sepia()-&gt;save('result.gif');
+</pre>
+<p>Those two lines of code load&nbsp;<strong>image.jpg</strong>, flip it horizontally, rotate it 90 degrees, shrink it to fit within a 320x200 box, apply a sepia effect, convert it to a GIF, and write it to&nbsp;<strong>result.gif</strong>.</p>
+<h2>Requirements</h2>
+<p>This class requires the PHP GD library. Some methods (i.e. colorize and pixelate) require a more recent version of PHP (5.2&mdash;5.3 or higher). The rest can be used with any recent version of PHP + GD.</p>
+<h2>Usage</h2>
+<h3>Loading</h3>
+<p>You can load an image when you instantiate a new SimpleImage object:</p>
+<pre>$img = new SimpleImage('image.jpg');
+</pre>
+<p>Or you can load it later on:</p>
+<pre>$img = new SimpleImage();<br />$img-&gt;load('image.jpg');
+</pre>
+<h3>Saving</h3>
+<p>Images must be saved after you manipulate them. To save your changes to the original file, simply call:</p>
+<pre>$img-&gt;save();
+</pre>
+<p>Alternatively, you can specify a new filename:</p>
+<pre>$img-&gt;save('new-image.jpg');
+</pre>
+<p>You can specify quality as a second parameter for JPEG and PNG images. Use 0-100 for JPEG and 0-9 for PNG. (For PNG, this is actually the compression level.)</p>
+<pre>$img-&gt;save('new-image.jpg', 90);
+</pre>
+<h3>Converting Between Formats</h3>
+<p>When saving, the resulting image format is determined by the file extension. For example, you can convert a JPEG to a GIF by doing this:</p>
+<pre>$img = new SimpleImage('image.jpg');<br />$img-&gt;save('image.gif');
+</pre>
+<h3>Stripping EXIF data</h3>
+<p>There is no built-in method for stripping EXIF data, partly because there is currently no way to <em>prevent</em> EXIF data from being stripped using the GD library. However, you can easily strip EXIF data simply by loading and saving:</p>
+<pre>$img = new SimpleImage('image.jpg');<br />$img-&gt;save();
+</pre>
+<h3>Method Chaining</h3>
+<p>SimpleImage supports method chaining, so you can make multiple changes and save the resulting image with just one line of code:</p>
+<pre>$img = new SimpleImage('image.jpg');<br />$img-&gt;flip('x')-&gt;rotate(90)-&gt;best_fit(320, 200)-&gt;desaturate()-&gt;invert()-&gt;save('result.jpg')
+</pre>
+<p>You can chain all of the methods below as well as the&nbsp;<strong>load()</strong> and&nbsp;<strong>save()</strong> methods above. &nbsp;(You cannot chain the constructor, however, as this is not supported by PHP.)</p>
+<h3>Error Handling</h3>
+<p>SimpleImage throws exceptions when things don't work right. You should always load/manipulate/save images inside of a&nbsp;<em>try/catch</em> block to handle them properly:</p>
+<pre>try {<br />&nbsp; &nbsp; $img = new SimpleImage('image.jpg');<br />&nbsp; &nbsp; $img-&gt;flip('x')-&gt;save('flipped.jpg');<br />} catch(Exception $e) {<br />&nbsp; &nbsp; echo 'Error: ' . $e-&gt;getMessage();<br />}</pre>
+<h3>Method Examples</h3>
+<p>Most methods have intelligent defaults so you don't need to pass in every argument. &nbsp;Check out&nbsp;<strong>SimpleImage.class.php</strong> for required/optional parameters and valid ranges for certain arguments.</p>
+<pre>// Flip the image horizontally (use <em>y</em> to flip vertically)<br />$img-&gt;flip('x');<br /><br />// Rotate the image 90 degrees<br />$img-&gt;rotate(90);<br /><br />// Adjust the orientation if needed (physically rotates/flips the image based on its EXIF 'Orientation' property)<br />$img-&gt;auto_orientation();
+</pre>
+<pre>// Resize the image to 320x200<br />$img-&gt;resize(320, 200);<br /><br />// Shrink the image to the specified width while maintaining proportion (width)<br />$img-&gt;fit_to_width(320);<br /><br />// Shrink the image to the specified height while maintaining proportion (height)<br />$img-&gt;fit_to_height(200);<br /><br />// Shrink the image proportionally to fit inside a 500x500 box<br />$img-&gt;best_fit(500, 500);<br /><br />// Crop a portion of the image from x1, y1 to x2, y2<br />$img-&gt;crop(100, 100, 400, 400);<br /><br />// Trim the image to a square and resize to 100x100<br />$img-&gt;square_crop(100);<br /><br />// Desaturate (grayscale)<br />$img-&gt;desaturate();<br /><br />// Invert<br />$img-&gt;invert();<br /><br />// Adjust Brightness (-255 to 255)<br />$img-&gt;brightness(100);<br /><br />// Adjust Contrast (-100 to 100)<br />$img-&gt;contrast(50);<br /><br />// Colorize red at 50% opacity<br />$img-&gt;colorize('#FF0000', .5);<br /><br />// Edges filter<br />$img-&gt;edges();<br /><br />// Emboss filter<br />$img-&gt;emboss();<br /><br />// Mean removal filter<br />$img-&gt;mean_remove();<br /><br />// Selective blur (one pass)<br />$img-&gt;blur();<br /><br />// Gaussian blur (two passes)<br />$img-&gt;blur('gaussian', 2);<br /><br />// Sketch filter<br />$img-&gt;sketch();<br /><br />// Smooth filter (-10 to 10)<br />$img-&gt;smooth(5);<br /><br />// Pixelate using 8px blocks<br />$img-&gt;pixelate(8);<br /><br />// Sepia effect (simulated)<br />$img-&gt;sepia();<br /><br />// Overlay watermark.png at 50% opacity at the bottom-right of the image with a 10 pixel horizontal and vertical margin*<br />$img-&gt;overlay('watermark.png', 'bottom right', .5, -10, -10);<br /><br />// Add 32-point white text top-centered (plus 20px) on the image*<br />$img-&gt;text('Your Text', 'font.ttf', 32, '#FFFFFF', 'top', 0, 20);
+</pre>
+<p>&nbsp;*&nbsp;Valid positions are&nbsp;<em>center, top, right, bottom, left, top left, top right, bottom left, bottom right</em></p>
+<h2>Differences from Version 1</h2>
+<p>SimpleImage has been completely overhauled since version 1. Here are the most significant changes:</p>
+<ul>
+<li><strong>Simple_Image</strong> is now&nbsp;<strong>SimpleImage</strong></li>
+<li>For more efficient processing, the class now has public load and save methods. In version 1, these methods were automatically executed on every manipulation, which led to slower processing times and potential quality loss.</li>
+<li>Because load and save are now public methods, it only made sense to support method chaining. You can now make as many modifications as you want to an image and save it in just one line of code.</li>
+<li>A positioning bug in the text() method was fixed so positioning is 100% accurate now. In version 1, the size of the text box was erroneously calculating points instead of pixels.</li>
+<li>Arguments for many methods have been normalized. Opacity is always 0 through 1 (like in CSS) instead of 0 through 100 and colors are consistently passed in as hex color codes instead of RGB.</li>
+<li>A few methods were consolidated to use the public resize and crop methods instead of replicating the same functionality like in version 1. This helped reduce the size of version 2 to under 700 lines of code (version 1 was 728 LOC).</li>
+</ul>
+<h2>Known Issues</h2>
+<ul>
+<li>Need to fix <strong>rotate()</strong> when primary image is a transparent PNG</li>
+<li>Need to fix <strong>overlay()</strong>&nbsp;when primary image is a transparent PNG</li>
+<li>Need to fix <strong>text()</strong> when primary image is a transparent PNG.</li>
+</ul>
