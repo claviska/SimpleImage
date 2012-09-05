@@ -14,7 +14,7 @@
 
 class SimpleImage {
 	
-	private $image, $filename, $width, $height, $exif;
+	private $image, $filename, $original_info, $width, $height;
 	
 	function __construct($filename = null) {
 		if( $filename ) $this->load($filename);
@@ -58,9 +58,16 @@ class SimpleImage {
 				
 		}
 		
+		$this->original_info = array(
+			'width' => $info[0],
+			'height' => $info[1],
+			'orientation' => $this->get_orientation(),
+			'exif' => function_exists('exif_read_data') ? $this->exif = @exif_read_data($this->filename) : null,
+			'mime' => $info['mime']
+		);
+		
 		$this->width = $info[0];
 		$this->height = $info[1];
-		$this->exif = function_exists('exif_read_data') ? $this->exif = @exif_read_data($this->filename) : null;
 		
 		return $this;
 		
@@ -109,6 +116,13 @@ class SimpleImage {
 		
 		return $this;
 		
+	}
+	
+	//
+	// Get info about the original image
+	//
+	public function get_original_info() {
+		return $this->original_info;
 	}
 	
 	//
@@ -192,7 +206,7 @@ class SimpleImage {
 	public function auto_orient() {
 		
 		// Adjust orientation
-		switch( $this->exif['Orientation'] ) {
+		switch( $this->original_info['exif']['Orientation'] ) {
 			case 2:
 				$angle = 0;
 				$flip = true;

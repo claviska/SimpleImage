@@ -205,14 +205,18 @@ right, bottom left, bottom right*
 The following methods are not chainable, because they return information about 
 the image you're working with:
 	
+	// Get info about the original image (before any changes were made)
+	// Returns width, height, orientation, exif (array), and mime
+	$info = $img->get_original_info();
+	
 	// Get the current width
-	$img->get_width();
+	$width = $img->get_width();
 	
 	// Get the current height
-	$img->get_height();
+	$height = $img->get_height();
 	
 	// Get the current orientation (returns 'portrait', 'landscape', or 'square')
-	$img->get_orientation();
+	$orientation = $img->get_orientation();
 
 Differences from Version 1
 --------------------------
