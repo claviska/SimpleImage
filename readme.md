@@ -204,10 +204,15 @@ right, bottom left, bottom right*
 
 The following methods are not chainable, because they return information about 
 the image you're working with:
-
-	$img->get_width(); // returns the image width
-	$img->get_height(); // returns the image height
-	$img->get_orientation(); // returns 'portrait', 'landscape', or 'square'
+	
+	// Get the current width
+	$img->get_width();
+	
+	// Get the current height
+	$img->get_height();
+	
+	// Get the current orientation (returns 'portrait', 'landscape', or 'square')
+	$img->get_orientation();
 
 Differences from Version 1
 --------------------------
