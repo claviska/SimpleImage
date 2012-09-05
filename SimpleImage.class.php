@@ -88,8 +88,12 @@ class SimpleImage {
 		
 		if( !$filename ) $filename = $this->filename;
 		
+		// Determine format via file extension (fall back to original format)
+		$format = $this->file_ext($filename);
+		if( !$format ) $format = $this->original_info['format'];
+		
 		// Determine output format
-		switch( $this->file_ext($filename) ) {
+		switch( $format ) {
 			
 			case 'gif':
 				$result = imagegif($this->image, $filename);
