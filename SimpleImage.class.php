@@ -300,6 +300,9 @@ class SimpleImage {
 	//
 	public function best_fit($max_width, $max_height) {
 		
+		// If it already fits, there's nothing to do
+		if( $this->width <= $max_width && $this->height <= $max_height ) return $this;
+		
 		// Determine aspect ratio
 		$aspect_ratio = $this->height / $this->width;
 		
