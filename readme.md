@@ -89,7 +89,7 @@ however, as this is not supported by PHP.)
 
 ### Error Handling
 
-SimpleImage throws exceptions when things don’t work right. You should
+SimpleImage throws exceptions when things don't work right. You should
 always load/manipulate/save images inside of a *try/catch* block to
 handle them properly:
 
@@ -102,7 +102,7 @@ handle them properly:
 
 ### Method Examples
 
-Most methods have intelligent defaults so you don’t need to pass in
+Most methods have intelligent defaults so you don't need to pass in
 every argument.  Check out **SimpleImage.class.php** for
 required/optional parameters and valid ranges for certain arguments.
 
@@ -161,7 +161,7 @@ required/optional parameters and valid ranges for certain arguments.
     $img->blur();  
   
     // Gaussian blur (two passes)  
-    $img->blur(’gaussian’, 2);  
+    $img->blur('gaussian', 2);  
   
     // Sketch filter  
     $img->sketch();  
@@ -176,10 +176,10 @@ required/optional parameters and valid ranges for certain arguments.
     $img->sepia();  
   
     // Overlay watermark.png at 50% opacity at the bottom-right of the image with a 10 pixel horizontal and vertical margin
-    $img->overlay(’watermark.png’, ‘bottom right’, .5, -10, -10);  
+    $img->overlay('watermark.png', 'bottom right', .5, -10, -10);  
   
-    // Add 32-point white text top-centered (plus 20px) on the image\*  
-    $img->text(’Your Text’, ‘font.ttf’, 32, ‘\#FFFFFF’, ‘top’, 0, 20);
+    // Add 32-point white text top-centered (plus 20px) on the image*  
+    $img->text('Your Text', 'font.ttf', 32, '#FFFFFF', 'top', 0, 20);
 
  * Valid positions are *center, top, right, bottom, left, top left, top
 right, bottom left, bottom right*
