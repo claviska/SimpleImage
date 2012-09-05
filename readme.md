@@ -38,7 +38,8 @@ You can load an image when you instantiate a new SimpleImage object:
 
 Or you can load it later on:
 
-    $img = new SimpleImage();$img->load('image.jpg');
+    $img = new SimpleImage();
+    $img->load('image.jpg');
 
 ### Saving
 
@@ -181,7 +182,7 @@ required/optional parameters and valid ranges for certain arguments.
     // Add 32-point white text top-centered (plus 20px) on the image*  
     $img->text('Your Text', 'font.ttf', 32, '#FFFFFF', 'top', 0, 20);
 
- * Valid positions are *center, top, right, bottom, left, top left, top
+* Valid positions are *center, top, right, bottom, left, top left, top
 right, bottom left, bottom right*
 
 Differences from Version 1
