@@ -112,6 +112,31 @@ class SimpleImage {
 	}
 	
 	//
+	// Get the current width
+	//
+	public function get_width() {
+		return imagesx($this->image);
+	}
+	
+	//
+	// Get the current height
+	//
+	public function get_height() {
+		return imagesy($this->image);
+	}
+	
+	//
+	// Get the current orientation ('portrait', 'landscape', or 'square')
+	//
+	public function get_orientation() {
+		
+		if( imagesx($this->image) > imagesy($this->image) ) return 'landscape';
+		if( imagesx($this->image) < imagesy($this->image) ) return 'portrait';
+		return 'square';
+		
+	}
+	
+	//
 	// Flip an image horizontally or vertically
 	//
 	//	$direction - 'x' or 'y'

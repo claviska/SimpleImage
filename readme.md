@@ -200,6 +200,15 @@ required/optional parameters and valid ranges for certain arguments.
 * Valid positions are *center, top, right, bottom, left, top left, top
 right, bottom left, bottom right*
 
+### Utility Methods
+
+The following methods are not chainable, because they return information about 
+the image you're working with:
+
+	$img->get_width(); // returns the image width
+	$img->get_height(); // returns the image height
+	$img->get_orientation(); // returns 'portrait', 'landscape', or 'square'
+
 Differences from Version 1
 --------------------------
 
