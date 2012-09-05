@@ -206,7 +206,17 @@ The following methods are not chainable, because they return information about
 the image you're working with:
 	
 	// Get info about the original image (before any changes were made)
-	// Returns width, height, orientation, exif (array), and mime
+	//
+	// Returns:
+	//
+	//	array(
+	//		width => 320,
+	//		height => 200,
+	//		orientation => ['portrait', 'landscape', 'square'],
+	//		exif => array(...),
+	//		mime => ['image/jpeg', 'image/gif', 'image/png'],
+	//		format => ['jpeg', 'gif', 'png']
+	//	)	
 	$info = $img->get_original_info();
 	
 	// Get the current width

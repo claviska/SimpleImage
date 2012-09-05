@@ -63,6 +63,7 @@ class SimpleImage {
 			'height' => $info[1],
 			'orientation' => $this->get_orientation(),
 			'exif' => function_exists('exif_read_data') ? $this->exif = @exif_read_data($this->filename) : null,
+			'format' => preg_replace('/^image\//', '', $info['mime']),
 			'mime' => $info['mime']
 		);
 		
@@ -120,6 +121,17 @@ class SimpleImage {
 	
 	//
 	// Get info about the original image
+	//
+	//	Returns
+	//
+	//	array(
+	//		width => 320,
+	//		height => 200,
+	//		orientation => ['portrait', 'landscape', 'square'],
+	//		exif => array(...),
+	//		mime => ['image/jpeg', 'image/gif', 'image/png'],
+	//		format => ['jpeg', 'gif', 'png']
+	//	)
 	//
 	public function get_original_info() {
 		return $this->original_info;
