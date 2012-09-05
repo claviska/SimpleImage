@@ -680,5 +680,3 @@ class SimpleImage {
 	}
 	
 }
-
-?>
