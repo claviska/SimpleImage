@@ -28,7 +28,7 @@ nutshell:
 
 The two lines inside the _try_ block load **image.jpg**, flip it horizontally, rotate
 it 90 degrees, shrink it to fit within a 320x200 box, apply a sepia
-effect, convert it to a GIF, and write it to **result.gif**.
+effect, convert it to a GIF, and save it to **result.gif**.
 
 With this class, you can effortlessly:
 -	Resize images (free resize, resize to width, resize to height, resize to fit)
