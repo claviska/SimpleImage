@@ -129,7 +129,7 @@ required/optional parameters and valid ranges for certain arguments.
     $img->rotate(90);
     
     // Adjust the orientation if needed (physically rotates/flips the image based on its EXIF 'Orientation' property)
-    $img->auto_orientation();
+    $img->auto_orient();
 
     // Resize the image to 320x200
     $img->resize(320, 200);
