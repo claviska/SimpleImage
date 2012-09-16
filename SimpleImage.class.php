@@ -251,6 +251,8 @@ class SimpleImage {
 				$angle = 270;
 				$flip = false;
 				break;
+			default:
+				$angle = 0;
 		}
 		
 		if( $angle > 0 ) $this->rotate($angle);
