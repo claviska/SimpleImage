@@ -93,7 +93,7 @@ class SimpleImage {
 		if( !$format ) $format = $this->original_info['format'];
 		
 		// Determine output format
-		switch( $format ) {
+		switch( strtolower($format) ) {
 			
 			case 'gif':
 				$result = imagegif($this->image, $filename);
