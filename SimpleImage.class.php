@@ -69,7 +69,10 @@ class SimpleImage {
 		
 		$this->width = $info[0];
 		$this->height = $info[1];
-		
+
+        imagesavealpha($this->image, true);
+        imagealphablending($this->image, true);
+
 		return $this;
 		
 	}
