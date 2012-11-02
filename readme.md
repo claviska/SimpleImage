@@ -21,7 +21,7 @@ nutshell:
 	}
 
 The two lines inside the _try_ block load **image.jpg**, flip it horizontally, rotate
-it 90 degrees, shrink it to fit within a 320x200 box, apply a sepia
+it 90 degrees clockwise, shrink it to fit within a 320x200 box, apply a sepia
 effect, convert it to a GIF, and save it to **result.gif**.
 
 With this class, you can effortlessly:
@@ -125,7 +125,7 @@ required/optional parameters and valid ranges for certain arguments.
     // Flip the image horizontally (use y to flip vertically)
     $img->flip('x');
     
-    // Rotate the image 90 degrees
+    // Rotate the image 90 degrees clockwise
     $img->rotate(90);
     
     // Adjust the orientation if needed (physically rotates/flips the image based on its EXIF 'Orientation' property)

@@ -93,7 +93,7 @@ class SimpleImage {
 		if( !$format ) $format = $this->original_info['format'];
 		
 		// Determine output format
-		switch( strtolower($format) ) {
+		switch( $format ) {
 			
 			case 'gif':
 				$result = imagegif($this->image, $filename);
@@ -206,7 +206,7 @@ class SimpleImage {
 		$rgb = $this->hex2rgb($bg_color);
 		$bg_color = imagecolorallocate($this->image, $rgb['r'], $rgb['g'], $rgb['b']);
 		
-		$new = imagerotate($this->image, $this->keep_within($angle, -360, 360), $bg_color);
+		$new = imagerotate($this->image, -($this->keep_within($angle, -360, 360)), $bg_color);
 		$this->width = imagesx($new);
 		$this->height = imagesy($new);
 		$this->image = $new;
@@ -223,41 +223,41 @@ class SimpleImage {
 		
 		// Adjust orientation
 		switch( $this->original_info['exif']['Orientation'] ) {
+			case 1:
+				// Do nothing
+				break;
 			case 2:
-				$angle = 0;
-				$flip = true;
+				// Flip horizontal
+				$this->flip('x');
 				break;
 			case 3:
-				$angle = 180;
-				$flip = false;
+				// Rotate 180 counterclockwise
+				$this->rotate(-180);
 				break;
 			case 4:
-				$angle = 180;
-				$flip = true;
+				// vertical flip
+				$this->flip('y');
 				break;
 			case 5:
-				$angle = 90;
-				$flip = true;
+				// Rotate 90 clockwise and flip vertically
+				$this->flip('y');
+				$this->rotate(90);
 				break;
 			case 6:
-				$angle = 90;
-				$flip = false;
+				// Rotate 90 clockwise
+				$this->rotate(90);
 				break;
 			case 7:
-				$angle = 270;
-				$flip = true;
+				// Rotate 90 clockwise and flip horizontally
+				$this->flip('x');
+				$this->rotate(90);
 				break;
 			case 8:
-				$angle = 270;
-				$flip = false;
+				// Rotate 90 counterclockwise
+				$this->rotate(-90);
 				break;
-			default:
-				$angle = 0;
 		}
 		
-		if( $angle > 0 ) $this->rotate($angle);
-		if( $flip ) $this->flip('x');
-
 		return $this;
 		
 	}
