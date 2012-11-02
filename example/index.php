@@ -2,6 +2,8 @@
 
 require('../SimpleImage.class.php');
 
+if( !is_dir('processed/') ) mkdir('processed/');
+
 try {
 	
 	$img = new SimpleImage();
