@@ -1,7 +1,7 @@
 <?php
 /*
 
-  The PHP SimpleImage class - v2.0
+  The PHP SimpleImage class - v2
   
     By Cory LaViska for A Beautiful Site, LLC. (http://www.abeautifulsite.net/)
   
@@ -69,6 +69,9 @@ class SimpleImage {
 		
 		$this->width = $info[0];
 		$this->height = $info[1];
+		
+		imagesavealpha($this->image, true);
+		imagealphablending($this->image, true);
 		
 		return $this;
 		
@@ -207,6 +210,9 @@ class SimpleImage {
 		$bg_color = imagecolorallocate($this->image, $rgb['r'], $rgb['g'], $rgb['b']);
 		
 		$new = imagerotate($this->image, -($this->keep_within($angle, -360, 360)), $bg_color);
+		imagesavealpha($new, true);
+		imagealphablending($new, true);
+		
 		$this->width = imagesx($new);
 		$this->height = imagesy($new);
 		$this->image = $new;
@@ -681,12 +687,44 @@ class SimpleImage {
 	}
 	
 	// Same as PHP's imagecopymerge() function, except preserves alpha-transparency in 24-bit PNGs
-    private function imagecopymerge_alpha($dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, $src_w, $src_h, $pct) {
-		$cut = imagecreatetruecolor($src_w, $src_h);
-		imagecopy($cut, $dst_im, 0, 0, $dst_x, $dst_y, $src_w, $src_h);
-		imagecopy($cut, $src_im, 0, 0, $src_x, $src_y, $src_w, $src_h);
-		return imagecopymerge($dst_im, $cut, $dst_x, $dst_y, $src_x, $src_y, $src_w, $src_h, $pct);
-    }
+	// Courtest of: http://www.php.net/manual/en/function.imagecopymerge.php#88456
+	private function imagecopymerge_alpha($dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, $src_w, $src_h, $pct ) { 
+		$pct /= 100;
+		// Get image width and height
+		$w = imagesx($src_im);
+		$h = imagesy($src_im);
+		// Turn alpha blending off
+		imagealphablending($src_im, false);
+		// Find the most opaque pixel in the image (the one with the smallest alpha value)
+		$minalpha = 127;
+		for( $x = 0; $x < $w; $x++ ) {
+			for( $y = 0; $y < $h; $y++ ) {
+				$alpha = (imagecolorat( $src_im, $x, $y ) >> 24) & 0xFF;
+				if( $alpha < $minalpha ) {
+					$minalpha = $alpha;
+				}
+			}
+		}
+		// Loop through image pixels and modify alpha for each
+		for( $x = 0; $x < $w; $x++ ) {
+			for( $y = 0; $y < $h; $y++ ) {
+				// Get current alpha value (represents the TANSPARENCY!)
+				$colorxy = imagecolorat($src_im, $x, $y);
+				$alpha = ($colorxy >> 24) & 0xFF;
+				// Calculate new alpha
+				if( $minalpha !== 127 ) {
+					$alpha = 127 + 127 * $pct * ($alpha - 127) / (127 - $minalpha);
+				} else {
+					$alpha += 127 * $pct;
+				}
+				// Get the color index with new alpha
+				$alphacolorxy = imagecolorallocatealpha($src_im, ($colorxy >> 16) & 0xFF, ($colorxy >> 8) & 0xFF, $colorxy & 0xFF, $alpha);
+				// Set pixel with the new color + opacity
+				if( !imagesetpixel($src_im, $x, $y, $alphacolorxy) ) return false;
+			}
+		}
+		imagecopy($dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, $src_w, $src_h);
+	} 
 	
 	//
 	// Ensures $value is always within $min and $max range.

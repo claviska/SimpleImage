@@ -250,12 +250,4 @@ most significant changes:
     consistently passed in as hex color codes instead of RGB.
 -   A few methods were consolidated to use the public resize and crop
     methods instead of replicating the same functionality like in
-    version 1. This helped reduce the size of version 2 to under 700
-    lines of code (version 1 was 728 LOC).
-
-Known Issues
-------------
-
--   Need to fix **rotate()** when primary image is a transparent PNG
--   Need to fix **overlay()** when primary image is a transparent PNG
--   Need to fix **text()** when primary image is a transparent PNG.
+    version 1.
