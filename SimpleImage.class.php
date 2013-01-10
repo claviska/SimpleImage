@@ -685,6 +685,44 @@ class SimpleImage {
 		return $this;
 		
 	}
+
+	//
+	// Outputs image without saving
+	//
+	public function output($quality=null)
+	{
+		// Require GD library
+		if( !extension_loaded('gd') ) throw new Exception('Required extension GD is not loaded.');
+		
+		$info = getimagesize($this->filename);
+
+		header("Content-Type: ".$info['mime']);
+		
+		switch( $info['mime'] ) {
+			
+			case 'image/gif':
+				imagegif($this->image);
+				break;
+				
+			case 'image/jpeg':
+				if( $quality === null ) $quality = 85;
+				$quality = $this->keep_within($quality, 0, 100);
+				imagejpeg($this->image, null, $quality);
+				break;
+					
+			case 'image/png':
+				if( $quality === null ) $quality = 9;
+				$quality = $this->keep_within($quality, 0, 9);
+				imagepng($this->image, null, $quality);
+				break;
+				
+			default:
+				throw new Exception('Invalid image: ' . $this->filename);
+				break;
+		}
+
+		imagedestroy($this->image);
+	}
 	
 	// Same as PHP's imagecopymerge() function, except preserves alpha-transparency in 24-bit PNGs
 	// Courtest of: http://www.php.net/manual/en/function.imagecopymerge.php#88456
