@@ -6,6 +6,10 @@ if( !is_dir('processed/') ) mkdir('processed/');
 
 try {
 	
+	//
+	// WARNING: This will create a lot of images in the /processed folder
+	//
+	
 	$img = new SimpleImage();
 	
 	// Convert to GIF
