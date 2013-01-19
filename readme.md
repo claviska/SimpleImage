@@ -203,7 +203,7 @@ right, bottom left, bottom right*
 ### Utility Methods
 
 The following methods are not chainable, because they return information about 
-the image you're working with:
+the image you're working with or output the image directly to the browser:
 	
 	// Get info about the original image (before any changes were made)
 	//
@@ -227,6 +227,9 @@ the image you're working with:
 	
 	// Get the current orientation (returns 'portrait', 'landscape', or 'square')
 	$orientation = $img->get_orientation();
+	
+	// Modify the image and output it directly to the browser (i.e. without saving)
+	$img->load('butterfly.jpg')->flip('x')->output();
 
 Differences from Version 1
 --------------------------
