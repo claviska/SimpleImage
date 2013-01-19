@@ -122,7 +122,7 @@ Most methods have intelligent defaults so you don't need to pass in
 every argument.  Check out **SimpleImage.class.php** for
 required/optional parameters and valid ranges for certain arguments.
 
-    // Flip the image horizontally (use y to flip vertically)
+    // Flip the image horizontally (use 'y' to flip vertically)
     $img->flip('x');
     
     // Rotate the image 90 degrees clockwise
@@ -228,7 +228,7 @@ the image you're working with or output the image directly to the browser:
 	// Get the current orientation (returns 'portrait', 'landscape', or 'square')
 	$orientation = $img->get_orientation();
 	
-	// Modify the image and output it directly to the browser (i.e. without saving)
+	// Flip the image and output it directly to the browser (i.e. without saving to file)
 	$img->load('butterfly.jpg')->flip('x')->output();
 
 Differences from Version 1
