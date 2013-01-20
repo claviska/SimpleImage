@@ -689,39 +689,58 @@ class SimpleImage {
 	//
 	// Outputs image without saving
 	//
-	public function output($quality=null)
-	{
-		// Require GD library
-		if( !extension_loaded('gd') ) throw new Exception('Required extension GD is not loaded.');
+	public function output($format = null, $quality = null) {
 		
-		$info = getimagesize($this->filename);
-
-		header("Content-Type: ".$info['mime']);
+		switch( strtolower($format) ) {
+			
+			case 'gif':
+				$mimetype = 'image/gif';
+				break;
+			
+			case 'jpeg':
+			case 'jpg':
+				$mimetype = 'image/jpeg';
+				break;
+			
+			case 'png':
+				$mimetype = 'image/png';
+				break;
+			
+			default:
+				$info = getimagesize($this->filename);
+				$mimetype = $info['mime'];
+				break;
+		}
 		
-		switch( $info['mime'] ) {
+		// Output the image
+		header('Content-Type: ' . $mimetype);
+		
+		switch( $mimetype ) {
 			
 			case 'image/gif':
 				imagegif($this->image);
 				break;
-				
+			
 			case 'image/jpeg':
 				if( $quality === null ) $quality = 85;
 				$quality = $this->keep_within($quality, 0, 100);
 				imagejpeg($this->image, null, $quality);
 				break;
-					
+			
 			case 'image/png':
 				if( $quality === null ) $quality = 9;
 				$quality = $this->keep_within($quality, 0, 9);
 				imagepng($this->image, null, $quality);
 				break;
-				
+			
 			default:
-				throw new Exception('Invalid image: ' . $this->filename);
+				throw new Exception('Unsupported image format: ' . $this->filename);
 				break;
 		}
-
-		imagedestroy($this->image);
+		
+		// Since no more output can be sent, call the destuctor to free up memory
+		$this->__destruct();
+		
 	}
 	
 	// Same as PHP's imagecopymerge() function, except preserves alpha-transparency in 24-bit PNGs
