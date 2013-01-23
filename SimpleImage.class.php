@@ -780,6 +780,10 @@ class SimpleImage {
 				if( !imagesetpixel($src_im, $x, $y, $alphacolorxy) ) return false;
 			}
 		}
+		imagesavealpha($dst_im, true);
+		imagealphablending($dst_im, true);
+		imagesavealpha($src_im, true);
+		imagealphablending($src_im, true);
 		imagecopy($dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, $src_w, $src_h);
 	} 
 	
