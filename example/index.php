@@ -1,6 +1,9 @@
 <?php
-
-require('../SimpleImage.class.php');
+function __autoload($class)  
+{  
+  $filename = str_replace('\\', '/', $class) . '.php';  
+  @require_once 'classes/'.$filename;  
+}
 
 if( !is_dir('processed/') ) mkdir('processed/');
 
@@ -10,7 +13,7 @@ try {
 	// WARNING: This will create a lot of images in the /processed folder
 	//
 	
-	$img = new SimpleImage();
+	$img = new Simple\Image\Obj();
 	
 	// Convert to GIF
 	$img->load('butterfly.jpg')->save('processed/butterfly-convert-to-gif.gif');

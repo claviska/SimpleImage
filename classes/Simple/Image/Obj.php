@@ -1,5 +1,5 @@
 <?php
-namespace SimpleImage;
+namespace Simple\Image;
 /*
 
   The PHP SimpleImage class - v2
