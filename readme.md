@@ -45,15 +45,25 @@ rest can be used with any recent version of PHP + GD.
 Usage
 -----
 
+### Autoloading
+
+Using your favorite __autoloading magic and path to your classes ("classes/" in this example):
+    
+    function __autoload($class)  
+    {  
+      $filename = str_replace('\\', '/', $class) . '.php';  
+      @require_once 'classes/'.$filename;  
+    }
+
 ### Loading
 
 You can load an image when you instantiate a new SimpleImage object:
 
-    $img = new SimpleImage('image.jpg');
+    $img = new SimpleImage\Obj('image.jpg');
 
 Or you can load it later on:
 
-    $img = new SimpleImage();
+    $img = new SimpleImage\Obj();
     $img->load('image.jpg');
 
 ### Saving
