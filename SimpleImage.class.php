@@ -76,6 +76,48 @@ class SimpleImage {
 		return $this;
 		
 	}
+
+	//
+	// Create an image from scratch
+	//
+	//	$width  - image width (required)
+	//	$height - will be same with $width if not defined
+	//  $color  - fill color
+	//
+	public function create($width, $height = null, $color = null) {
+
+		if( $height === null ) $height = $width;
+
+		$this->width = $width;
+		$this->height = $height;
+
+		$this->image = imagecreatetruecolor($width, $height);
+		
+		$this->original_info = array(
+			'width' => $width,
+			'height' => $height,
+			'orientation' => $this->get_orientation(),
+			'exif' => null,
+			'format' => 'png',
+			'mime' => 'image/png'
+		);
+
+		if( $color !== null ) {
+			$this->fill($color);
+		}
+
+		return $this;
+	}
+
+	public function fill($color = '#000000')
+	{
+		$rgb = $this->hex2rgb($color);
+
+		$fill_color = imagecolorallocate($this->image, $rgb['r'], $rgb['g'], $rgb['b']);
+		imagefilledrectangle($this->image, 0, 0, $this->width, $this->height, $fill_color);
+
+		return $this;
+	}
 	
 	//
 	// Save an image
