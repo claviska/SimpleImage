@@ -1,0 +1,68 @@
+//
+  // Outputs image as data base64 to use as img src
+	//
+	public function outputBase64($format = null, $quality = null) {
+
+		switch( strtolower($format) ) {
+
+			case 'gif':
+				$mimetype = 'image/gif';
+				break;
+
+			case 'jpeg':
+			case 'jpg':
+				$mimetype = 'image/jpeg';
+				break;
+
+			case 'png':
+				$mimetype = 'image/png';
+				break;
+
+			default:
+				$info = getimagesize($this->filename);
+				$mimetype = $info['mime'];
+				break;
+		}
+
+
+
+		ob_start ();
+
+			// Output the image
+
+					switch( $mimetype ) {
+
+					case 'image/gif':
+					imagegif($this->image);
+							break;
+
+							case 'image/jpeg':
+							if( $quality === null ) $quality = 85;
+							$quality = $this->keep_within($quality, 0, 100);
+							imagejpeg($this->image, null, $quality);
+							break;
+
+							case 'image/png':
+							if( $quality === null ) $quality = 9;
+							$quality = $this->keep_within($quality, 0, 9);
+							imagepng($this->image, null, $quality);
+							break;
+
+							default:
+							throw new Exception('Unsupported image format: ' . $this->filename);
+							break;
+					}
+
+
+
+					$image_data = ob_get_contents ();
+
+					ob_end_clean ();
+
+					// Returns formated string for img src
+
+					$image_data_base64 = 'data:'.$mimetype.';base64,'.base64_encode($image_data);
+
+					return $image_data_base64;
+
+	}
