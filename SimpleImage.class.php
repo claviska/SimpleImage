@@ -109,11 +109,16 @@ class SimpleImage {
 		return $this;
 	}
 
-	public function fill($color = '#000000')
-	{
-		$rgb = $this->hex2rgb($color);
+	//
+	// Fills image
+	//
+	//  $color  - fill color
+	//
+	public function fill($color = '#000000') {
 
+		$rgb = $this->hex2rgb($color);
 		$fill_color = imagecolorallocate($this->image, $rgb['r'], $rgb['g'], $rgb['b']);
+		
 		imagefilledrectangle($this->image, 0, 0, $this->width, $this->height, $fill_color);
 
 		return $this;

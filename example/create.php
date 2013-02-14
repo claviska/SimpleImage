@@ -6,12 +6,14 @@ if( !is_dir('processed/') ) mkdir('processed/');
 
 try {
 	
-	// Flip the image and output it directly to the browser
+	// Create an image from scratch
 	$img = new SimpleImage();
-	$img->create(500, 200, '#FFCC00')->text("Dynamicly Created Image", 'delicious.ttf');
+	$img->create(500, 200, '#FFCC00')->text('Dynamically Created Image', 'delicious.ttf');
 
   $img->save('processed/created-image.png');
 
+  // If you use create function instead of loading image
+  // you have to define output extension
   $img->output('png');
 	
 } catch(Exception $e) {
