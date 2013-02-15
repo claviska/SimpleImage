@@ -1,4 +1,7 @@
 <?php
+
+namespace SimpleImage;
+
 /*
 
   The PHP SimpleImage class - v2
