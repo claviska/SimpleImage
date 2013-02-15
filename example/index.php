@@ -13,7 +13,7 @@ try {
 	// WARNING: This will create a lot of images in the /processed folder
 	//
 	
-	$img = new Simple\Image\Obj();
+	$img = new SimpleImage\SimpleImage();
 	
 	// Convert to GIF
 	$img->load('butterfly.jpg')->save('processed/butterfly-convert-to-gif.gif');

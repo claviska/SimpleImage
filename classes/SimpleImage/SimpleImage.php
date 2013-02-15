@@ -1,5 +1,7 @@
 <?php
-namespace Simple\Image;
+
+namespace SimpleImage;
+
 /*
 
   The PHP SimpleImage class - v2
@@ -13,7 +15,7 @@ namespace Simple\Image;
 	
 */
 
-class Obj {
+class SimpleImage {
 	
 	private $image, $filename, $original_info, $width, $height;
 	
