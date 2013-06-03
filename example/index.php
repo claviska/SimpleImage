@@ -48,8 +48,8 @@ try {
 	// Crop
 	$img->load('butterfly.jpg')->crop(160, 110, 460, 360)->save('processed/butterfly-crop.jpg');
 	
-	// Square crop
-	$img->load('butterfly.jpg')->square_crop(75)->save('processed/butterfly-square-crop.jpg');
+	// Smart crop
+	$img->load('butterfly.jpg')->smart_crop(100, 75)->save('processed/butterfly-smart-crop.jpg');
 	
 	// Desaturate
 	$img->load('butterfly.jpg')->desaturate()->save('processed/butterfly-desaturate.jpg');
