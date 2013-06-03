@@ -167,8 +167,11 @@ $img->best_fit(500, 500);
 // Crop a portion of the image from x1, y1 to x2, y2
 $img->crop(100, 100, 400, 400);
 
-// Trim the image to a square and resize to 100x100
-$img->square_crop(100);
+// Trim the image to a 100x100 square
+$img->smart_crop(100);
+
+// Trim the image and resize to exactly 100x75
+$img->smart_crop(100, 75);
 
 // Desaturate (grayscale)
 $img->desaturate();
@@ -254,6 +257,11 @@ $orientation = $img->get_orientation();
 // Flip the image and output it directly to the browser (i.e. without saving to file)
 $img->load('butterfly.jpg')->flip('x')->output();
 ```
+
+Change Log
+----------
+
+-   2013-06-03: `square_crop` was replaced with `smart_crop`, which supports varying width/height as well as squares. Simply swap out `square_crop` with `smart_crop` to update.
 
 Differences from Version 1
 --------------------------
