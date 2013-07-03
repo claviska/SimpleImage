@@ -753,9 +753,6 @@ class SimpleImage {
 				break;
 		}
 		
-		// Since no more output can be sent, call the destuctor to free up memory
-		$this->__destruct();
-		
 	}
 	
 	// Same as PHP's imagecopymerge() function, except preserves alpha-transparency in 24-bit PNGs
