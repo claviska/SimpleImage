@@ -2,13 +2,13 @@
 /*
  * @package		SimpleImage class
  * @version		2.1
- * @author		By Cory LaViska for A Beautiful Site, LLC. (http://www.abeautifulsite.net/)
+ * @author		Cory LaViska for A Beautiful Site, LLC. (http://www.abeautifulsite.net/)
  * @author		Nazar Mokrynskyi <nazar@mokrynskyi.com> - merging of forks, namespace support, PhpDoc editing
  * @license		This software is dual-licensed under the GNU General Public License and the MIT License
  * @copyright	A Beautiful Site, LLC.
  */
-namespace SimpleImage;
-use            \Exception;
+namespace	SimpleImage;
+use			\Exception;
 
 /**
  * Class SimpleImage
@@ -19,23 +19,36 @@ class SimpleImage {
 
 	private $image, $filename, $original_info, $width, $height;
 
+	/**
+	 * Create instance and load an image
+	 *
+	 * @param string		$filename	Path to image file
+	 *
+	 * @return SimpleImage
+	 * @throws \Exception
+	 */
 	function __construct ($filename = null) {
 		if ($filename) {
 			$this->load($filename);
 		}
+		return $this;
 	}
-
+	/**
+	 * Destroy image resource
+	 */
 	function __destruct () {
 		if ($this->image) {
 			imagedestroy($this->image);
 		}
 	}
-
-	//
-	// Load an image
-	//
-	//	$filename - the image to be loaded (required)
-	//
+	/**
+	 * Load an image
+	 *
+	 * @param string		$filename	Path to image file
+	 *
+	 * @return SimpleImage
+	 * @throws \Exception
+	 */
 	public function load ($filename) {
 
 		// Require GD library
@@ -86,13 +99,15 @@ class SimpleImage {
 
 	}
 
-	//
-	// Create an image from scratch
-	//
-	//	$width  - image width (required)
-	//	$height - will be same with $width if not defined
-	//  $color  - fill color
-	//
+	/**
+	 * Create an image from scratch
+	 *
+	 * @param int			$width	Image width (required)
+	 * @param int|null		$height	If omitted - assumed equal to $width
+	 * @param null|string	$color	Hex color string
+	 *
+	 * @return SimpleImage
+	 */
 	public function create ($width, $height = null, $color = null) {
 
 		if ($height === null) {
@@ -120,11 +135,13 @@ class SimpleImage {
 		return $this;
 	}
 
-	//
-	// Fills image
-	//
-	//  $color  - fill color
-	//
+	/**
+	 * Fill image with color
+	 *
+	 * @param string		$color	Hex color string
+	 *
+	 * @return SimpleImage
+	 */
 	public function fill ($color = '#000000') {
 
 		$rgb        = $this->hex2rgb($color);
@@ -135,16 +152,17 @@ class SimpleImage {
 		return $this;
 	}
 
-	//
-	// Save an image
-	//
-	//		$filename - the filename to save to (defaults to original file)
-	//		$quality - 0-9 for PNG, 0-100 for JPEG
-	//
-	//	Notes:
-	//
-	//		The resulting format will be determined by the file extension.
-	//
+	/**
+	 * Save an image
+	 *
+	 * The resulting format will be determined by the file extension.
+	 *
+	 * @param null|string		$filename	If omitted - original file will be overwritten
+	 * @param null|int			$quality	Output image quality 0-9 for png, 0-100 fo jpg
+	 *
+	 * @return SimpleImage
+	 * @throws \Exception
+	 */
 	public function save ($filename = null, $quality = null) {
 
 		if (!$filename) {
@@ -194,41 +212,45 @@ class SimpleImage {
 
 	}
 
-	//
-	// Get info about the original image
-	//
-	//	Returns
-	//
-	//	array(
-	//		width => 320,
-	//		height => 200,
-	//		orientation => ['portrait', 'landscape', 'square'],
-	//		exif => array(...),
-	//		mime => ['image/jpeg', 'image/gif', 'image/png'],
-	//		format => ['jpeg', 'gif', 'png']
-	//	)
-	//
+	/**
+	 * Get info about the original image
+	 *
+	 * @return array <pre> array(
+	 * 	width		=> 320,
+	 * 	height		=> 200,
+	 * 	orientation	=> ['portrait', 'landscape', 'square'],
+	 * 	exif		=> array(...),
+	 * 	mime		=> ['image/jpeg', 'image/gif', 'image/png'],
+	 * 	format		=> ['jpeg', 'gif', 'png']
+	 * )</pre>
+	 */
 	public function get_original_info () {
 		return $this->original_info;
 	}
 
-	//
-	// Get the current width
-	//
+	/**
+	 * Get the current width
+	 *
+	 * @return int
+	 */
 	public function get_width () {
 		return imagesx($this->image);
 	}
 
-	//
-	// Get the current height
-	//
+	/**
+	 * Get the current height
+	 *
+	 * @return int
+	 */
 	public function get_height () {
 		return imagesy($this->image);
 	}
 
-	//
-	// Get the current orientation ('portrait', 'landscape', or 'square')
-	//
+	/**
+	 * Get the current orientation
+	 *
+	 * @return string	portrait|landscape|square
+	 */
 	public function get_orientation () {
 
 		if (imagesx($this->image) > imagesy($this->image)) {
@@ -241,11 +263,13 @@ class SimpleImage {
 
 	}
 
-	//
-	// Flip an image horizontally or vertically
-	//
-	//	$direction - 'x' or 'y'
-	//
+	/**
+	 * Flip an image horizontally or vertically
+	 *
+	 * @param string		$direction	x|y
+	 *
+	 * @return SimpleImage
+	 */
 	public function flip ($direction) {
 
 		$new = imagecreatetruecolor($this->width, $this->height);
@@ -274,12 +298,14 @@ class SimpleImage {
 
 	}
 
-	//
-	// Rotate an image
-	//
-	//	$angle - 0 - 360 (required)
-	//	$bg_color - hex color for the background
-	//
+	/**
+	 * Rotate an image
+	 *
+	 * @param int			$angle		0-360
+	 * @param string		$bg_color	Hex color string for background
+	 *
+	 * @return SimpleImage
+	 */
 	public function rotate ($angle, $bg_color = '#000000') {
 
 		$rgb      = $this->hex2rgb($bg_color);
@@ -297,10 +323,11 @@ class SimpleImage {
 
 	}
 
-	//
-	// Rotates and/or flips an image automatically so the orientation will
-	// be correct (based on exif 'Orientation')
-	//
+	/**
+	 * Rotates and/or flips an image automatically so the orientation will be correct (based on exif 'Orientation')
+	 *
+	 * @return SimpleImage
+	 */
 	public function auto_orient () {
 
 		// Adjust orientation
@@ -344,12 +371,14 @@ class SimpleImage {
 
 	}
 
-	//
-	// Resize an image to the specified dimensions
-	//
-	//	$width - the width of the resulting image
-	//	$height - the height of the resulting image
-	//
+	/**
+	 * Resize an image to the specified dimensions
+	 *
+	 * @param int	$width
+	 * @param int	$height
+	 *
+	 * @return SimpleImage
+	 */
 	public function resize ($width, $height) {
 
 		$new = imagecreatetruecolor($width, $height);
@@ -365,27 +394,42 @@ class SimpleImage {
 
 	}
 
-	//
-	// Fit to width (proportionally resize to specified width)
-	//
+	/**
+	 * Fit to width (proportionally resize to specified width)
+	 *
+	 * @param int			$width
+	 *
+	 * @return SimpleImage
+	 */
 	public function fit_to_width ($width) {
 		$aspect_ratio = $this->height / $this->width;
 		$height       = $width * $aspect_ratio;
 		return $this->resize($width, $height);
 	}
 
-	//
-	// Fit to height (proportionally resize to specified height)
-	//
+	/**
+	 * Fit to height (proportionally resize to specified height)
+	 *
+	 * @param int			$height
+	 *
+	 * @return SimpleImage
+	 */
 	public function fit_to_height ($height) {
 		$aspect_ratio = $this->height / $this->width;
 		$width        = $height / $aspect_ratio;
 		return $this->resize($width, $height);
 	}
 
-	//
-	// Best fit (proportionally resize to fit in specified width/height)
-	//
+	/**
+	 * Best fit (proportionally resize to fit in specified width/height)
+	 *
+	 * Shrink the image proportionally to fit inside a $width x $height box
+	 *
+	 * @param int			$max_width
+	 * @param int			$max_height
+	 *
+	 * @return	SimpleImage
+	 */
 	public function best_fit ($max_width, $max_height) {
 
 		// If it already fits, there's nothing to do
@@ -415,14 +459,16 @@ class SimpleImage {
 
 	}
 
-	//
-	// Crop an image
-	//
-	//	$x1 - left
-	//	$y1 - top
-	//	$x2 - right
-	//	$y2 - bottom
-	//
+	/**
+	 * Crop an image
+	 *
+	 * @param int			$x1	Left
+	 * @param int			$y1	Top
+	 * @param int			$x2	Right
+	 * @param int			$y2	Bottom
+	 *
+	 * @return SimpleImage
+	 */
 	public function crop ($x1, $y1, $x2, $y2) {
 
 		// Determine crop size
@@ -448,15 +494,16 @@ class SimpleImage {
 
 	}
 
-	//
-	// Crop an image from center
-	// Resized the image with square_crop for better dimension
-	//
-	// $width
-	// $height
-	//
+	/**
+	 * Crop an image from center
+	 *
+	 * @param int			$width
+	 * @param int			$height
+	 *
+	 * @return SimpleImage
+	 */
 	public function crop_center ($width, $height) {
-		$this->img = $this->square_crop($width);
+		$this->img = $this->smart_crop($width);
 
 		$left = ($this->width / 2) - ($width / 2);
 		$top  = ($this->height / 2) - ($height / 2);
@@ -464,15 +511,16 @@ class SimpleImage {
 		return $this->crop($left, $top, $width + $left, $height + $top);
 	}
 
-	//
-	// Smart crop (great for thumbnails)
-	//
-	//	Trims and resizes to the specified $width and $height; if $height
-	//	is omitted, a square thumbnail the size of $width will be produced
-	//
-	//	$width - the width of the resulting image
-	//	$height - the height of the resulting image (optional)
-	//
+	/**
+	 * Smart crop (great for thumbnails)
+	 *
+	 * Trims and resize to the specified $width and $height
+	 *
+	 * @param int			$width
+	 * @param int|null		$height	If omitted - assumed equal to $width
+	 *
+	 * @return SimpleImage
+	 */
 	public function smart_crop ($width, $height = null) {
 
 		if ($height === null) {
@@ -511,48 +559,59 @@ class SimpleImage {
 
 	}
 
-	//
-	// Desaturate (grayscale)
-	//
+	/**
+	 * Desaturate (grayscale)
+	 *
+	 * @return SimpleImage
+	 */
 	public function desaturate () {
 		imagefilter($this->image, IMG_FILTER_GRAYSCALE);
 		return $this;
 	}
 
-	//
-	// Invert
-	//
+	/**
+	 * Invert
+	 *
+	 * @return SimpleImage
+	 */
 	public function invert () {
 		imagefilter($this->image, IMG_FILTER_NEGATE);
 		return $this;
 	}
 
-	//
-	// Brightness
-	//
-	//	$level - darkest = -255, lightest = 255 (required)
-	//
+	/**
+	 * Brightness
+	 *
+	 * @param int			$level	Darkest = -255, lightest = 255
+	 *
+	 * @return SimpleImage
+	 */
 	public function brightness ($level) {
 		imagefilter($this->image, IMG_FILTER_BRIGHTNESS, $this->keep_within($level, -255, 255));
 		return $this;
 	}
 
-	//
-	// Contrast
-	//
-	//	$level - min = -100, max, 100 (required)
-	//
+	/**
+	 * Contrast
+	 *
+	 * @param int			$level	Min = -100, max = 100
+	 *
+	 * @return SimpleImage
+	 *
+	 */
 	public function contrast ($level) {
 		imagefilter($this->image, IMG_FILTER_CONTRAST, $this->keep_within($level, -100, 100));
 		return $this;
 	}
 
-	//
-	// Colorize (requires PHP 5.2.5+)
-	//
-	//	$color - any valid hex color (required)
-	//	$opacity - 0 - 1 (required)
-	//
+	/**
+	 * Colorize (requires PHP 5.2.5+)
+	 *
+	 * @param string		$color		Hex color string
+	 * @param float|int		$opacity	0-1
+	 *
+	 * @return SimpleImage
+	 */
 	public function colorize ($color, $opacity) {
 		$rgb   = $this->hex2rgb($color);
 		$alpha = $this->keep_within(127 - (127 * $opacity), 0, 127);
@@ -560,36 +619,44 @@ class SimpleImage {
 		return $this;
 	}
 
-	//
-	// Edge Detect
-	//
+	/**
+	 * Edge Detect
+	 *
+	 * @return SimpleImage
+	 */
 	public function edges () {
 		imagefilter($this->image, IMG_FILTER_EDGEDETECT);
 		return $this;
 	}
 
-	//
-	// Emboss
-	//
+	/**
+	 * Emboss
+	 *
+	 * @return SimpleImage
+	 */
 	public function emboss () {
 		imagefilter($this->image, IMG_FILTER_EMBOSS);
 		return $this;
 	}
 
-	//
-	// Mean Remove
-	//
+	/**
+	 * Mean Remove
+	 *
+	 * @return SimpleImage
+	 */
 	public function mean_remove () {
 		imagefilter($this->image, IMG_FILTER_MEAN_REMOVAL);
 		return $this;
 	}
 
-	//
-	// Blur
-	//
-	//	$type - 'selective' or 'gaussian' (default = selective)
-	//	$passes - the number of times to apply the filter
-	//
+	/**
+	 * Blur
+	 *
+	 * @param string		$type	selective|gaussian
+	 * @param int			$passes	Number of times to apply the filter
+	 *
+	 * @return SimpleImage
+	 */
 	public function blur ($type = 'selective', $passes = 1) {
 
 		switch (strtolower($type)) {
@@ -609,53 +676,64 @@ class SimpleImage {
 
 	}
 
-	//
-	// Sketch
-	//
+	/**
+	 * Sketch
+	 *
+	 * @return SimpleImage
+	 */
 	public function sketch () {
 		imagefilter($this->image, IMG_FILTER_MEAN_REMOVAL);
 		return $this;
 	}
 
-	//
-	// Smooth
-	//
-	//	$level - min = -10, max = 10
-	//
+	/**
+	 * Smooth
+	 *
+	 * @param int			$level	Min = -10, max = 10
+	 *
+	 * @return SimpleImage
+	 */
 	public function smooth ($level) {
 		imagefilter($this->image, IMG_FILTER_SMOOTH, $this->keep_within($level, -10, 10));
 		return $this;
 	}
 
-	//
-	// Pixelate (requires PHP 5.3+)
-	//
-	//	$block_size - the size in pixels of each resulting block (default = 10)
-	//
+	/**
+	 * Pixelate (requires PHP 5.3+)
+	 *
+	 * @param int			$block_size	Size in pixels of each resulting block
+	 *
+	 * @return SimpleImage
+	 */
 	public function pixelate ($block_size = 10) {
 		imagefilter($this->image, IMG_FILTER_PIXELATE, $block_size, true);
 		return $this;
 	}
 
-	//
-	// Sepia
-	//
+	/**
+	 * Sepia
+	 *
+	 * @return SimpleImage
+	 */
 	public function sepia () {
 		imagefilter($this->image, IMG_FILTER_GRAYSCALE);
 		imagefilter($this->image, IMG_FILTER_COLORIZE, 100, 50, 0);
 		return $this;
 	}
 
-	//
-	// Overlay (overlay an image on top of another; works with 24-big PNG alpha-transparency)
-	//
-	//	$overlay_file - the image to use as a overlay (required)
-	//	$position - 'center', 'top', 'left', 'bottom', 'right', 'top left',
-	//				'top right', 'bottom left', 'bottom right'
-	//	$opacity - overlay opacity (0 - 1)
-	//	$x_offset - horizontal offset in pixels
-	//	$y_offset - vertical offset in pixels
-	//
+	/**
+	 * Overlay
+	 *
+	 * Overlay an image on top of another, works with 24-bit PNG alpha-transparency
+	 *
+	 * @param string		$overlay_file
+	 * @param string		$position		center|top|left|bottom|right|top left|top right|bottom left|bottom right
+	 * @param float|int		$opacity		Overlay opacity 0-1
+	 * @param int			$x_offset		Horizontal offset in pixels
+	 * @param int			$y_offset		Vertical offset in pixels
+	 *
+	 * @return SimpleImage
+	 */
 	public function overlay ($overlay_file, $position = 'center', $opacity = 1, $x_offset = 0, $y_offset = 0) {
 
 		// Load overlay image
@@ -721,19 +799,21 @@ class SimpleImage {
 
 	}
 
-	//
-	// Text (adds text to an image)
-	//
-	//	$text - the text to add (required)
-	//	$font_file - the font to use (required)
-	//	$font_size - font size in points
-	//	$color - font color in hex
-	//	$position - 'center', 'top', 'left', 'bottom', 'right', 'top left',
-	//				'top right', 'bottom left', 'bottom right'
-	//	$x_offset - horizontal offset in pixels
-	//	$y_offset - vertical offset in pixels
-	//
-	public function text ($text, $font_file, $font_size = '12', $color = '#000000', $position = 'center', $x_offset = 0, $y_offset = 0) {
+	/**
+	 * Add text to an image
+	 *
+	 * @param string		$text
+	 * @param string		$font_file
+	 * @param float|int		$font_size
+	 * @param string		$color
+	 * @param string		$position
+	 * @param int			$x_offset
+	 * @param int			$y_offset
+	 *
+	 * @return SimpleImage
+	 * @throws \Exception
+	 */
+	public function text ($text, $font_file, $font_size = 12, $color = '#000000', $position = 'center', $x_offset = 0, $y_offset = 0) {
 
 		// todo - this method could be improved to support the text angle
 		$angle = 0;
@@ -805,9 +885,14 @@ class SimpleImage {
 
 	}
 
-	//
-	// Outputs image without saving
-	//
+	/**
+	 * Outputs image without saving
+	 *
+	 * @param null|string	$format		If omitted or null - format of original file will be used, may be gif|jpg|png
+	 * @param int|null		$quality	Output image quality 0-9 for png, 0-100 fo jpg
+	 *
+	 * @throws \Exception
+	 */
 	public function output ($format = null, $quality = null) {
 
 		switch (strtolower($format)) {
@@ -866,9 +951,15 @@ class SimpleImage {
 
 	}
 
-	//
-	// Outputs image as data base64 to use as img src
-	//
+	/**
+	 * Outputs image as data base64 to use as img src
+	 *
+	 * @param null|string	$format		If omitted or null - format of original file will be used, may be gif|jpg|png
+	 * @param int|null		$quality	Output image quality 0-9 for png, 0-100 fo jpg
+	 *
+	 * @return string
+	 * @throws \Exception
+	 */
 	public function outputBase64 ($format = null, $quality = null) {
 
 		switch (strtolower($format)) {
@@ -931,8 +1022,21 @@ class SimpleImage {
 		return $image_data_base64;
 	}
 
-	// Same as PHP's imagecopymerge() function, except preserves alpha-transparency in 24-bit PNGs
-	// Courtest of: http://www.php.net/manual/en/function.imagecopymerge.php#88456
+	/**
+	 * Same as PHP's imagecopymerge() function, except preserves alpha-transparency in 24-bit PNGs
+	 *
+	 * @param $dst_im
+	 * @param $src_im
+	 * @param $dst_x
+	 * @param $dst_y
+	 * @param $src_x
+	 * @param $src_y
+	 * @param $src_w
+	 * @param $src_h
+	 * @param $pct
+	 *
+	 * @link http://www.php.net/manual/en/function.imagecopymerge.php#88456
+	 */
 	private function imagecopymerge_alpha ($dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, $src_w, $src_h, $pct) {
 		$pct /= 100;
 		// Get image width and height
@@ -977,10 +1081,17 @@ class SimpleImage {
 		imagecopy($dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, $src_w, $src_h);
 	}
 
-	//
-	// Ensures $value is always within $min and $max range.
-	// If lower, $min is returned. If higher, $max is returned.
-	//
+	/**
+	 * Ensures $value is always within $min and $max range.
+	 *
+	 * If lower, $min is returned. If higher, $max is returned.
+	 *
+	 * @param int|float		$value
+	 * @param int|float		$min
+	 * @param int|float		$max
+	 *
+	 * @return int|float
+	 */
 	private function keep_within ($value, $min, $max) {
 		if ($value < $min) {
 			return $min;
@@ -991,9 +1102,13 @@ class SimpleImage {
 		return $value;
 	}
 
-	//
-	// Returns the file extension of the specified file
-	//
+	/**
+	 * Returns the file extension of the specified file
+	 *
+	 * @param string	$filename
+	 *
+	 * @return string
+	 */
 	private function file_ext ($filename) {
 
 		if (!preg_match('/\./', $filename)) {
@@ -1004,9 +1119,13 @@ class SimpleImage {
 
 	}
 
-	//
-	// Converts a hex color value to its RGB equivalent
-	//
+	/**
+	 * Converts a hex color value to its RGB equivalent
+	 *
+	 * @param string		$hex_color
+	 *
+	 * @return array|bool
+	 */
 	private function hex2rgb ($hex_color) {
 
 		if ($hex_color[0] == '#') {

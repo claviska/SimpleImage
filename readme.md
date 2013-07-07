@@ -44,6 +44,8 @@ This class requires the PHP GD library. Some methods (i.e. colorize and
 pixelate) require a more recent version of PHP (5.2—5.3 or higher). The
 rest can be used with any recent version of PHP + GD.
 
+Due to namespace usage PHP 5.3 required, but removing namespace declaration will allow to use this class with older versions of PHP.
+
 Usage
 -----
 
@@ -194,31 +196,31 @@ $img->edges();
 // Emboss filter
 $img->emboss();
 
-// Mean removal filter  
-$img->mean_remove();  
+// Mean removal filter
+$img->mean_remove();
 
-// Selective blur (one pass)  
-$img->blur();  
+// Selective blur (one pass)
+$img->blur();
 
-// Gaussian blur (two passes)  
-$img->blur('gaussian', 2);  
+// Gaussian blur (two passes)
+$img->blur('gaussian', 2);
 
-// Sketch filter  
-$img->sketch();  
+// Sketch filter
+$img->sketch();
 
-// Smooth filter (-10 to 10)  
-$img->smooth(5);  
+// Smooth filter (-10 to 10)
+$img->smooth(5);
 
-// Pixelate using 8px blocks  
-$img->pixelate(8);  
+// Pixelate using 8px blocks
+$img->pixelate(8);
 
-// Sepia effect (simulated)  
-$img->sepia();  
+// Sepia effect (simulated)
+$img->sepia();
 
 // Overlay watermark.png at 50% opacity at the bottom-right of the image with a 10 pixel horizontal and vertical margin
-$img->overlay('watermark.png', 'bottom right', .5, -10, -10);  
+$img->overlay('watermark.png', 'bottom right', .5, -10, -10);
 
-// Add 32-point white text top-centered (plus 20px) on the image*  
+// Add 32-point white text top-centered (plus 20px) on the image*
 $img->text('Your Text', 'font.ttf', 32, '#FFFFFF', 'top', 0, 20);
 ```
 
@@ -227,7 +229,7 @@ right, bottom left, bottom right*
 
 ### Utility Methods
 
-The following methods are not chainable, because they return information about 
+The following methods are not chainable, because they return information about
 the image you're working with or output the image directly to the browser:
 
 ```php
@@ -242,7 +244,7 @@ the image you're working with or output the image directly to the browser:
 //		exif => array(...),
 //		mime => ['image/jpeg', 'image/gif', 'image/png'],
 //		format => ['jpeg', 'gif', 'png']
-//	)	
+//	)
 $info = $img->get_original_info();
 
 // Get the current width
