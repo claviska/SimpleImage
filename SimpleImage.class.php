@@ -16,7 +16,7 @@ use			\Exception;
  */
 class SimpleImage {
 
-	private $image, $filename, $original_info, $width, $height;
+	protected $image, $filename, $original_info, $width, $height;
 
 	/**
 	 * Create instance and load an image
@@ -825,7 +825,7 @@ class SimpleImage {
 	 *
 	 * @link http://www.php.net/manual/en/function.imagecopymerge.php#88456
 	 */
-	private function imagecopymerge_alpha ($dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, $src_w, $src_h, $pct) {
+	protected function imagecopymerge_alpha ($dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, $src_w, $src_h, $pct) {
 		$pct		/= 100;
 		// Get image width and height
 		$w			= imagesx($src_im);
@@ -879,7 +879,7 @@ class SimpleImage {
 	 *
 	 * @return int|float
 	 */
-	private function keep_within ($value, $min, $max) {
+	protected function keep_within ($value, $min, $max) {
 		if ($value < $min) {
 			return $min;
 		}
@@ -895,7 +895,7 @@ class SimpleImage {
 	 *
 	 * @return string
 	 */
-	private function file_ext ($filename) {
+	protected function file_ext ($filename) {
 		if (!preg_match('/\./', $filename)) {
 			return '';
 		}
@@ -908,7 +908,7 @@ class SimpleImage {
 	 *
 	 * @return array|bool
 	 */
-	private function hex2rgb ($hex_color) {
+	protected function hex2rgb ($hex_color) {
 		if ($hex_color[0] == '#') {
 			$hex_color = substr($hex_color, 1);
 		}
