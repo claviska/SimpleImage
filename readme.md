@@ -6,6 +6,15 @@ The SimpleImage PHP class
 
 *Dual licensed under the MIT / GPLv2 licenses*
 
+From author of this fork
+------------------------
+Hi, I'm Mokrynskyi Nazar, and I liked SimpleImage PHP class created by Cory LaViska.
+But class didn't have correct PhpDoc sections and some additional useful features, that were made by other people, that forked this class too.
+That is why I merged all these forks, made some refactoring that (subjectively) makes code simpler to read and understand, and add some other features
+I wanted to have (you can see them in change log at the end of this page).
+Currently this fork of class have version 2.1, but it is not related directly to the version of original class, so don't be confused if two classes
+with the same name and version are actually different.
+
 Overview
 --------
 
@@ -53,11 +62,10 @@ You can load an image when you instantiate a new SimpleImage object:
 $img = new SimpleImage('image.jpg');
 ```
 
-Or you can load it later on:
+Or you can create empty image 200x100 with black background:
 
 ```php
-$img = new SimpleImage();
-$img->load('image.jpg');
+$img = new SimpleImage(null, 200, 100, '#000');
 ```
 
 ### Saving
@@ -75,9 +83,7 @@ Alternatively, you can specify a new filename:
 $img->save('new-image.jpg');
 ```
 
-You can specify quality as a second parameter for JPEG and PNG images.
-Use 0-100 for JPEG and 0-9 for PNG. (For PNG, this is actually the
-compression level.)
+You can specify quality as a second parameter in percents within range 0-100
 
 ```php
 $img->save('new-image.jpg', 90);
@@ -115,8 +121,7 @@ $img = new SimpleImage('image.jpg');
 $img->flip('x')->rotate(90)->best_fit(320, 200)->desaturate()->invert()->save('result.jpg')
 ```
 
-You can chain all of the methods below as well as the **load()**
-and **save()** methods above.  (You cannot chain the constructor,
+You can chain all of the methods below as well methods above.  (You cannot chain the constructor,
 however, as this is not supported by PHP.)
 
 ### Error Handling
@@ -165,11 +170,17 @@ $img->best_fit(500, 500);
 // Crop a portion of the image from x1, y1 to x2, y2
 $img->crop(100, 100, 400, 400);
 
+// Crop a portion of the image with size 100x100 from image center
+$img->crop_center(100, 100);
+
 // Trim the image to a 100x100 square
 $img->smart_crop(100);
 
 // Trim the image and resize to exactly 100x75
 $img->smart_crop(100, 75);
+
+// Fill image with white color
+$img->fill('#fff');
 
 // Desaturate (grayscale)
 $img->desaturate();
@@ -253,11 +264,28 @@ $height = $img->get_height();
 $orientation = $img->get_orientation();
 
 // Flip the image and output it directly to the browser (i.e. without saving to file)
-$img->load('butterfly.jpg')->flip('x')->output();
+$img->flip('x')->output();
 ```
 
 Change Log
 ----------
+
+-   2013-07-07: Version 2.1 (by Nazar Mokrynskyi), a lot of refactoring and new features
+
+Differences from Version 2
+--------------------------
+
+* `load` method hidden, use constructor instead
+* constructor extended with possibility to create empty image without source file (thanks to **strip** fork)
+* added method `fill` for filling image with specified color (thanks to **strip** fork)
+* added method `output_base64` for getting image in form of string as *data: URL* (thanks to **Fernando Cunha** fork)
+* added `crop_center` method for cropping image of certain size in the center of image (thanks to **Cezar Luiz** fork)
+* quality of output now in percents, which is the same for any image type
+* added `$quality` property for specifying default image quality value
+* private methods replaced by protected for inheritance possibility
+* added support of RGB and RGBA colors in addition to HEX
+* added interlacing to images in order to obtain progressive jpeg
+
 
 -   2013-06-03: `square_crop` was replaced with `smart_crop`, which supports varying width/height as well as squares. Simply swap out `square_crop` with `smart_crop` to update.
 

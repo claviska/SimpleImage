@@ -16,19 +16,31 @@ use			\Exception;
  */
 class SimpleImage {
 
+	/**
+	 * @var int Default output image quality
+	 */
+	public		$quality	= 80;
+
 	protected $image, $filename, $original_info, $width, $height;
 
 	/**
-	 * Create instance and load an image
+	 * Create instance and load an image, or create an image from scratch
 	 *
-	 * @param string		$filename	Path to image file
+	 * @param null|string	$filename	Path to image file (may be omitted to create image from scratch)
+	 * @param int			$width		Image width (is used for creating image from scratch)
+	 * @param int|null		$height		If omitted - assumed equal to $width (is used for creating image from scratch)
+	 * @param null|string	$color		Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
+	 * 									Where red, green, blue - integers 0-255, alpha - integer 0-127<br>
+	 * 									(is used for creating image from scratch)
 	 *
 	 * @return SimpleImage
 	 * @throws \Exception
 	 */
-	function __construct ($filename = null) {
+	function __construct ($filename = null, $width = null, $height = null, $color = null) {
 		if ($filename) {
 			$this->load($filename);
+		} else {
+			$this->create($width, $height, $color);
 		}
 		return $this;
 	}
@@ -48,7 +60,7 @@ class SimpleImage {
 	 * @return SimpleImage
 	 * @throws \Exception
 	 */
-	function load ($filename) {
+	protected function load ($filename) {
 		// Require GD library
 		if (!extension_loaded('gd')) {
 			throw new Exception('Required extension GD is not loaded.');
@@ -86,13 +98,14 @@ class SimpleImage {
 	/**
 	 * Create an image from scratch
 	 *
-	 * @param int			$width	Image width (required)
+	 * @param int			$width	Image width
 	 * @param int|null		$height	If omitted - assumed equal to $width
-	 * @param null|string	$color	Hex color string
+	 * @param null|string	$color	Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
+	 * 								Where red, green, blue - integers 0-255, alpha - integer 0-127
 	 *
 	 * @return SimpleImage
 	 */
-	function create ($width, $height = null, $color = null) {
+	protected function create ($width, $height = null, $color = null) {
 		$height					= $height ?: $width;
 		$this->width			= $width;
 		$this->height			= $height;
@@ -113,13 +126,14 @@ class SimpleImage {
 	/**
 	 * Fill image with color
 	 *
-	 * @param string		$color	Hex color string
+	 * @param string		$color	Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
+	 * 								Where red, green, blue - integers 0-255, alpha - integer 0-127
 	 *
 	 * @return SimpleImage
 	 */
 	function fill ($color = '#000000') {
-		$rgb		= $this->hex2rgb($color);
-		$fill_color	= imagecolorallocate($this->image, $rgb['r'], $rgb['g'], $rgb['b']);
+		$rgba		= $this->normalize_color($color);
+		$fill_color	= imagecolorallocatealpha($this->image, $rgba['r'], $rgba['g'], $rgba['b'], $rgba['a'], $rgba['a']);
 		imagefilledrectangle($this->image, 0, 0, $this->width, $this->height, $fill_color);
 		return $this;
 	}
@@ -128,14 +142,16 @@ class SimpleImage {
 	 *
 	 * The resulting format will be determined by the file extension.
 	 *
-	 * @param null|string		$filename	If omitted - original file will be overwritten
-	 * @param null|int			$quality	Output image quality 0-9 for png, 0-100 fo jpg
+	 * @param null|string	$filename	If omitted - original file will be overwritten
+	 * @param null|int		$quality	Output image quality in percents 0-100
 	 *
 	 * @return SimpleImage
 	 * @throws \Exception
 	 */
 	function save ($filename = null, $quality = null) {
+		$quality	= $quality ?: $this->quality;
 		$filename	= $filename ?: $this->filename;
+		imageinterlace($this->image, true);
 		// Determine format via file extension (fall back to original format)
 		$format		= $this->file_ext($filename) ?: $this->original_info['format'];
 		// Determine output format
@@ -145,14 +161,10 @@ class SimpleImage {
 				break;
 			case 'jpg':
 			case 'jpeg':
-				$quality	= $quality ?: 85;
-				$quality	= $this->keep_within($quality, 0, 100);
-				$result		= imagejpeg($this->image, $filename, $quality);
+				$result		= imagejpeg($this->image, $filename, round($quality));
 				break;
 			case 'png':
-				$quality	= $quality ?: 9;
-				$quality	= $this->keep_within($quality, 0, 9);
-				$result		= imagepng($this->image, $filename, $quality);
+				$result		= imagepng($this->image, $filename, round(9 * $quality / 100));
 				break;
 			default:
 				throw new Exception('Unsupported format');
@@ -237,13 +249,14 @@ class SimpleImage {
 	 * Rotate an image
 	 *
 	 * @param int			$angle		0-360
-	 * @param string		$bg_color	Hex color string for background
+	 * @param string		$bg_color	Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
+	 * 									Where red, green, blue - integers 0-255, alpha - integer 0-127
 	 *
 	 * @return SimpleImage
 	 */
 	function rotate ($angle, $bg_color = '#000000') {
-		$rgb			= $this->hex2rgb($bg_color);
-		$bg_color		= imagecolorallocate($this->image, $rgb['r'], $rgb['g'], $rgb['b']);
+		$rgba			= $this->normalize_color($bg_color);
+		$bg_color		= imagecolorallocatealpha($this->image, $rgba['r'], $rgba['g'], $rgba['b'], $rgba['a']);
 		$new			= imagerotate($this->image, -($this->keep_within($angle, -360, 360)), $bg_color);
 		imagesavealpha($new, true);
 		imagealphablending($new, true);
@@ -480,17 +493,18 @@ class SimpleImage {
 		return $this;
 	}
 	/**
-	 * Colorize (requires PHP 5.2.5+)
+	 * Colorize
 	 *
-	 * @param string		$color		Hex color string
+	 * @param string		$color		Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
+	 * 									Where red, green, blue - integers 0-255, alpha - integer 0-127
 	 * @param float|int		$opacity	0-1
 	 *
 	 * @return SimpleImage
 	 */
 	function colorize ($color, $opacity) {
-		$rgb   = $this->hex2rgb($color);
+		$rgba   = $this->normalize_color($color);
 		$alpha = $this->keep_within(127 - (127 * $opacity), 0, 127);
-		imagefilter($this->image, IMG_FILTER_COLORIZE, $this->keep_within($rgb['r'], 0, 255), $this->keep_within($rgb['g'], 0, 255), $this->keep_within($rgb['b'], 0, 255), $alpha);
+		imagefilter($this->image, IMG_FILTER_COLORIZE, $this->keep_within($rgba['r'], 0, 255), $this->keep_within($rgba['g'], 0, 255), $this->keep_within($rgba['b'], 0, 255), $alpha);
 		return $this;
 	}
 	/**
@@ -563,7 +577,7 @@ class SimpleImage {
 		return $this;
 	}
 	/**
-	 * Pixelate (requires PHP 5.3+)
+	 * Pixelate
 	 *
 	 * @param int			$block_size	Size in pixels of each resulting block
 	 *
@@ -661,8 +675,8 @@ class SimpleImage {
 	function text ($text, $font_file, $font_size = 12, $color = '#000000', $position = 'center', $x_offset = 0, $y_offset = 0) {
 		// todo - this method could be improved to support the text angle
 		$angle		= 0;
-		$rgb		= $this->hex2rgb($color);
-		$color		= imagecolorallocate($this->image, $rgb['r'], $rgb['g'], $rgb['b']);
+		$rgba		= $this->normalize_color($color);
+		$color		= imagecolorallocatealpha($this->image, $rgba['r'], $rgba['g'], $rgba['b'], $rgba['a']);
 		// Determine textbox size
 		$box		= imagettfbbox($font_size, $angle, $font_file, $text);
 		if (!$box) {
@@ -717,11 +731,13 @@ class SimpleImage {
 	 * Outputs image without saving
 	 *
 	 * @param null|string	$format		If omitted or null - format of original file will be used, may be gif|jpg|png
-	 * @param int|null		$quality	Output image quality 0-9 for png, 0-100 fo jpg
+	 * @param int|null		$quality	Output image quality in percents 0-100
 	 *
 	 * @throws \Exception
 	 */
 	function output ($format = null, $quality = null) {
+		$quality	= $quality ?: $this->quality;
+		imageinterlace($this->image, true);
 		switch (strtolower($format)) {
 			case 'gif':
 				$mimetype	= 'image/gif';
@@ -746,12 +762,10 @@ class SimpleImage {
 				imagegif($this->image);
 				break;
 			case 'image/jpeg':
-				$quality	= $this->keep_within($quality ?: 85, 0, 100);
-				imagejpeg($this->image, null, $quality);
+				imagejpeg($this->image, null, round($quality));
 				break;
 			case 'image/png':
-				$quality	= $this->keep_within($quality ?: 9, 0, 9);
-				imagepng($this->image, null, $quality);
+				imagepng($this->image, null, round(9 * $quality / 100));
 				break;
 			default:
 				throw new Exception('Unsupported image format: '.$this->filename);
@@ -764,12 +778,14 @@ class SimpleImage {
 	 * Outputs image as data base64 to use as img src
 	 *
 	 * @param null|string	$format		If omitted or null - format of original file will be used, may be gif|jpg|png
-	 * @param int|null		$quality	Output image quality 0-9 for png, 0-100 fo jpg
+	 * @param int|null		$quality	Output image quality in percents 0-100
 	 *
 	 * @return string
 	 * @throws \Exception
 	 */
-	function outputBase64 ($format = null, $quality = null) {
+	function output_base64 ($format = null, $quality = null) {
+		$quality	= $quality ?: $this->quality;
+		imageinterlace($this->image, true);
 		switch (strtolower($format)) {
 			case 'gif':
 				$mimetype	= 'image/gif';
@@ -794,12 +810,10 @@ class SimpleImage {
 				imagegif($this->image);
 				break;
 			case 'image/jpeg':
-				$quality	= $this->keep_within($quality ?: 85, 0, 100);
-				imagejpeg($this->image, null, $quality);
+				imagejpeg($this->image, null, round($quality));
 				break;
 			case 'image/png':
-				$quality	= $this->keep_within($quality ?: 9, 0, 9);
-				imagepng($this->image, null, $quality);
+				imagepng($this->image, null, round(9 * $quality / 100));
 				break;
 			default:
 				throw new Exception('Unsupported image format: '.$this->filename);
@@ -904,33 +918,52 @@ class SimpleImage {
 	/**
 	 * Converts a hex color value to its RGB equivalent
 	 *
-	 * @param string		$hex_color
+	 * @param string		$color	Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
+	 * 								Where red, green, blue - integers 0-255, alpha - integer 0-127
 	 *
 	 * @return array|bool
 	 */
-	protected function hex2rgb ($hex_color) {
-		if ($hex_color[0] == '#') {
-			$hex_color = substr($hex_color, 1);
-		}
-		if (strlen($hex_color) == 6) {
-			list($r, $g, $b) = array(
-				$hex_color[0].$hex_color[1],
-				$hex_color[2].$hex_color[3],
-				$hex_color[4].$hex_color[5]
+	protected function normalize_color ($color) {
+		if (is_string($color)) {
+			$color	= trim($color, '#');
+			if (strlen($color) == 6) {
+				list($r, $g, $b) = array(
+					$color[0].$color[1],
+					$color[2].$color[3],
+					$color[4].$color[5]
+				);
+			} elseif (strlen($color) == 3) {
+				list($r, $g, $b) = array(
+					$color[0].$color[0],
+					$color[1].$color[1],
+					$color[2].$color[2]
+				);
+			} else {
+				return false;
+			}
+			return array(
+				'r'	=> hexdec($r),
+				'g'	=> hexdec($g),
+				'b'	=> hexdec($b),
+				'a'	=> 0
 			);
-		} elseif (strlen($hex_color) == 3) {
-			list($r, $g, $b) = array(
-				$hex_color[0].$hex_color[0],
-				$hex_color[1].$hex_color[1],
-				$hex_color[2].$hex_color[2]
-			);
-		} else {
-			return false;
+		} elseif (is_array($color) && (count($color) == 3 || count($color) == 4)) {
+			if (isset($color['r'], $color['g'], $color['b'])) {
+				return array(
+					'r'	=> $this->keep_within($color['r'], 0, 255),
+					'g'	=> $this->keep_within($color['g'], 0, 255),
+					'b'	=> $this->keep_within($color['b'], 0, 255),
+					'a'	=> $this->keep_within(isset($color['a']) ? $color['a'] : 0, 0, 127)
+				);
+			} elseif (isset($color[0], $color[1], $color[2])) {
+				return array(
+					'r'	=> $this->keep_within($color[0], 0, 255),
+					'g'	=> $this->keep_within($color[1], 0, 255),
+					'b'	=> $this->keep_within($color[2], 0, 255),
+					'a'	=> $this->keep_within(isset($color[3]) ? $color[3] : 0, 0, 127)
+				);
+			}
 		}
-		return array(
-			'r' => hexdec($r),
-			'g' => hexdec($g),
-			'b' => hexdec($b)
-		);
+		return false;
 	}
 }
