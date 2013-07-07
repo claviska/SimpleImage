@@ -1,19 +1,22 @@
 <?php
 /*
-
-  The PHP SimpleImage class - v2
-
-    By Cory LaViska for A Beautiful Site, LLC. (http://www.abeautifulsite.net/)
-
-  License:
-
-    This software is dual-licensed under the GNU General Public License and
-    the MIT License and is copyright A Beautiful Site, LLC.
-
-*/
+ * @package		SimpleImage class
+ * @version		2.1
+ * @author		By Cory LaViska for A Beautiful Site, LLC. (http://www.abeautifulsite.net/)
+ * @author		Nazar Mokrynskyi <nazar@mokrynskyi.com> - merging of forks, namespace support, PhpDoc editing
+ * @license		This software is dual-licensed under the GNU General Public License and the MIT License
+ * @copyright	A Beautiful Site, LLC.
+ */
 namespace	SimpleImage;
 use			\Exception;
 
+/**
+ * Class SimpleImage
+ *
+ * This class makes image manipulation in PHP as simple as possible.
+ *
+ * @package SimpleImage
+ */
 class SimpleImage {
 
 	private $image, $filename, $original_info, $width, $height;
