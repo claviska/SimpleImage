@@ -11,6 +11,8 @@
     the MIT License and is copyright A Beautiful Site, LLC.
 
 */
+namespace	SimpleImage;
+use			\Exception;
 
 class SimpleImage {
 
@@ -916,7 +918,7 @@ class SimpleImage {
 				// Get the color index with new alpha
 				$alphacolorxy = imagecolorallocatealpha($src_im, ($colorxy >> 16) & 0xFF, ($colorxy >> 8) & 0xFF, $colorxy & 0xFF, $alpha);
 				// Set pixel with the new color + opacity
-				if( !imagesetpixel($src_im, $x, $y, $alphacolorxy) ) return false;
+				if( !imagesetpixel($src_im, $x, $y, $alphacolorxy) ) return;
 			}
 		}
 		imagesavealpha($dst_im, true);
