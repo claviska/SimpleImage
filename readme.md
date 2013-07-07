@@ -40,11 +40,7 @@ With this class, you can effortlessly:
 Requirements
 ------------
 
-This class requires the PHP GD library. Some methods (i.e. colorize and
-pixelate) require a more recent version of PHP (5.2—5.3 or higher). The
-rest can be used with any recent version of PHP + GD.
-
-Due to namespace usage PHP 5.3 required, but removing namespace declaration will allow to use this class with older versions of PHP.
+This class requires PHP 5.3 and PHP GD library.
 
 Usage
 -----
