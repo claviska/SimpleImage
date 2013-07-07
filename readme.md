@@ -273,10 +273,9 @@ $img->flip('x')->output();
 Change Log
 ----------
 
--   2013-07-07: Version 2.1 (by Nazar Mokrynskyi), a lot of refactoring and new features
+##### 2013-07-07: Version 2.1 (by Nazar Mokrynskyi), a lot of refactoring and new features
 
-Differences from Version 2
---------------------------
+###### Differences from Version 2
 
 * `load` method hidden, use constructor instead
 * constructor extended with possibility to create empty image without source file (thanks to **strip** fork)
@@ -290,10 +289,9 @@ Differences from Version 2
 * added interlacing to images in order to obtain progressive jpeg
 
 
--   2013-06-03: `square_crop` was replaced with `smart_crop`, which supports varying width/height as well as squares. Simply swap out `square_crop` with `smart_crop` to update.
+##### 2013-06-03: `square_crop` was replaced with `smart_crop`, which supports varying width/height as well as squares. Simply swap out `square_crop` with `smart_crop` to update.
 
-Differences from Version 1
---------------------------
+###### Differences from Version 1
 
 SimpleImage has been completely overhauled since version 1. Here are the
 most significant changes:
