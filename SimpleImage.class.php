@@ -364,7 +364,23 @@ class SimpleImage {
 		
 		return $this;
 		
-	}	
+	}
+	
+	//
+	// Crop an image from center
+	// Resized the image with square_crop for better dimension
+	//
+	// $width
+	// $height
+	//
+	public function crop_center($width, $height) {
+		$this->img = $this->square_crop($width);
+
+		$left = ($this->width / 2) - ($width / 2);
+		$top = ($this->height / 2) - ($height / 2);
+
+		return $this->crop($left, $top, $width + $left, $height + $top);
+	}
 	
 	//
 	// Smart crop (great for thumbnails)
