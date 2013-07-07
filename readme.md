@@ -13,12 +13,14 @@ This class makes image manipulation in PHP as simple as possible. The
 examples are the best way to learn how to use it, but here it is in a
 nutshell:
 
-	try {
-	    $img = new SimpleImage('image.jpg');
-	    $img->flip('x')->rotate(90)->best_fit(320, 200)->sepia()->save('result.gif');
-	} catch(Exception $e) {
-		echo 'Error: ' . $e->getMessage();
-	}
+```php
+try {
+    $img = new SimpleImage('image.jpg');
+    $img->flip('x')->rotate(90)->best_fit(320, 200)->sepia()->save('result.gif');
+} catch(Exception $e) {
+	echo 'Error: ' . $e->getMessage();
+}
+```
 
 The two lines inside the _try_ block load **image.jpg**, flip it horizontally, rotate
 it 90 degrees clockwise, shrink it to fit within a 320x200 box, apply a sepia
@@ -49,37 +51,49 @@ Usage
 
 You can load an image when you instantiate a new SimpleImage object:
 
-    $img = new SimpleImage('image.jpg');
+```php
+$img = new SimpleImage('image.jpg');
+```
 
 Or you can load it later on:
 
-    $img = new SimpleImage();
-    $img->load('image.jpg');
+```php
+$img = new SimpleImage();
+$img->load('image.jpg');
+```
 
 ### Saving
 
 Images must be saved after you manipulate them. To save your changes to
 the original file, simply call:
 
-    $img->save();
+```php
+$img->save();
+```
 
 Alternatively, you can specify a new filename:
 
-    $img->save('new-image.jpg');
+```php
+$img->save('new-image.jpg');
+```
 
 You can specify quality as a second parameter for JPEG and PNG images.
 Use 0-100 for JPEG and 0-9 for PNG. (For PNG, this is actually the
 compression level.)
 
-    $img->save('new-image.jpg', 90);
+```php
+$img->save('new-image.jpg', 90);
+```
 
 ### Converting Between Formats
 
 When saving, the resulting image format is determined by the file
 extension. For example, you can convert a JPEG to a GIF by doing this:
 
-    $img = new SimpleImage('image.jpg');
-    $img->save('image.gif');
+```php
+$img = new SimpleImage('image.jpg');
+$img->save('image.gif');
+```
 
 ### Stripping EXIF data
 
@@ -88,16 +102,20 @@ there is currently no way to *prevent* EXIF data from being stripped
 using the GD library. However, you can easily strip EXIF data simply by
 loading and saving:
 
-    $img = new SimpleImage('image.jpg');
-    $img->save();
+```php
+$img = new SimpleImage('image.jpg');
+$img->save();
+```
 
 ### Method Chaining
 
 SimpleImage supports method chaining, so you can make multiple changes
 and save the resulting image with just one line of code:
 
-    $img = new SimpleImage('image.jpg');
-    $img->flip('x')->rotate(90)->best_fit(320, 200)->desaturate()->invert()->save('result.jpg')
+```php
+$img = new SimpleImage('image.jpg');
+$img->flip('x')->rotate(90)->best_fit(320, 200)->desaturate()->invert()->save('result.jpg')
+```
 
 You can chain all of the methods below as well as the **load()**
 and **save()** methods above.  (You cannot chain the constructor,
@@ -109,12 +127,14 @@ SimpleImage throws exceptions when things don't work right. You should
 always load/manipulate/save images inside of a *try/catch* block to
 handle them properly:
 
-    try {
-        $img = new SimpleImage('image.jpg');
-        $img->flip('x')->save('flipped.jpg');
-    } catch(Exception $e) {
-        echo 'Error: ' . $e->getMessage();
-    }
+```php
+try {
+	$img = new SimpleImage('image.jpg');
+	$img->flip('x')->save('flipped.jpg');
+} catch(Exception $e) {
+	echo 'Error: ' . $e->getMessage();
+}
+```
 
 ### Method Examples
 
@@ -122,80 +142,85 @@ Most methods have intelligent defaults so you don't need to pass in
 every argument.  Check out **SimpleImage.class.php** for
 required/optional parameters and valid ranges for certain arguments.
 
-    // Flip the image horizontally (use 'y' to flip vertically)
-    $img->flip('x');
-    
-    // Rotate the image 90 degrees clockwise
-    $img->rotate(90);
-    
-    // Adjust the orientation if needed (physically rotates/flips the image based on its EXIF 'Orientation' property)
-    $img->auto_orient();
+```php
+// Flip the image horizontally (use 'y' to flip vertically)
+$img->flip('x');
 
-    // Resize the image to 320x200
-    $img->resize(320, 200);
-    
-    // Shrink the image to the specified width while maintaining proportion (width)
-    $img->fit_to_width(320);
-    
-    // Shrink the image to the specified height while maintaining proportion (height)
-    $img->fit_to_height(200);
-    
-    // Shrink the image proportionally to fit inside a 500x500 box
-    $img->best_fit(500, 500);
-    
-    // Crop a portion of the image from x1, y1 to x2, y2
-    $img->crop(100, 100, 400, 400);
-    
-    // Trim the image to a square and resize to 100x100
-    $img->square_crop(100);
-    
-    // Desaturate (grayscale)
-    $img->desaturate();
-    
-    // Invert
-    $img->invert();
-    
-    // Adjust Brightness (-255 to 255)
-    $img->brightness(100);
-    
-    // Adjust Contrast (-100 to 100)
-    $img->contrast(50);
-    
-    // Colorize red at 50% opacity
-    $img->colorize('#FF0000', .5);
-    
-    // Edges filter
-    $img->edges();
-    
-    // Emboss filter
-    $img->emboss();
+// Rotate the image 90 degrees clockwise
+$img->rotate(90);
 
-    // Mean removal filter  
-    $img->mean_remove();  
-  
-    // Selective blur (one pass)  
-    $img->blur();  
-  
-    // Gaussian blur (two passes)  
-    $img->blur('gaussian', 2);  
-  
-    // Sketch filter  
-    $img->sketch();  
-  
-    // Smooth filter (-10 to 10)  
-    $img->smooth(5);  
-  
-    // Pixelate using 8px blocks  
-    $img->pixelate(8);  
-  
-    // Sepia effect (simulated)  
-    $img->sepia();  
-  
-    // Overlay watermark.png at 50% opacity at the bottom-right of the image with a 10 pixel horizontal and vertical margin
-    $img->overlay('watermark.png', 'bottom right', .5, -10, -10);  
-  
-    // Add 32-point white text top-centered (plus 20px) on the image*  
-    $img->text('Your Text', 'font.ttf', 32, '#FFFFFF', 'top', 0, 20);
+// Adjust the orientation if needed (physically rotates/flips the image based on its EXIF 'Orientation' property)
+$img->auto_orient();
+
+// Resize the image to 320x200
+$img->resize(320, 200);
+
+// Shrink the image to the specified width while maintaining proportion (width)
+$img->fit_to_width(320);
+
+// Shrink the image to the specified height while maintaining proportion (height)
+$img->fit_to_height(200);
+
+// Shrink the image proportionally to fit inside a 500x500 box
+$img->best_fit(500, 500);
+
+// Crop a portion of the image from x1, y1 to x2, y2
+$img->crop(100, 100, 400, 400);
+
+// Trim the image to a 100x100 square
+$img->smart_crop(100);
+
+// Trim the image and resize to exactly 100x75
+$img->smart_crop(100, 75);
+
+// Desaturate (grayscale)
+$img->desaturate();
+
+// Invert
+$img->invert();
+
+// Adjust Brightness (-255 to 255)
+$img->brightness(100);
+
+// Adjust Contrast (-100 to 100)
+$img->contrast(50);
+
+// Colorize red at 50% opacity
+$img->colorize('#FF0000', .5);
+
+// Edges filter
+$img->edges();
+
+// Emboss filter
+$img->emboss();
+
+// Mean removal filter  
+$img->mean_remove();  
+
+// Selective blur (one pass)  
+$img->blur();  
+
+// Gaussian blur (two passes)  
+$img->blur('gaussian', 2);  
+
+// Sketch filter  
+$img->sketch();  
+
+// Smooth filter (-10 to 10)  
+$img->smooth(5);  
+
+// Pixelate using 8px blocks  
+$img->pixelate(8);  
+
+// Sepia effect (simulated)  
+$img->sepia();  
+
+// Overlay watermark.png at 50% opacity at the bottom-right of the image with a 10 pixel horizontal and vertical margin
+$img->overlay('watermark.png', 'bottom right', .5, -10, -10);  
+
+// Add 32-point white text top-centered (plus 20px) on the image*  
+$img->text('Your Text', 'font.ttf', 32, '#FFFFFF', 'top', 0, 20);
+```
 
 * Valid positions are *center, top, right, bottom, left, top left, top
 right, bottom left, bottom right*
@@ -204,32 +229,39 @@ right, bottom left, bottom right*
 
 The following methods are not chainable, because they return information about 
 the image you're working with or output the image directly to the browser:
-	
-	// Get info about the original image (before any changes were made)
-	//
-	// Returns:
-	//
-	//	array(
-	//		width => 320,
-	//		height => 200,
-	//		orientation => ['portrait', 'landscape', 'square'],
-	//		exif => array(...),
-	//		mime => ['image/jpeg', 'image/gif', 'image/png'],
-	//		format => ['jpeg', 'gif', 'png']
-	//	)	
-	$info = $img->get_original_info();
-	
-	// Get the current width
-	$width = $img->get_width();
-	
-	// Get the current height
-	$height = $img->get_height();
-	
-	// Get the current orientation (returns 'portrait', 'landscape', or 'square')
-	$orientation = $img->get_orientation();
-	
-	// Flip the image and output it directly to the browser (i.e. without saving to file)
-	$img->load('butterfly.jpg')->flip('x')->output();
+
+```php
+// Get info about the original image (before any changes were made)
+//
+// Returns:
+//
+//	array(
+//		width => 320,
+//		height => 200,
+//		orientation => ['portrait', 'landscape', 'square'],
+//		exif => array(...),
+//		mime => ['image/jpeg', 'image/gif', 'image/png'],
+//		format => ['jpeg', 'gif', 'png']
+//	)	
+$info = $img->get_original_info();
+
+// Get the current width
+$width = $img->get_width();
+
+// Get the current height
+$height = $img->get_height();
+
+// Get the current orientation (returns 'portrait', 'landscape', or 'square')
+$orientation = $img->get_orientation();
+
+// Flip the image and output it directly to the browser (i.e. without saving to file)
+$img->load('butterfly.jpg')->flip('x')->output();
+```
+
+Change Log
+----------
+
+-   2013-06-03: `square_crop` was replaced with `smart_crop`, which supports varying width/height as well as squares. Simply swap out `square_crop` with `smart_crop` to update.
 
 Differences from Version 1
 --------------------------

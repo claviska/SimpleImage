@@ -62,7 +62,7 @@ class SimpleImage {
 			'width' => $info[0],
 			'height' => $info[1],
 			'orientation' => $this->get_orientation(),
-			'exif' => function_exists('exif_read_data') ? $this->exif = @exif_read_data($this->filename) : null,
+			'exif' => function_exists('exif_read_data') && $info['mime'] === 'image/jpeg' ? $this->exif = @exif_read_data($this->filename) : null,
 			'format' => preg_replace('/^image\//', '', $info['mime']),
 			'mime' => $info['mime']
 		);
@@ -414,30 +414,61 @@ class SimpleImage {
 	}
 
 	//
-	// Square crop (great for thumbnails)
+	// Crop an image from center
+	// Resized the image with square_crop for better dimension
 	//
-	//	$size - the size in pixels of the resulting image (width and height are the same) (optional)
+	// $width
+	// $height
 	//
-	public function square_crop($size = null) {
+	public function crop_center($width, $height) {
+		$this->img = $this->square_crop($width);
 
-		// Calculate measurements
-		if( $this->width > $this->height ) {
-			// Landscape
-			$x_offset = ($this->width - $this->height) / 2;
-			$y_offset = 0;
-			$square_size = $this->width - ($x_offset * 2);
-		} else {
-			// Portrait
+		$left = ($this->width / 2) - ($width / 2);
+		$top = ($this->height / 2) - ($height / 2);
+
+		return $this->crop($left, $top, $width + $left, $height + $top);
+	}
+
+	//
+	// Smart crop (great for thumbnails)
+	//
+	//	Trims and resizes to the specified $width and $height; if $height
+	//	is omitted, a square thumbnail the size of $width will be produced
+	//
+	//	$width - the width of the resulting image
+	//	$height - the height of the resulting image (optional)
+	//
+	public function smart_crop($width, $height = null) {
+
+		if( $height === null ) $height = $width;
+
+		$aspect_ratio = $this->width / $this->height;
+		$aspect_ratio_required = $width / $height;
+
+		if( $aspect_ratio < $aspect_ratio_required ) {
+
+			// Cut height to achieve desired ratio
+			$newHeight = $this->height * $aspect_ratio / $aspect_ratio_required;
 			$x_offset = 0;
-			$y_offset = ($this->height - $this->width) / 2;
-			$square_size = $this->height - ($y_offset * 2);
+			$y_offset = ( $this->height - $newHeight ) / 2;
+
+			// Trim to correct ratio
+			$this->crop($x_offset, $y_offset, $this->width, $y_offset + $newHeight);
+
+		} elseif( $aspect_ratio > $aspect_ratio_required ) {
+
+			// Cut width to achieve desired ratio
+			$newWidth = $this->width / $aspect_ratio * $aspect_ratio_required;
+			$y_offset = 0;
+			$x_offset = ( $this->width - $newWidth ) / 2;
+
+			// Trim to correct ratio
+			$this->crop($x_offset, $y_offset, $x_offset + $newWidth, $this->height);
+
 		}
 
-		// Trim to square
-		$this->crop($x_offset, $y_offset, $x_offset + $square_size, $y_offset + $square_size);
-
 		// Resize
-		if( $size ) $this->resize($size, $size);
+		$this->resize($width, $height);
 
 		return $this;
 
@@ -788,6 +819,67 @@ class SimpleImage {
 		// Since no more output can be sent, call the destuctor to free up memory
 		$this->__destruct();
 
+	}
+
+	//
+	// Outputs image as data base64 to use as img src
+	//
+	public function outputBase64($format = null, $quality = null) {
+
+		switch( strtolower($format) ) {
+
+			case 'gif':
+				$mimetype = 'image/gif';
+				break;
+
+			case 'jpeg':
+			case 'jpg':
+				$mimetype = 'image/jpeg';
+				break;
+
+			case 'png':
+				$mimetype = 'image/png';
+				break;
+
+			default:
+				$info = getimagesize($this->filename);
+				$mimetype = $info['mime'];
+				break;
+		}
+		ob_start ();
+		// Output the image
+		switch( $mimetype ) {
+
+			case 'image/gif':
+				imagegif($this->image);
+				break;
+
+			case 'image/jpeg':
+				if( $quality === null ) $quality = 85;
+				$quality = $this->keep_within($quality, 0, 100);
+				imagejpeg($this->image, null, $quality);
+				break;
+
+			case 'image/png':
+				if( $quality === null ) $quality = 9;
+				$quality = $this->keep_within($quality, 0, 9);
+				imagepng($this->image, null, $quality);
+				break;
+
+			default:
+				throw new Exception('Unsupported image format: ' . $this->filename);
+				break;
+		}
+
+		$image_data = ob_get_contents ();
+
+		ob_end_clean ();
+
+		// Returns formated string for img src
+
+		$image_data_base64 = 'data:'.$mimetype.';base64,'.base64_encode($image_data);
+
+		return $image_data_base64;
 	}
 
 	// Same as PHP's imagecopymerge() function, except preserves alpha-transparency in 24-bit PNGs
