@@ -320,6 +320,30 @@ class SimpleImage {
 		return $this;
 	}
 	/**
+	 * Adaptive resize
+	 *
+	 * This function attempts to get the image to as close to the provided dimensions as possible, and then crops the
+	 * remaining overflow (from the center) to get the image to be the size specified
+	 *
+	 * @param int			$width
+	 * @param int|null		$height	If omitted - assumed equal to $width
+	 *
+	 * @return SimpleImage
+	 */
+	function adaptive_resize ($width, $height = null) {
+		$height					= $height ?: $width;
+		$current_aspect_ratio	= $this->height / $this->width;
+		$new_aspect_ratio		= $height / $width;
+		if ($new_aspect_ratio > $current_aspect_ratio) {
+			$this->fit_to_height($height);
+		} else {
+			$this->fit_to_width($width);
+		}
+		$left					= ($this->width / 2) - ($width / 2);
+		$top					= ($this->height / 2) - ($height / 2);
+		return $this->crop($left, $top, $width + $left, $height + $top);
+	}
+	/**
 	 * Fit to width (proportionally resize to specified width)
 	 *
 	 * @param int			$width
@@ -402,53 +426,6 @@ class SimpleImage {
 		$this->width	= $crop_width;
 		$this->height	= $crop_height;
 		$this->image	= $new;
-		return $this;
-	}
-	/**
-	 * Crop an image from center
-	 *
-	 * @param int			$width
-	 * @param int			$height
-	 *
-	 * @return SimpleImage
-	 */
-	function crop_center ($width, $height) {
-		$this->img	= $this->smart_crop($width);
-		$left		= ($this->width / 2) - ($width / 2);
-		$top		= ($this->height / 2) - ($height / 2);
-		return $this->crop($left, $top, $width + $left, $height + $top);
-	}
-	/**
-	 * Smart crop (great for thumbnails)
-	 *
-	 * Trims and resize to the specified $width and $height
-	 *
-	 * @param int			$width
-	 * @param int|null		$height	If omitted - assumed equal to $width
-	 *
-	 * @return SimpleImage
-	 */
-	function smart_crop ($width, $height = null) {
-		$height					= $height ?: $width;
-		$aspect_ratio			= $this->width / $this->height;
-		$aspect_ratio_required	= $width / $height;
-		if ($aspect_ratio < $aspect_ratio_required) {
-			// Cut height to achieve desired ratio
-			$newHeight	= $this->height * $aspect_ratio / $aspect_ratio_required;
-			$x_offset	= 0;
-			$y_offset	= ($this->height - $newHeight) / 2;
-			// Trim to correct ratio
-			$this->crop($x_offset, $y_offset, $this->width, $y_offset + $newHeight);
-		} elseif ($aspect_ratio > $aspect_ratio_required) {
-			// Cut width to achieve desired ratio
-			$newWidth	= $this->width / $aspect_ratio * $aspect_ratio_required;
-			$y_offset	= 0;
-			$x_offset	= ($this->width - $newWidth) / 2;
-			// Trim to correct ratio
-			$this->crop($x_offset, $y_offset, $x_offset + $newWidth, $this->height);
-		}
-		// Resize
-		$this->resize($width, $height);
 		return $this;
 	}
 	/**
