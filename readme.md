@@ -6,6 +6,18 @@ The SimpleImage PHP class
 
 *Dual licensed under the MIT / GPLv2 licenses*
 
+From author of this fork
+------------------------
+Hi, I'm Mokrynskyi Nazar, and I liked SimpleImage PHP class created by Cory LaViska.
+
+But class didn't have correct PhpDoc sections and some additional useful features, that were made by other people, that forked this class too.
+
+That is why I merged all these forks, made some refactoring that (subjectively) makes code simpler to read and understand, and add some other features
+I wanted to have (you can see them in change log at the end of this page).
+
+Currently this fork of class have version 2.1, but it is not related directly to the version of original class, so don't be confused if two classes
+with the same name and version are actually different.
+
 Overview
 --------
 
@@ -40,9 +52,7 @@ With this class, you can effortlessly:
 Requirements
 ------------
 
-This class requires the PHP GD library. Some methods (i.e. colorize and
-pixelate) require a more recent version of PHP (5.2—5.3 or higher). The
-rest can be used with any recent version of PHP + GD.
+This class requires PHP 5.3 and PHP GD library.
 
 Usage
 -----
@@ -55,11 +65,10 @@ You can load an image when you instantiate a new SimpleImage object:
 $img = new SimpleImage('image.jpg');
 ```
 
-Or you can load it later on:
+Or you can create empty image 200x100 with black background:
 
 ```php
-$img = new SimpleImage();
-$img->load('image.jpg');
+$img = new SimpleImage(null, 200, 100, '#000');
 ```
 
 ### Saving
@@ -77,9 +86,7 @@ Alternatively, you can specify a new filename:
 $img->save('new-image.jpg');
 ```
 
-You can specify quality as a second parameter for JPEG and PNG images.
-Use 0-100 for JPEG and 0-9 for PNG. (For PNG, this is actually the
-compression level.)
+You can specify quality as a second parameter in percents within range 0-100
 
 ```php
 $img->save('new-image.jpg', 90);
@@ -117,8 +124,7 @@ $img = new SimpleImage('image.jpg');
 $img->flip('x')->rotate(90)->best_fit(320, 200)->desaturate()->invert()->save('result.jpg')
 ```
 
-You can chain all of the methods below as well as the **load()**
-and **save()** methods above.  (You cannot chain the constructor,
+You can chain all of the methods below as well methods above.  (You cannot chain the constructor,
 however, as this is not supported by PHP.)
 
 ### Error Handling
@@ -155,6 +161,9 @@ $img->auto_orient();
 // Resize the image to 320x200
 $img->resize(320, 200);
 
+// Trim the image and resize to exactly 100x75
+$img->adaptive_resize(100, 75);
+
 // Shrink the image to the specified width while maintaining proportion (width)
 $img->fit_to_width(320);
 
@@ -167,11 +176,8 @@ $img->best_fit(500, 500);
 // Crop a portion of the image from x1, y1 to x2, y2
 $img->crop(100, 100, 400, 400);
 
-// Trim the image to a 100x100 square
-$img->smart_crop(100);
-
-// Trim the image and resize to exactly 100x75
-$img->smart_crop(100, 75);
+// Fill image with white color
+$img->fill('#fff');
 
 // Desaturate (grayscale)
 $img->desaturate();
@@ -194,31 +200,31 @@ $img->edges();
 // Emboss filter
 $img->emboss();
 
-// Mean removal filter  
-$img->mean_remove();  
+// Mean removal filter
+$img->mean_remove();
 
-// Selective blur (one pass)  
-$img->blur();  
+// Selective blur (one pass)
+$img->blur();
 
-// Gaussian blur (two passes)  
-$img->blur('gaussian', 2);  
+// Gaussian blur (two passes)
+$img->blur('gaussian', 2);
 
-// Sketch filter  
-$img->sketch();  
+// Sketch filter
+$img->sketch();
 
-// Smooth filter (-10 to 10)  
-$img->smooth(5);  
+// Smooth filter (-10 to 10)
+$img->smooth(5);
 
-// Pixelate using 8px blocks  
-$img->pixelate(8);  
+// Pixelate using 8px blocks
+$img->pixelate(8);
 
-// Sepia effect (simulated)  
-$img->sepia();  
+// Sepia effect (simulated)
+$img->sepia();
 
 // Overlay watermark.png at 50% opacity at the bottom-right of the image with a 10 pixel horizontal and vertical margin
-$img->overlay('watermark.png', 'bottom right', .5, -10, -10);  
+$img->overlay('watermark.png', 'bottom right', .5, -10, -10);
 
-// Add 32-point white text top-centered (plus 20px) on the image*  
+// Add 32-point white text top-centered (plus 20px) on the image*
 $img->text('Your Text', 'font.ttf', 32, '#FFFFFF', 'top', 0, 20);
 ```
 
@@ -227,7 +233,7 @@ right, bottom left, bottom right*
 
 ### Utility Methods
 
-The following methods are not chainable, because they return information about 
+The following methods are not chainable, because they return information about
 the image you're working with or output the image directly to the browser:
 
 ```php
@@ -242,7 +248,7 @@ the image you're working with or output the image directly to the browser:
 //		exif => array(...),
 //		mime => ['image/jpeg', 'image/gif', 'image/png'],
 //		format => ['jpeg', 'gif', 'png']
-//	)	
+//	)
 $info = $img->get_original_info();
 
 // Get the current width
@@ -255,16 +261,37 @@ $height = $img->get_height();
 $orientation = $img->get_orientation();
 
 // Flip the image and output it directly to the browser (i.e. without saving to file)
-$img->load('butterfly.jpg')->flip('x')->output();
+$img->flip('x')->output();
 ```
 
 Change Log
 ----------
 
--   2013-06-03: `square_crop` was replaced with `smart_crop`, which supports varying width/height as well as squares. Simply swap out `square_crop` with `smart_crop` to update.
+##### 2013-07-08: Version 2.2 (by Nazar Mokrynskyi)
 
-Differences from Version 1
---------------------------
+###### Differences from Version 2.1
+
+* `smart_crop` and `crop_center` methods removed, simplified `adaptive_resize` added instead, new method is compatible with old, but simpler
+
+##### 2013-07-07: Version 2.1 (by Nazar Mokrynskyi), a lot of refactoring and new features
+
+###### Differences from Version 2
+
+* `load` method hidden, use constructor instead
+* constructor extended with possibility to create empty image without source file (thanks to **strip** fork)
+* added method `fill` for filling image with specified color (thanks to **strip** fork)
+* added method `output_base64` for getting image in form of string as *data: URL* (thanks to **Fernando Cunha** fork)
+* added `crop_center` method for cropping image of certain size in the center of image (thanks to **Cezar Luiz** fork)
+* quality of output now in percents, which is the same for any image type
+* added `$quality` property for specifying default image quality value
+* private methods replaced by protected for inheritance possibility
+* added support of RGB and RGBA colors in addition to HEX
+* added interlacing to images in order to obtain progressive jpeg
+
+
+##### 2013-06-03: `square_crop` was replaced with `smart_crop`, which supports varying width/height as well as squares. Simply swap out `square_crop` with `smart_crop` to update.
+
+###### Differences from Version 1
 
 SimpleImage has been completely overhauled since version 1. Here are the
 most significant changes:
