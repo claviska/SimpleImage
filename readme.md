@@ -161,6 +161,9 @@ $img->auto_orient();
 // Resize the image to 320x200
 $img->resize(320, 200);
 
+// Trim the image and resize to exactly 100x75
+$img->adaptive_resize(100, 75);
+
 // Shrink the image to the specified width while maintaining proportion (width)
 $img->fit_to_width(320);
 
@@ -172,15 +175,6 @@ $img->best_fit(500, 500);
 
 // Crop a portion of the image from x1, y1 to x2, y2
 $img->crop(100, 100, 400, 400);
-
-// Crop a portion of the image with size 100x100 from image center
-$img->crop_center(100, 100);
-
-// Trim the image to a 100x100 square
-$img->smart_crop(100);
-
-// Trim the image and resize to exactly 100x75
-$img->smart_crop(100, 75);
 
 // Fill image with white color
 $img->fill('#fff');
@@ -272,6 +266,12 @@ $img->flip('x')->output();
 
 Change Log
 ----------
+
+##### 2013-07-08: Version 2.2 (by Nazar Mokrynskyi)
+
+###### Differences from Version 2.1
+
+* `smart_crop` and `crop_center` methods removed, simplified `adaptive_resize` added instead, new method is compatible with old, but simpler
 
 ##### 2013-07-07: Version 2.1 (by Nazar Mokrynskyi), a lot of refactoring and new features
 
