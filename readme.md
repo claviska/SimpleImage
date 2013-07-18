@@ -26,12 +26,18 @@ examples are the best way to learn how to use it, but here it is in a
 nutshell:
 
 ```php
+<?php
+
+include('src/abeautifulsite/SimpleImage.php');
+
 try {
-    $img = new SimpleImage('image.jpg');
-    $img->flip('x')->rotate(90)->best_fit(320, 200)->sepia()->save('result.gif');
+    $img = new abeautifulsite\SimpleImage('image.jpg');
+    $img->flip('x')->rotate(90)->best_fit(320, 200)->sepia()->save('example/result.gif');
 } catch(Exception $e) {
-	echo 'Error: ' . $e->getMessage();
+    echo 'Error: ' . $e->getMessage();
 }
+
+?>
 ```
 
 The two lines inside the _try_ block load **image.jpg**, flip it horizontally, rotate
@@ -62,13 +68,13 @@ Usage
 You can load an image when you instantiate a new SimpleImage object:
 
 ```php
-$img = new SimpleImage('image.jpg');
+$img = new abeautifulsite\SimpleImage('image.jpg');
 ```
 
 Or you can create empty image 200x100 with black background:
 
 ```php
-$img = new SimpleImage(null, 200, 100, '#000');
+$img = new abeautifulsite\SimpleImage(null, 200, 100, '#000');
 ```
 
 ### Saving
@@ -98,7 +104,7 @@ When saving, the resulting image format is determined by the file
 extension. For example, you can convert a JPEG to a GIF by doing this:
 
 ```php
-$img = new SimpleImage('image.jpg');
+$img = new abeautifulsite\SimpleImage('image.jpg');
 $img->save('image.gif');
 ```
 
@@ -110,7 +116,7 @@ using the GD library. However, you can easily strip EXIF data simply by
 loading and saving:
 
 ```php
-$img = new SimpleImage('image.jpg');
+$img = new abeautifulsite\SimpleImage('image.jpg');
 $img->save();
 ```
 
@@ -120,7 +126,7 @@ SimpleImage supports method chaining, so you can make multiple changes
 and save the resulting image with just one line of code:
 
 ```php
-$img = new SimpleImage('image.jpg');
+$img = new abeautifulsite\SimpleImage('image.jpg');
 $img->flip('x')->rotate(90)->best_fit(320, 200)->desaturate()->invert()->save('result.jpg')
 ```
 
@@ -135,7 +141,7 @@ handle them properly:
 
 ```php
 try {
-	$img = new SimpleImage('image.jpg');
+	$img = new abeautifulsite\SimpleImage('image.jpg');
 	$img->flip('x')->save('flipped.jpg');
 } catch(Exception $e) {
 	echo 'Error: ' . $e->getMessage();
