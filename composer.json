@@ -1,0 +1,30 @@
+{
+	"name"        : "abeautifulsite/SimpleImage",
+	"description" : "A PHP class that simplifies working with images",
+	"license"     : [
+		"GPL-3.0+",
+		"MIT"
+	],
+	"version"     : "2.3.0",
+	"require"     : {
+		"php" : ">=5.3.0"
+	},
+	"authors"     : [
+		{
+			"name"     : "Cory LaViska",
+			"homepage" : "http://www.abeautifulsite.net/",
+			"role"     : "Developer"
+		},
+		{
+			"name"     : "Nazar Mokrynskyi",
+			"email"    : "nazar@mokrynskyi.com",
+			"homepage" : "http://cleverstyle.org/",
+			"role"     : "Developer"
+		}
+	],
+	"autoload"    : {
+		"psr-0" : {
+			"abeautifulsite" : "src/"
+		}
+	}
+}
