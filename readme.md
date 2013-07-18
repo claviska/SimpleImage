@@ -15,7 +15,7 @@ But class didn't have correct PhpDoc sections and some additional useful feature
 That is why I merged all these forks, made some refactoring that (subjectively) makes code simpler to read and understand, and add some other features
 I wanted to have (you can see them in change log at the end of this page).
 
-Currently this fork of class have version 2.1, but it is not related directly to the version of original class, so don't be confused if two classes
+Currently this fork of class have version 2.3, but it is not related directly to the version of original class, so don't be confused if two classes
 with the same name and version are actually different.
 
 Overview
@@ -266,6 +266,15 @@ $img->flip('x')->output();
 
 Change Log
 ----------
+
+##### 2013-07-08: Version 2.3 (by Nazar Mokrynskyi)
+
+###### Differences from Version 2.1
+
+* `load` and `create` methods now are public
+* namespace changed to *claviska*
+* added composer support
+* examples update
 
 ##### 2013-07-08: Version 2.2 (by Nazar Mokrynskyi)
 

@@ -1,14 +1,14 @@
 <?php
 /*
  * @package		SimpleImage class
- * @version		2.1
+ * @version		2.3
  * @author		Cory LaViska for A Beautiful Site, LLC. (http://www.abeautifulsite.net/)
- * @author		Nazar Mokrynskyi <nazar@mokrynskyi.com> - merging of forks, namespace support, PhpDoc editing
+ * @author		Nazar Mokrynskyi <nazar@mokrynskyi.com> - merging of forks, namespace support, PhpDoc editing, adaptive_resize() method, other fixes
  * @license		This software is dual-licensed under the GNU General Public License and the MIT License
  * @copyright	A Beautiful Site, LLC.
  */
-namespace	SimpleImage;
-use			\Exception;
+namespace	claviska;
+use			Exception;
 /**
  * Class SimpleImage
  * This class makes image manipulation in PHP as simple as possible.
@@ -34,12 +34,12 @@ class SimpleImage {
 	 * 									(is used for creating image from scratch)
 	 *
 	 * @return SimpleImage
-	 * @throws \Exception
+	 * @throws Exception
 	 */
 	function __construct ($filename = null, $width = null, $height = null, $color = null) {
 		if ($filename) {
 			$this->load($filename);
-		} else {
+		} elseif ($width) {
 			$this->create($width, $height, $color);
 		}
 		return $this;
@@ -58,9 +58,9 @@ class SimpleImage {
 	 * @param string		$filename	Path to image file
 	 *
 	 * @return SimpleImage
-	 * @throws \Exception
+	 * @throws Exception
 	 */
-	protected function load ($filename) {
+	function load ($filename) {
 		// Require GD library
 		if (!extension_loaded('gd')) {
 			throw new Exception('Required extension GD is not loaded.');
@@ -105,7 +105,7 @@ class SimpleImage {
 	 *
 	 * @return SimpleImage
 	 */
-	protected function create ($width, $height = null, $color = null) {
+	function create ($width, $height = null, $color = null) {
 		$height					= $height ?: $width;
 		$this->width			= $width;
 		$this->height			= $height;
@@ -133,7 +133,7 @@ class SimpleImage {
 	 */
 	function fill ($color = '#000000') {
 		$rgba		= $this->normalize_color($color);
-		$fill_color	= imagecolorallocatealpha($this->image, $rgba['r'], $rgba['g'], $rgba['b'], $rgba['a'], $rgba['a']);
+		$fill_color	= imagecolorallocatealpha($this->image, $rgba['r'], $rgba['g'], $rgba['b'], $rgba['a']);
 		imagefilledrectangle($this->image, 0, 0, $this->width, $this->height, $fill_color);
 		return $this;
 	}
@@ -146,7 +146,7 @@ class SimpleImage {
 	 * @param null|int		$quality	Output image quality in percents 0-100
 	 *
 	 * @return SimpleImage
-	 * @throws \Exception
+	 * @throws Exception
 	 */
 	function save ($filename = null, $quality = null) {
 		$quality	= $quality ?: $this->quality;
@@ -647,7 +647,7 @@ class SimpleImage {
 	 * @param int			$y_offset
 	 *
 	 * @return SimpleImage
-	 * @throws \Exception
+	 * @throws Exception
 	 */
 	function text ($text, $font_file, $font_size = 12, $color = '#000000', $position = 'center', $x_offset = 0, $y_offset = 0) {
 		// todo - this method could be improved to support the text angle
@@ -710,7 +710,7 @@ class SimpleImage {
 	 * @param null|string	$format		If omitted or null - format of original file will be used, may be gif|jpg|png
 	 * @param int|null		$quality	Output image quality in percents 0-100
 	 *
-	 * @throws \Exception
+	 * @throws Exception
 	 */
 	function output ($format = null, $quality = null) {
 		$quality	= $quality ?: $this->quality;
@@ -758,7 +758,7 @@ class SimpleImage {
 	 * @param int|null		$quality	Output image quality in percents 0-100
 	 *
 	 * @return string
-	 * @throws \Exception
+	 * @throws Exception
 	 */
 	function output_base64 ($format = null, $quality = null) {
 		$quality	= $quality ?: $this->quality;

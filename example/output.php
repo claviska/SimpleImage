@@ -1,17 +1,13 @@
 <?php
+namespace	claviska;
+use			Exception;
 
-require('../SimpleImage.class.php');
-
-if( !is_dir('processed/') ) mkdir('processed/');
+require '../src/claviska/SimpleImage.php';
 
 try {
-	
 	// Flip the image and output it directly to the browser
-	$img = new SimpleImage();
-	$img->load('butterfly.jpg')->flip('x')->output('png');
-	
+	$img = new SimpleImage('butterfly.jpg');
+	$img->flip('x')->output('png');
 } catch(Exception $e) {
-	
 	echo '<span style="color: red;">' . $e->getMessage() . '</span>';
-	
 }
