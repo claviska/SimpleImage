@@ -1,8 +1,8 @@
 <?php
-namespace	claviska;
+namespace	abeautifulsite;
 use			Exception;
 
-require '../src/claviska/SimpleImage.php';
+require '../src/abeautifulsite/SimpleImage.php';
 
 try {
 	// Flip the image and output it directly to the browser

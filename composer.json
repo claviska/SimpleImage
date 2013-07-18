@@ -1,5 +1,5 @@
 {
-	"name"        : "claviska/SimpleImage",
+	"name"        : "abeautifulsite/SimpleImage",
 	"description" : "A PHP class that simplifies working with images",
 	"license"     : [
 		"GPL-3.0+",
@@ -24,7 +24,7 @@
 	],
 	"autoload"    : {
 		"psr-0" : {
-			"claviska" : "src/"
+			"abeautifulsite" : "src/"
 		}
 	}
 }

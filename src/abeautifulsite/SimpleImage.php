@@ -7,7 +7,7 @@
  * @license		This software is dual-licensed under the GNU General Public License and the MIT License
  * @copyright	A Beautiful Site, LLC.
  */
-namespace	claviska;
+namespace	abeautifulsite;
 use			Exception;
 /**
  * Class SimpleImage

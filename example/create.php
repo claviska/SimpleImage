@@ -1,8 +1,8 @@
 <?php
-namespace	claviska;
+namespace	abeautifulsite;
 use			Exception;
 
-require '../src/claviska/SimpleImage.php';
+require '../src/abeautifulsite/SimpleImage.php';
 
 if(!is_dir('processed/')) {
 	mkdir('processed/');

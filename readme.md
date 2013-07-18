@@ -272,7 +272,7 @@ Change Log
 ###### Differences from Version 2.1
 
 * `load` and `create` methods now are public
-* namespace changed to *claviska*
+* namespace changed to *abeautifulsite*
 * added composer support
 * examples update
 
