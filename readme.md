@@ -6,18 +6,6 @@ The SimpleImage PHP class
 
 *Dual licensed under the MIT / GPLv2 licenses*
 
-From author of this fork
-------------------------
-Hi, I'm Mokrynskyi Nazar, and I liked SimpleImage PHP class created by Cory LaViska.
-
-But class didn't have correct PhpDoc sections and some additional useful features, that were made by other people, that forked this class too.
-
-That is why I merged all these forks, made some refactoring that (subjectively) makes code simpler to read and understand, and add some other features
-I wanted to have (you can see them in change log at the end of this page).
-
-Currently this fork of class have version 2.3, but it is not related directly to the version of original class, so don't be confused if two classes
-with the same name and version are actually different.
-
 Overview
 --------
 
