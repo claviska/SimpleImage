@@ -5,7 +5,7 @@
 		"GPL-2.0",
 		"MIT"
 	],
-	"version"     : "2.3.0",
+	"version"     : "2.3.1",
 	"require"     : {
 		"php" : ">=5.3.0"
 	},
