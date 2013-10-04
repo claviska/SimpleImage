@@ -155,7 +155,7 @@ class SimpleImage {
 		// Determine format via file extension (fall back to original format)
 		$format		= $this->file_ext($filename) ?: $this->original_info['format'];
 		// Determine output format
-		switch ($format) {
+		switch (strtolower($format)) {
 			case 'gif':
 				$result		= imagegif($this->image, $filename);
 				break;
