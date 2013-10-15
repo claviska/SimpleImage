@@ -312,14 +312,33 @@ class SimpleImage {
 	 * @return SimpleImage
 	 */
 	function resize ($width, $height) {
-		$new			= imagecreatetruecolor($width, $height);
+		
+		// Generate new GD image
+		$new = imagecreatetruecolor($width, $height);
+		
+		// Preserve transparency when working with GIFs
+		if( $this->original_info['format'] === 'gif' ) {
+			$transparent_index = imagecolortransparent($this->image);
+			if ($transparent_index >= 0) {
+				imagepalettecopy($this->image, $new);
+				imagefill($new, 0, 0, $transparent_index);
+				imagecolortransparent($new, $transparent_index);
+				imagetruecolortopalette($new, true, 256);
+			}
+		}
+		
+		// Resize
 		imagealphablending($new, false);
 		imagesavealpha($new, true);
 		imagecopyresampled($new, $this->image, 0, 0, 0, 0, $width, $height, $this->width, $this->height);
-		$this->width	= $width;
-		$this->height	= $height;
-		$this->image	= $new;
+		
+		// Update meta data
+		$this->width = $width;
+		$this->height = $height;
+		$this->image = $new;
+		
 		return $this;
+		
 	}
 	/**
 	 * Adaptive resize
