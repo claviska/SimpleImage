@@ -2,7 +2,6 @@
 	"name"        : "abeautifulsite/simpleimage",
 	"description" : "A PHP class that simplifies working with images",
 	"license"     : [
-		"GPL-2.0",
 		"MIT"
 	],
 	"version"     : "2.3.2",
