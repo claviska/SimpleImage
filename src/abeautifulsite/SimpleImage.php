@@ -614,7 +614,7 @@ class SimpleImage {
 	 * @return SimpleImage
 	 *
 	 */
-	function brightness ($level) {
+	function brightness($level) {
 		imagefilter($this->image, IMG_FILTER_BRIGHTNESS, $this->keep_within($level, -255, 255));
 		return $this;
 	}
