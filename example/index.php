@@ -1,6 +1,6 @@
 <?php
-namespace	abeautifulsite;
-use			Exception;
+namespace abeautifulsite;
+use Exception;
 
 require '../src/abeautifulsite/SimpleImage.php';
 

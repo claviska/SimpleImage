@@ -8,8 +8,10 @@
  * @copyright	A Beautiful Site, LLC.
  *
  */
-namespace	abeautifulsite;
-use			Exception;
+
+namespace abeautifulsite;
+use Exception;
+
 /*
  * Class SimpleImage
  * This class makes image manipulation in PHP as simple as possible.
