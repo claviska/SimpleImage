@@ -4,7 +4,7 @@ The SimpleImage PHP class
 *By Cory LaViska for A Beautiful Site, LLC.
 (http://www.abeautifulsite.net/)*
 
-*Dual licensed under the MIT / GPLv2 licenses*
+*Licensed under the MIT license: http://opensource.org/licenses/MIT*
 
 Overview
 --------
