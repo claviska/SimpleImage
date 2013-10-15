@@ -134,6 +134,8 @@ class SimpleImage {
 	function fill ($color = '#000000') {
 		$rgba		= $this->normalize_color($color);
 		$fill_color	= imagecolorallocatealpha($this->image, $rgba['r'], $rgba['g'], $rgba['b'], $rgba['a']);
+		imagealphablending($this->image, false);
+		imagesavealpha($this->image, true);		
 		imagefilledrectangle($this->image, 0, 0, $this->width, $this->height, $fill_color);
 		return $this;
 	}
