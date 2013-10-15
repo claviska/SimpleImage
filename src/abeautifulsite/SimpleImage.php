@@ -513,9 +513,6 @@ class SimpleImage {
 	 *
 	 * @param int			$max_width
 	 * @param int			$max_height
-	 * @param bool|null		$trim
-	 * @param string|null	$color	Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
-	 * 								Where red, green, blue - integers 0-255, alpha - integer 0-127
 	 *
 	 * @return	SimpleImage
 	 *
