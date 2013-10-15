@@ -108,6 +108,9 @@ try {
 	// Text
 	$img->load('butterfly.jpg')->text('Butterfly', __DIR__.'/delicious.ttf', 32, '#FFFFFF', 'bottom', 0, -20)->save('processed/butterfly-text.jpg');
 
+	// Resizing GIFs with transparency
+	$img->load('basketball.gif')->resize(50, 50)->save('processed/basketball-resize.gif');
+	
 	echo '<span style="color: green;">All processed images are saved in /example/processed</span>';
 
 } catch (Exception $e) {
