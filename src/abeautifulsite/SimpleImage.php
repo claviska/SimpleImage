@@ -418,8 +418,9 @@ class SimpleImage {
 	/*
 	 * Adaptive resize
 	 *
-	 * This function attempts to get the image to as close to the provided dimensions as possible, and then crops the
-	 * remaining overflow (from the center) to get the image to be the size specified
+	 * This function has been deprecated and will be removed in an upcoming release. Please 
+	 * update your code to use the `thumbnail()` method instead. The arguments for both 
+	 * methods are exactly the same.
 	 *
 	 * @param int			$width
 	 * @param int|null		$height	If omitted - assumed equal to $width
@@ -428,6 +429,24 @@ class SimpleImage {
 	 *
 	 */
 	function adaptive_resize($width, $height = null) {
+		
+		return $this->thumbnail($width, $height);
+		
+	}
+	
+	/*
+	 * Thumbnail
+	 *
+	 * This function attempts to get the image to as close to the provided dimensions as possible, and then crops the
+	 * remaining overflow (from the center) to get the image to be the size specified. Useful for generating thumbnails.
+	 *
+	 * @param int			$width
+	 * @param int|null		$height	If omitted - assumed equal to $width
+	 *
+	 * @return SimpleImage
+	 *
+	 */
+	function thumbnail($width, $height = null) {
 		
 		// Determine height
 		$height = $height ?: $width;
@@ -448,7 +467,7 @@ class SimpleImage {
 		// Return trimmed image
 		return $this->crop($left, $top, $width + $left, $height + $top);
 		
-	}
+	}	
 	
 	/*
 	 * Fit to width (proportionally resize to specified width)

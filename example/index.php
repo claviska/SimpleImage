@@ -16,7 +16,7 @@ try {
 	$img = new SimpleImage();
 
 	// Create from scratch
-	$img->create(200, 100, '#f00')->save('processed/create-from-scratch.gif');
+	$img->create(200, 100, '#08c')->save('processed/create-from-scratch.png');
 
 	// Convert to GIF
 	$img->load('butterfly.jpg')->save('processed/butterfly-convert-to-gif.gif');
@@ -42,8 +42,8 @@ try {
 	// Resize
 	$img->load('butterfly.jpg')->resize(320, 239)->save('processed/butterfly-resize.jpg');
 
-	// Adaptive resize
-	$img->load('butterfly.jpg')->adaptive_resize(100, 75)->save('processed/butterfly-adaptive-resize.jpg');
+	// Thumbnail
+	$img->load('butterfly.jpg')->thumbnail(100, 75)->save('processed/butterfly-thumbnail.jpg');
 
 	// Fit to width
 	$img->load('butterfly.jpg')->fit_to_width(100)->save('processed/butterfly-fit-to-width.jpg');
@@ -73,7 +73,7 @@ try {
 	$img->load('butterfly.jpg')->contrast(-50)->save('processed/butterfly-contrast.jpg');
 
 	// Colorize
-	$img->load('butterfly.jpg')->colorize('#F00', .5)->save('processed/butterfly-colorize.jpg');
+	$img->load('butterfly.jpg')->colorize('#08c', .75)->save('processed/butterfly-colorize.jpg');
 
 	// Edge Detect
 	$img->load('butterfly.jpg')->edges()->save('processed/butterfly-edges.jpg');
