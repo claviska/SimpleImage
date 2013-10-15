@@ -388,20 +388,22 @@ class SimpleImage {
 		// Generate new GD image
 		$new = imagecreatetruecolor($width, $height);
 		
-		// Preserve transparency when working with GIFs
 		if( $this->original_info['format'] === 'gif' ) {
+			// Preserve transparency in GIFs
 			$transparent_index = imagecolortransparent($this->image);
 			if ($transparent_index >= 0) {
-				imagepalettecopy($this->image, $new);
-				imagefill($new, 0, 0, $transparent_index);
-				imagecolortransparent($new, $transparent_index);
-				imagetruecolortopalette($new, true, 256);
+	            $transparent_color = imagecolorsforindex($this->image, $transparent_index);
+	            $transparent_index = imagecolorallocate($new, $transparent_color['red'], $transparent_color['green'], $transparent_color['blue']);
+	            imagefill($new, 0, 0, $transparent_index);
+	            imagecolortransparent($new, $transparent_index);
 			}
+		} else {
+			// Preserve transparency in PNGs (benign for JPEGs)
+			imagealphablending($new, false);
+			imagesavealpha($new, true);
 		}
 		
 		// Resize
-		imagealphablending($new, false);
-		imagesavealpha($new, true);
 		imagecopyresampled($new, $this->image, 0, 0, 0, 0, $width, $height, $this->width, $this->height);
 		
 		// Update meta data
