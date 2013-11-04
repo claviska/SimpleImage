@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * @package		SimpleImage class
  * @version		2.3
  * @author		Cory LaViska for A Beautiful Site, LLC. (http://www.abeautifulsite.net/)
@@ -12,7 +12,7 @@
 namespace abeautifulsite;
 use Exception;
 
-/*
+/**
  * Class SimpleImage
  * This class makes image manipulation in PHP as simple as possible.
  * @package SimpleImage
@@ -20,7 +20,7 @@ use Exception;
  */
 class SimpleImage {
 
-	/*
+	/**
 	 * @var int Default output image quality
 	 *
 	 */
@@ -28,7 +28,7 @@ class SimpleImage {
 
 	protected $image, $filename, $original_info, $width, $height;
 
-	/*
+	/**
 	 * Create instance and load an image, or create an image from scratch
 	 *
 	 * @param null|string	$filename	Path to image file (may be omitted to create image from scratch)
@@ -51,7 +51,7 @@ class SimpleImage {
 		return $this;
 	}
 	
-	/*
+	/**
 	 * Destroy image resource
 	 *
 	 */
@@ -61,7 +61,7 @@ class SimpleImage {
 		}
 	}
 	
-	/*
+	/**
 	 * Load an image
 	 *
 	 * @param string		$filename	Path to image file
@@ -112,7 +112,7 @@ class SimpleImage {
 		
 	}
 	
-	/*
+	/**
 	 * Create an image from scratch
 	 *
 	 * @param int			$width	Image width
@@ -146,7 +146,7 @@ class SimpleImage {
 		
 	}
 	
-	/*
+	/**
 	 * Fill image with color
 	 *
 	 * @param string		$color	Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
@@ -167,7 +167,7 @@ class SimpleImage {
 		
 	}
 	
-	/*
+	/**
 	 * Save an image
 	 *
 	 * The resulting format will be determined by the file extension.
@@ -211,7 +211,7 @@ class SimpleImage {
 		
 	}
 	
-	/*
+	/**
 	 * Get info about the original image
 	 *
 	 * @return array <pre> array(
@@ -228,7 +228,7 @@ class SimpleImage {
 		return $this->original_info;
 	}
 	
-	/*
+	/**
 	 * Get the current width
 	 *
 	 * @return int
@@ -238,7 +238,7 @@ class SimpleImage {
 		return $this->width;
 	}
 	
-	/*
+	/**
 	 * Get the current height
 	 *
 	 * @return int
@@ -248,7 +248,7 @@ class SimpleImage {
 		return $this->height;
 	}
 	
-	/*
+	/**
 	 * Get the current orientation
 	 *
 	 * @return string	portrait|landscape|square
@@ -268,7 +268,7 @@ class SimpleImage {
 		
 	}
 	
-	/*
+	/**
 	 * Flip an image horizontally or vertically
 	 *
 	 * @param string		$direction	x|y
@@ -301,7 +301,7 @@ class SimpleImage {
 		
 	}
 	
-	/*
+	/**
 	 * Rotate an image
 	 *
 	 * @param int			$angle		0-360
@@ -329,7 +329,7 @@ class SimpleImage {
 		
 	}
 	
-	/*
+	/**
 	 * Rotates and/or flips an image automatically so the orientation will be correct (based on exif 'Orientation')
 	 *
 	 * @return SimpleImage
@@ -377,7 +377,7 @@ class SimpleImage {
 		
 	}
 	
-	/*
+	/**
 	 * Resize an image to the specified dimensions
 	 *
 	 * @param int	$width
@@ -418,7 +418,7 @@ class SimpleImage {
 		
 	}
 	
-	/*
+	/**
 	 * Adaptive resize
 	 *
 	 * This function has been deprecated and will be removed in an upcoming release. Please 
@@ -437,7 +437,7 @@ class SimpleImage {
 		
 	}
 	
-	/*
+	/**
 	 * Thumbnail
 	 *
 	 * This function attempts to get the image to as close to the provided dimensions as possible, and then crops the
@@ -472,7 +472,7 @@ class SimpleImage {
 		
 	}	
 	
-	/*
+	/**
 	 * Fit to width (proportionally resize to specified width)
 	 *
 	 * @param int			$width
@@ -489,7 +489,7 @@ class SimpleImage {
 		
 	}
 	
-	/*
+	/**
 	 * Fit to height (proportionally resize to specified height)
 	 *
 	 * @param int			$height
@@ -506,7 +506,7 @@ class SimpleImage {
 		
 	}
 	
-	/*
+	/**
 	 * Best fit (proportionally resize to fit in specified width/height)
 	 *
 	 * Shrink the image proportionally to fit inside a $width x $height box
@@ -546,7 +546,7 @@ class SimpleImage {
 		
 	}
 	
-	/*
+	/**
 	 * Crop an image
 	 *
 	 * @param int			$x1	Left
@@ -584,7 +584,7 @@ class SimpleImage {
 		
 	}
 	
-	/*
+	/**
 	 * Desaturate (grayscale)
 	 *
 	 * @return SimpleImage
@@ -595,7 +595,7 @@ class SimpleImage {
 		return $this;
 	}
 	
-	/*
+	/**
 	 * Invert
 	 *
 	 * @return SimpleImage
@@ -606,7 +606,7 @@ class SimpleImage {
 		return $this;
 	}
 	
-	/*
+	/**
 	 * Brightness
 	 *
 	 * @param int			$level	Darkest = -255, lightest = 255
@@ -619,7 +619,7 @@ class SimpleImage {
 		return $this;
 	}
 	
-	/*
+	/**
 	 * Contrast
 	 *
 	 * @param int			$level	Min = -100, max = 100
@@ -633,7 +633,7 @@ class SimpleImage {
 		return $this;
 	}
 	
-	/*
+	/**
 	 * Colorize
 	 *
 	 * @param string		$color		Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
@@ -650,7 +650,7 @@ class SimpleImage {
 		return $this;
 	}
 	
-	/*
+	/**
 	 * Edge Detect
 	 *
 	 * @return SimpleImage
@@ -661,7 +661,7 @@ class SimpleImage {
 		return $this;
 	}
 	
-	/*
+	/**
 	 * Emboss
 	 *
 	 * @return SimpleImage
@@ -672,7 +672,7 @@ class SimpleImage {
 		return $this;
 	}
 	
-	/*
+	/**
 	 * Mean Remove
 	 *
 	 * @return SimpleImage
@@ -683,7 +683,7 @@ class SimpleImage {
 		return $this;
 	}
 	
-	/*
+	/**
 	 * Blur
 	 *
 	 * @param string		$type	selective|gaussian
@@ -707,7 +707,7 @@ class SimpleImage {
 		return $this;
 	}
 	
-	/*
+	/**
 	 * Sketch
 	 *
 	 * @return SimpleImage
@@ -718,7 +718,7 @@ class SimpleImage {
 		return $this;
 	}
 	
-	/*
+	/**
 	 * Smooth
 	 *
 	 * @param int			$level	Min = -10, max = 10
@@ -731,7 +731,7 @@ class SimpleImage {
 		return $this;
 	}
 	
-	/*
+	/**
 	 * Pixelate
 	 *
 	 * @param int			$block_size	Size in pixels of each resulting block
@@ -744,7 +744,7 @@ class SimpleImage {
 		return $this;
 	}
 	
-	/*
+	/**
 	 * Sepia
 	 *
 	 * @return SimpleImage
@@ -756,7 +756,7 @@ class SimpleImage {
 		return $this;
 	}
 	
-	/*
+	/**
 	 * Overlay
 	 *
 	 * Overlay an image on top of another, works with 24-bit PNG alpha-transparency
@@ -826,7 +826,7 @@ class SimpleImage {
 		
 	}
 	
-	/*
+	/**
 	 * Add text to an image
 	 *
 	 * @param string		$text
@@ -906,7 +906,7 @@ class SimpleImage {
 		
 	}
 	
-	/*
+	/**
 	 * Outputs image without saving
 	 *
 	 * @param null|string	$format		If omitted or null - format of original file will be used, may be gif|jpg|png
@@ -962,7 +962,7 @@ class SimpleImage {
 		
 	}
 	
-	/*
+	/**
 	 * Outputs image as data base64 to use as img src
 	 *
 	 * @param null|string	$format		If omitted or null - format of original file will be used, may be gif|jpg|png
@@ -1021,7 +1021,7 @@ class SimpleImage {
 		
 	}
 	
-	/*
+	/**
 	 * Same as PHP's imagecopymerge() function, except preserves alpha-transparency in 24-bit PNGs
 	 *
 	 * @param $dst_im
@@ -1088,7 +1088,7 @@ class SimpleImage {
 		
 	}
 	
-	/*
+	/**
 	 * Ensures $value is always within $min and $max range.
 	 *
 	 * If lower, $min is returned. If higher, $max is returned.
@@ -1114,7 +1114,7 @@ class SimpleImage {
 		
 	}
 	
-	/*
+	/**
 	 * Returns the file extension of the specified file
 	 *
 	 * @param string	$filename
@@ -1132,7 +1132,7 @@ class SimpleImage {
 		
 	}
 	
-	/*
+	/**
 	 * Converts a hex color value to its RGB equivalent
 	 *
 	 * @param string		$color	Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
