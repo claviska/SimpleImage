@@ -266,7 +266,7 @@ Change Log
 
 2.4.0
 - added opacity method
-- reorganized public methods for easier access
+- reorganized public methods for easier editing
 
 2.3.3
 - added thumbnail method (replaces adaptive_resize)
