@@ -105,6 +105,9 @@ try {
 	// Overlay
 	$img->load('butterfly.jpg')->overlay('overlay.png', 'bottom right', .8)->save('processed/butterfly-overlay.jpg');
 
+	// Change opacity
+	$img->load('butterfly.jpg')->opacity(.5)->save('processed/butterfly-opacity.png');
+	
 	// Text
 	$img->load('butterfly.jpg')->text('Butterfly', __DIR__.'/delicious.ttf', 32, '#FFFFFF', 'bottom', 0, -20)->save('processed/butterfly-text.jpg');
 

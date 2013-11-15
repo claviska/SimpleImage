@@ -901,6 +901,36 @@ class SimpleImage {
 		
 		// Add the text
 		imagettftext($this->image, $font_size, $angle, $x, $y, $color, $font_file, $text);
+	
+		return $this;
+		
+	}
+	
+	/**
+	 * Changes the opacity level of the image
+	 *
+	 * @param float|int		$opacity	0-1
+	 *
+	 * @throws Exception
+	 *
+	 */
+	function opacity($opacity) {
+		
+		// Determine opacity
+		$opacity = $this->keep_within($opacity, 0, 1) * 100;
+		
+		// Make a copy of the image
+		$copy = imagecreatetruecolor($this->width, $this->height);
+		imagealphablending($copy, false);
+		imagesavealpha($copy, true);		
+		imagecopy($copy, $this->image, 0, 0, 0, 0, $this->width, $this->height);
+		
+		// Create transparent layer
+		$this->create($this->width, $this->height, array(0, 0, 0, 127));
+		
+		// Merge with specified opacity
+		$this->imagecopymerge_alpha($this->image, $copy, 0, 0, 0, 0, $this->width, $this->height, $opacity);
+		imagedestroy($copy);
 		
 		return $this;
 		
