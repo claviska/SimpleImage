@@ -62,270 +62,21 @@ class SimpleImage {
 	}
 	
 	/**
-	 * Load an image
+	 * Adaptive resize
 	 *
-	 * @param string		$filename	Path to image file
+	 * This function has been deprecated and will be removed in an upcoming release. Please 
+	 * update your code to use the `thumbnail()` method instead. The arguments for both 
+	 * methods are exactly the same.
 	 *
-	 * @return SimpleImage
-	 * @throws Exception
-	 *
-	 */
-	function load($filename) {
-		
-		// Require GD library
-		if (!extension_loaded('gd')) {
-			throw new Exception('Required extension GD is not loaded.');
-		}
-		
-		// Gather meta data
-		$this->filename = $filename;
-		$info = getimagesize($this->filename);
-		switch ($info['mime']) {
-			case 'image/gif':
-				$this->image = imagecreatefromgif($this->filename);
-				break;
-			case 'image/jpeg':
-				$this->image = imagecreatefromjpeg($this->filename);
-				break;
-			case 'image/png':
-				$this->image = imagecreatefrompng($this->filename);
-				break;
-			default:
-				throw new Exception('Invalid image: '.$this->filename);
-				break;
-		}
-		$this->original_info = array(
-			'width' => $info[0],
-			'height' => $info[1],
-			'orientation' => $this->get_orientation(),
-			'exif' => function_exists('exif_read_data') && $info['mime'] === 'image/jpeg' ? $this->exif = @exif_read_data($this->filename) : null,
-			'format' => preg_replace('/^image\//', '', $info['mime']),
-			'mime' => $info['mime']
-		);
-		$this->width = $info[0];
-		$this->height = $info[1];
-		
-		imagesavealpha($this->image, true);
-		imagealphablending($this->image, true);
-		
-		return $this;
-		
-	}
-	
-	/**
-	 * Create an image from scratch
-	 *
-	 * @param int			$width	Image width
+	 * @param int			$width
 	 * @param int|null		$height	If omitted - assumed equal to $width
-	 * @param null|string	$color	Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
-	 * 								Where red, green, blue - integers 0-255, alpha - integer 0-127
 	 *
 	 * @return SimpleImage
 	 *
 	 */
-	function create($width, $height = null, $color = null) {
+	function adaptive_resize($width, $height = null) {
 		
-		$height = $height ?: $width;
-		$this->width = $width;
-		$this->height = $height;
-		$this->image = imagecreatetruecolor($width, $height);
-		$this->original_info = array(
-			'width' => $width,
-			'height' => $height,
-			'orientation' => $this->get_orientation(),
-			'exif' => null,
-			'format' => 'png',
-			'mime' => 'image/png'
-		);
-		
-		if ($color) {
-			$this->fill($color);
-		}
-		
-		return $this;
-		
-	}
-	
-	/**
-	 * Fill image with color
-	 *
-	 * @param string		$color	Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
-	 * 								Where red, green, blue - integers 0-255, alpha - integer 0-127
-	 *
-	 * @return SimpleImage
-	 *
-	 */
-	function fill($color = '#000000') {
-		
-		$rgba = $this->normalize_color($color);
-		$fill_color = imagecolorallocatealpha($this->image, $rgba['r'], $rgba['g'], $rgba['b'], $rgba['a']);
-		imagealphablending($this->image, false);
-		imagesavealpha($this->image, true);		
-		imagefilledrectangle($this->image, 0, 0, $this->width, $this->height, $fill_color);
-		
-		return $this;
-		
-	}
-	
-	/**
-	 * Save an image
-	 *
-	 * The resulting format will be determined by the file extension.
-	 *
-	 * @param null|string	$filename	If omitted - original file will be overwritten
-	 * @param null|int		$quality	Output image quality in percents 0-100
-	 *
-	 * @return SimpleImage
-	 * @throws Exception
-	 *
-	 */
-	function save($filename = null, $quality = null) {
-		
-		// Determine quality, filename, and format
-		$quality = $quality ?: $this->quality;
-		$filename = $filename ?: $this->filename;
-		$format = $this->file_ext($filename) ?: $this->original_info['format'];
-		
-		// Create the image
-		switch (strtolower($format)) {
-			case 'gif':
-				$result = imagegif($this->image, $filename);
-				break;
-			case 'jpg':
-			case 'jpeg':
-				imageinterlace($this->image, true);
-				$result = imagejpeg($this->image, $filename, round($quality));
-				break;
-			case 'png':
-				$result = imagepng($this->image, $filename, round(9 * $quality / 100));
-				break;
-			default:
-				throw new Exception('Unsupported format');
-		}
-		
-		if (!$result) {
-			throw new Exception('Unable to save image: ' . $filename);
-		}
-		
-		return $this;
-		
-	}
-	
-	/**
-	 * Get info about the original image
-	 *
-	 * @return array <pre> array(
-	 * 	width        => 320,
-	 * 	height       => 200,
-	 * 	orientation  => ['portrait', 'landscape', 'square'],
-	 * 	exif         => array(...),
-	 * 	mime         => ['image/jpeg', 'image/gif', 'image/png'],
-	 * 	format       => ['jpeg', 'gif', 'png']
-	 * )</pre>
-	 *
-	 */
-	function get_original_info() {
-		return $this->original_info;
-	}
-	
-	/**
-	 * Get the current width
-	 *
-	 * @return int
-	 *
-	 */
-	function get_width() {
-		return $this->width;
-	}
-	
-	/**
-	 * Get the current height
-	 *
-	 * @return int
-	 *
-	 */
-	function get_height() {
-		return $this->height;
-	}
-	
-	/**
-	 * Get the current orientation
-	 *
-	 * @return string	portrait|landscape|square
-	 *
-	 */
-	function get_orientation() {
-		
-		if (imagesx($this->image) > imagesy($this->image)) {
-			return 'landscape';
-		}
-		
-		if (imagesx($this->image) < imagesy($this->image)) {
-			return 'portrait';
-		}
-		
-		return 'square';
-		
-	}
-	
-	/**
-	 * Flip an image horizontally or vertically
-	 *
-	 * @param string		$direction	x|y
-	 *
-	 * @return SimpleImage
-	 *
-	 */
-	function flip($direction) {
-		
-		$new = imagecreatetruecolor($this->width, $this->height);
-		imagealphablending($new, false);
-		imagesavealpha($new, true);
-		
-		switch (strtolower($direction)) {
-			case 'y':
-				for ($y = 0; $y < $this->height; $y++) {
-					imagecopy($new, $this->image, 0, $y, 0, $this->height - $y - 1, $this->width, 1);
-				}
-				break;
-			default:
-				for ($x = 0; $x < $this->width; $x++) {
-					imagecopy($new, $this->image, $x, 0, $this->width - $x - 1, 0, 1, $this->height);
-				}
-				break;
-		}
-		
-		$this->image = $new;
-		
-		return $this;
-		
-	}
-	
-	/**
-	 * Rotate an image
-	 *
-	 * @param int			$angle		0-360
-	 * @param string		$bg_color	Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
-	 * 									Where red, green, blue - integers 0-255, alpha - integer 0-127
-	 *
-	 * @return SimpleImage
-	 *
-	 */
-	function rotate($angle, $bg_color = '#000000') {
-		
-		// Perform the rotation
-		$rgba = $this->normalize_color($bg_color);
-		$bg_color = imagecolorallocatealpha($this->image, $rgba['r'], $rgba['g'], $rgba['b'], $rgba['a']);
-		$new = imagerotate($this->image, -($this->keep_within($angle, -360, 360)), $bg_color);
-		imagesavealpha($new, true);
-		imagealphablending($new, true);
-		
-		// Update meta data
-		$this->width = imagesx($new);
-		$this->height = imagesy($new);
-		$this->image = $new;
-		
-		return $this;
+		return $this->thumbnail($width, $height);
 		
 	}
 	
@@ -378,135 +129,6 @@ class SimpleImage {
 	}
 	
 	/**
-	 * Resize an image to the specified dimensions
-	 *
-	 * @param int	$width
-	 * @param int	$height
-	 *
-	 * @return SimpleImage
-	 *
-	 */
-	function resize($width, $height) {
-		
-		// Generate new GD image
-		$new = imagecreatetruecolor($width, $height);
-		
-		if( $this->original_info['format'] === 'gif' ) {
-			// Preserve transparency in GIFs
-			$transparent_index = imagecolortransparent($this->image);
-			if ($transparent_index >= 0) {
-	            $transparent_color = imagecolorsforindex($this->image, $transparent_index);
-	            $transparent_index = imagecolorallocate($new, $transparent_color['red'], $transparent_color['green'], $transparent_color['blue']);
-	            imagefill($new, 0, 0, $transparent_index);
-	            imagecolortransparent($new, $transparent_index);
-			}
-		} else {
-			// Preserve transparency in PNGs (benign for JPEGs)
-			imagealphablending($new, false);
-			imagesavealpha($new, true);
-		}
-		
-		// Resize
-		imagecopyresampled($new, $this->image, 0, 0, 0, 0, $width, $height, $this->width, $this->height);
-		
-		// Update meta data
-		$this->width = $width;
-		$this->height = $height;
-		$this->image = $new;
-		
-		return $this;
-		
-	}
-	
-	/**
-	 * Adaptive resize
-	 *
-	 * This function has been deprecated and will be removed in an upcoming release. Please 
-	 * update your code to use the `thumbnail()` method instead. The arguments for both 
-	 * methods are exactly the same.
-	 *
-	 * @param int			$width
-	 * @param int|null		$height	If omitted - assumed equal to $width
-	 *
-	 * @return SimpleImage
-	 *
-	 */
-	function adaptive_resize($width, $height = null) {
-		
-		return $this->thumbnail($width, $height);
-		
-	}
-	
-	/**
-	 * Thumbnail
-	 *
-	 * This function attempts to get the image to as close to the provided dimensions as possible, and then crops the
-	 * remaining overflow (from the center) to get the image to be the size specified. Useful for generating thumbnails.
-	 *
-	 * @param int			$width
-	 * @param int|null		$height	If omitted - assumed equal to $width
-	 *
-	 * @return SimpleImage
-	 *
-	 */
-	function thumbnail($width, $height = null) {
-		
-		// Determine height
-		$height = $height ?: $width;
-		
-		// Determine aspect ratios
-		$current_aspect_ratio = $this->height / $this->width;
-		$new_aspect_ratio = $height / $width;
-		
-		// Fit to height/width
-		if ($new_aspect_ratio > $current_aspect_ratio) {
-			$this->fit_to_height($height);
-		} else {
-			$this->fit_to_width($width);
-		}
-		$left = ($this->width / 2) - ($width / 2);
-		$top = ($this->height / 2) - ($height / 2);
-		
-		// Return trimmed image
-		return $this->crop($left, $top, $width + $left, $height + $top);
-		
-	}	
-	
-	/**
-	 * Fit to width (proportionally resize to specified width)
-	 *
-	 * @param int			$width
-	 *
-	 * @return SimpleImage
-	 *
-	 */
-	function fit_to_width($width) {
-		
-		$aspect_ratio = $this->height / $this->width;
-		$height = $width * $aspect_ratio;
-		
-		return $this->resize($width, $height);
-		
-	}
-	
-	/**
-	 * Fit to height (proportionally resize to specified height)
-	 *
-	 * @param int			$height
-	 *
-	 * @return SimpleImage
-	 *
-	 */
-	function fit_to_height($height) {
-		
-		$aspect_ratio = $this->height / $this->width;
-		$width = $height / $aspect_ratio;
-		
-		return $this->resize($width, $height);
-		
-	}
-	
-	/**
 	 * Best fit (proportionally resize to fit in specified width/height)
 	 *
 	 * Shrink the image proportionally to fit inside a $width x $height box
@@ -543,6 +165,108 @@ class SimpleImage {
 		}
 		
 		return $this->resize($width, $height);
+		
+	}
+	
+	/**
+	 * Blur
+	 *
+	 * @param string		$type	selective|gaussian
+	 * @param int			$passes	Number of times to apply the filter
+	 *
+	 * @return SimpleImage
+	 *
+	 */
+	function blur($type = 'selective', $passes = 1) {
+		switch (strtolower($type)) {
+			case 'gaussian':
+				$type = IMG_FILTER_GAUSSIAN_BLUR;
+				break;
+			default:
+				$type = IMG_FILTER_SELECTIVE_BLUR;
+				break;
+		}
+		for ($i = 0; $i < $passes; $i++) {
+			imagefilter($this->image, $type);
+		}
+		return $this;
+	}
+	
+	/**
+	 * Brightness
+	 *
+	 * @param int			$level	Darkest = -255, lightest = 255
+	 *
+	 * @return SimpleImage
+	 *
+	 */
+	function brightness($level) {
+		imagefilter($this->image, IMG_FILTER_BRIGHTNESS, $this->keep_within($level, -255, 255));
+		return $this;
+	}
+	
+	/**
+	 * Contrast
+	 *
+	 * @param int			$level	Min = -100, max = 100
+	 *
+	 * @return SimpleImage
+	 *
+	 *
+	 */
+	function contrast($level) {
+		imagefilter($this->image, IMG_FILTER_CONTRAST, $this->keep_within($level, -100, 100));
+		return $this;
+	}
+	
+	/**
+	 * Colorize
+	 *
+	 * @param string		$color		Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
+	 * 									Where red, green, blue - integers 0-255, alpha - integer 0-127
+	 * @param float|int		$opacity	0-1
+	 *
+	 * @return SimpleImage
+	 *
+	 */
+	function colorize($color, $opacity) {
+		$rgba = $this->normalize_color($color);
+		$alpha = $this->keep_within(127 - (127 * $opacity), 0, 127);
+		imagefilter($this->image, IMG_FILTER_COLORIZE, $this->keep_within($rgba['r'], 0, 255), $this->keep_within($rgba['g'], 0, 255), $this->keep_within($rgba['b'], 0, 255), $alpha);
+		return $this;
+	}
+	
+	/**
+	 * Create an image from scratch
+	 *
+	 * @param int			$width	Image width
+	 * @param int|null		$height	If omitted - assumed equal to $width
+	 * @param null|string	$color	Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
+	 * 								Where red, green, blue - integers 0-255, alpha - integer 0-127
+	 *
+	 * @return SimpleImage
+	 *
+	 */
+	function create($width, $height = null, $color = null) {
+		
+		$height = $height ?: $width;
+		$this->width = $width;
+		$this->height = $height;
+		$this->image = imagecreatetruecolor($width, $height);
+		$this->original_info = array(
+			'width' => $width,
+			'height' => $height,
+			'orientation' => $this->get_orientation(),
+			'exif' => null,
+			'format' => 'png',
+			'mime' => 'image/png'
+		);
+		
+		if ($color) {
+			$this->fill($color);
+		}
+		
+		return $this;
 		
 	}
 	
@@ -596,61 +320,6 @@ class SimpleImage {
 	}
 	
 	/**
-	 * Invert
-	 *
-	 * @return SimpleImage
-	 *
-	 */
-	function invert() {
-		imagefilter($this->image, IMG_FILTER_NEGATE);
-		return $this;
-	}
-	
-	/**
-	 * Brightness
-	 *
-	 * @param int			$level	Darkest = -255, lightest = 255
-	 *
-	 * @return SimpleImage
-	 *
-	 */
-	function brightness($level) {
-		imagefilter($this->image, IMG_FILTER_BRIGHTNESS, $this->keep_within($level, -255, 255));
-		return $this;
-	}
-	
-	/**
-	 * Contrast
-	 *
-	 * @param int			$level	Min = -100, max = 100
-	 *
-	 * @return SimpleImage
-	 *
-	 *
-	 */
-	function contrast($level) {
-		imagefilter($this->image, IMG_FILTER_CONTRAST, $this->keep_within($level, -100, 100));
-		return $this;
-	}
-	
-	/**
-	 * Colorize
-	 *
-	 * @param string		$color		Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
-	 * 									Where red, green, blue - integers 0-255, alpha - integer 0-127
-	 * @param float|int		$opacity	0-1
-	 *
-	 * @return SimpleImage
-	 *
-	 */
-	function colorize($color, $opacity) {
-		$rgba = $this->normalize_color($color);
-		$alpha = $this->keep_within(127 - (127 * $opacity), 0, 127);
-		imagefilter($this->image, IMG_FILTER_COLORIZE, $this->keep_within($rgba['r'], 0, 255), $this->keep_within($rgba['g'], 0, 255), $this->keep_within($rgba['b'], 0, 255), $alpha);
-		return $this;
-	}
-	
-	/**
 	 * Edge Detect
 	 *
 	 * @return SimpleImage
@@ -673,6 +342,213 @@ class SimpleImage {
 	}
 	
 	/**
+	 * Fill image with color
+	 *
+	 * @param string		$color	Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
+	 * 								Where red, green, blue - integers 0-255, alpha - integer 0-127
+	 *
+	 * @return SimpleImage
+	 *
+	 */
+	function fill($color = '#000000') {
+		
+		$rgba = $this->normalize_color($color);
+		$fill_color = imagecolorallocatealpha($this->image, $rgba['r'], $rgba['g'], $rgba['b'], $rgba['a']);
+		imagealphablending($this->image, false);
+		imagesavealpha($this->image, true);		
+		imagefilledrectangle($this->image, 0, 0, $this->width, $this->height, $fill_color);
+		
+		return $this;
+		
+	}
+	
+	/**
+	 * Fit to height (proportionally resize to specified height)
+	 *
+	 * @param int			$height
+	 *
+	 * @return SimpleImage
+	 *
+	 */
+	function fit_to_height($height) {
+		
+		$aspect_ratio = $this->height / $this->width;
+		$width = $height / $aspect_ratio;
+		
+		return $this->resize($width, $height);
+		
+	}
+	
+	/**
+	 * Fit to width (proportionally resize to specified width)
+	 *
+	 * @param int			$width
+	 *
+	 * @return SimpleImage
+	 *
+	 */
+	function fit_to_width($width) {
+		
+		$aspect_ratio = $this->height / $this->width;
+		$height = $width * $aspect_ratio;
+		
+		return $this->resize($width, $height);
+		
+	}
+	
+	/**
+	 * Flip an image horizontally or vertically
+	 *
+	 * @param string		$direction	x|y
+	 *
+	 * @return SimpleImage
+	 *
+	 */
+	function flip($direction) {
+		
+		$new = imagecreatetruecolor($this->width, $this->height);
+		imagealphablending($new, false);
+		imagesavealpha($new, true);
+		
+		switch (strtolower($direction)) {
+			case 'y':
+				for ($y = 0; $y < $this->height; $y++) {
+					imagecopy($new, $this->image, 0, $y, 0, $this->height - $y - 1, $this->width, 1);
+				}
+				break;
+			default:
+				for ($x = 0; $x < $this->width; $x++) {
+					imagecopy($new, $this->image, $x, 0, $this->width - $x - 1, 0, 1, $this->height);
+				}
+				break;
+		}
+		
+		$this->image = $new;
+		
+		return $this;
+		
+	}
+	
+	/**
+	 * Get the current height
+	 *
+	 * @return int
+	 *
+	 */
+	function get_height() {
+		return $this->height;
+	}
+	
+	/**
+	 * Get the current orientation
+	 *
+	 * @return string	portrait|landscape|square
+	 *
+	 */
+	function get_orientation() {
+		
+		if (imagesx($this->image) > imagesy($this->image)) {
+			return 'landscape';
+		}
+		
+		if (imagesx($this->image) < imagesy($this->image)) {
+			return 'portrait';
+		}
+		
+		return 'square';
+		
+	}
+	
+	/**
+	 * Get info about the original image
+	 *
+	 * @return array <pre> array(
+	 * 	width        => 320,
+	 * 	height       => 200,
+	 * 	orientation  => ['portrait', 'landscape', 'square'],
+	 * 	exif         => array(...),
+	 * 	mime         => ['image/jpeg', 'image/gif', 'image/png'],
+	 * 	format       => ['jpeg', 'gif', 'png']
+	 * )</pre>
+	 *
+	 */
+	function get_original_info() {
+		return $this->original_info;
+	}
+	
+	/**
+	 * Get the current width
+	 *
+	 * @return int
+	 *
+	 */
+	function get_width() {
+		return $this->width;
+	}
+	
+	/**
+	 * Invert
+	 *
+	 * @return SimpleImage
+	 *
+	 */
+	function invert() {
+		imagefilter($this->image, IMG_FILTER_NEGATE);
+		return $this;
+	}
+	
+	/**
+	 * Load an image
+	 *
+	 * @param string		$filename	Path to image file
+	 *
+	 * @return SimpleImage
+	 * @throws Exception
+	 *
+	 */
+	function load($filename) {
+		
+		// Require GD library
+		if (!extension_loaded('gd')) {
+			throw new Exception('Required extension GD is not loaded.');
+		}
+		
+		// Gather meta data
+		$this->filename = $filename;
+		$info = getimagesize($this->filename);
+		switch ($info['mime']) {
+			case 'image/gif':
+				$this->image = imagecreatefromgif($this->filename);
+				break;
+			case 'image/jpeg':
+				$this->image = imagecreatefromjpeg($this->filename);
+				break;
+			case 'image/png':
+				$this->image = imagecreatefrompng($this->filename);
+				break;
+			default:
+				throw new Exception('Invalid image: '.$this->filename);
+				break;
+		}
+		$this->original_info = array(
+			'width' => $info[0],
+			'height' => $info[1],
+			'orientation' => $this->get_orientation(),
+			'exif' => function_exists('exif_read_data') && $info['mime'] === 'image/jpeg' ? $this->exif = @exif_read_data($this->filename) : null,
+			'format' => preg_replace('/^image\//', '', $info['mime']),
+			'mime' => $info['mime']
+		);
+		$this->width = $info[0];
+		$this->height = $info[1];
+		
+		imagesavealpha($this->image, true);
+		imagealphablending($this->image, true);
+		
+		return $this;
+		
+	}
+	
+	/**
 	 * Mean Remove
 	 *
 	 * @return SimpleImage
@@ -681,229 +557,6 @@ class SimpleImage {
 	function mean_remove() {
 		imagefilter($this->image, IMG_FILTER_MEAN_REMOVAL);
 		return $this;
-	}
-	
-	/**
-	 * Blur
-	 *
-	 * @param string		$type	selective|gaussian
-	 * @param int			$passes	Number of times to apply the filter
-	 *
-	 * @return SimpleImage
-	 *
-	 */
-	function blur($type = 'selective', $passes = 1) {
-		switch (strtolower($type)) {
-			case 'gaussian':
-				$type = IMG_FILTER_GAUSSIAN_BLUR;
-				break;
-			default:
-				$type = IMG_FILTER_SELECTIVE_BLUR;
-				break;
-		}
-		for ($i = 0; $i < $passes; $i++) {
-			imagefilter($this->image, $type);
-		}
-		return $this;
-	}
-	
-	/**
-	 * Sketch
-	 *
-	 * @return SimpleImage
-	 *
-	 */
-	function sketch() {
-		imagefilter($this->image, IMG_FILTER_MEAN_REMOVAL);
-		return $this;
-	}
-	
-	/**
-	 * Smooth
-	 *
-	 * @param int			$level	Min = -10, max = 10
-	 *
-	 * @return SimpleImage
-	 *
-	 */
-	function smooth($level) {
-		imagefilter($this->image, IMG_FILTER_SMOOTH, $this->keep_within($level, -10, 10));
-		return $this;
-	}
-	
-	/**
-	 * Pixelate
-	 *
-	 * @param int			$block_size	Size in pixels of each resulting block
-	 *
-	 * @return SimpleImage
-	 *
-	 */
-	function pixelate($block_size = 10) {
-		imagefilter($this->image, IMG_FILTER_PIXELATE, $block_size, true);
-		return $this;
-	}
-	
-	/**
-	 * Sepia
-	 *
-	 * @return SimpleImage
-	 *
-	 */
-	function sepia() {
-		imagefilter($this->image, IMG_FILTER_GRAYSCALE);
-		imagefilter($this->image, IMG_FILTER_COLORIZE, 100, 50, 0);
-		return $this;
-	}
-	
-	/**
-	 * Overlay
-	 *
-	 * Overlay an image on top of another, works with 24-bit PNG alpha-transparency
-	 *
-	 * @param string		$overlay_file
-	 * @param string		$position		center|top|left|bottom|right|top left|top right|bottom left|bottom right
-	 * @param float|int		$opacity		Overlay opacity 0-1
-	 * @param int			$x_offset		Horizontal offset in pixels
-	 * @param int			$y_offset		Vertical offset in pixels
-	 *
-	 * @return SimpleImage
-	 *
-	 */
-	function overlay($overlay_file, $position = 'center', $opacity = 1, $x_offset = 0, $y_offset = 0) {
-		
-		// Load overlay image
-		$overlay = new SimpleImage($overlay_file);
-		
-		// Convert opacity
-		$opacity = $opacity * 100;
-		
-		// Determine position
-		switch (strtolower($position)) {
-			case 'top left':
-				$x = 0 + $x_offset;
-				$y = 0 + $y_offset;
-				break;
-			case 'top right':
-				$x = $this->width - $overlay->width + $x_offset;
-				$y = 0 + $y_offset;
-				break;
-			case 'top':
-				$x = ($this->width / 2) - ($overlay->width / 2) + $x_offset;
-				$y = 0 + $y_offset;
-				break;
-			case 'bottom left':
-				$x = 0 + $x_offset;
-				$y = $this->height - $overlay->height + $y_offset;
-				break;
-			case 'bottom right':
-				$x = $this->width - $overlay->width + $x_offset;
-				$y = $this->height - $overlay->height + $y_offset;
-				break;
-			case 'bottom':
-				$x = ($this->width / 2) - ($overlay->width / 2) + $x_offset;
-				$y = $this->height - $overlay->height + $y_offset;
-				break;
-			case 'left':
-				$x = 0 + $x_offset;
-				$y = ($this->height / 2) - ($overlay->height / 2) + $y_offset;
-				break;
-			case 'right':
-				$x = $this->width - $overlay->width + $x_offset;
-				$y = ($this->height / 2) - ($overlay->height / 2) + $y_offset;
-				break;
-			case 'center':
-			default:
-				$x = ($this->width / 2) - ($overlay->width / 2) + $x_offset;
-				$y = ($this->height / 2) - ($overlay->height / 2) + $y_offset;
-				break;
-		}
-		
-		// Perform the overlay
-		$this->imagecopymerge_alpha($this->image, $overlay->image, $x, $y, 0, 0, $overlay->width, $overlay->height, $opacity);
-		
-		return $this;
-		
-	}
-	
-	/**
-	 * Add text to an image
-	 *
-	 * @param string		$text
-	 * @param string		$font_file
-	 * @param float|int		$font_size
-	 * @param string		$color
-	 * @param string		$position
-	 * @param int			$x_offset
-	 * @param int			$y_offset
-	 *
-	 * @return SimpleImage
-	 * @throws Exception
-	 *
-	 */
-	function text($text, $font_file, $font_size = 12, $color = '#000000', $position = 'center', $x_offset = 0, $y_offset = 0) {
-		
-		// todo - this method could be improved to support the text angle
-		$angle = 0;
-		
-		// Determine text color
-		$rgba = $this->normalize_color($color);
-		$color = imagecolorallocatealpha($this->image, $rgba['r'], $rgba['g'], $rgba['b'], $rgba['a']);
-		
-		// Determine textbox size
-		$box = imagettfbbox($font_size, $angle, $font_file, $text);
-		if (!$box) {
-			throw new Exception('Unable to load font: '.$font_file);
-		}
-		$box_width = abs($box[6] - $box[2]);
-		$box_height = abs($box[7] - $box[1]);
-		
-		// Determine position
-		switch (strtolower($position)) {
-			case 'top left':
-				$x = 0 + $x_offset;
-				$y = 0 + $y_offset + $box_height;
-				break;
-			case 'top right':
-				$x = $this->width - $box_width + $x_offset;
-				$y = 0 + $y_offset + $box_height;
-				break;
-			case 'top':
-				$x = ($this->width / 2) - ($box_width / 2) + $x_offset;
-				$y = 0 + $y_offset + $box_height;
-				break;
-			case 'bottom left':
-				$x = 0 + $x_offset;
-				$y = $this->height - $box_height + $y_offset + $box_height;
-				break;
-			case 'bottom right':
-				$x = $this->width - $box_width + $x_offset;
-				$y = $this->height - $box_height + $y_offset + $box_height;
-				break;
-			case 'bottom':
-				$x = ($this->width / 2) - ($box_width / 2) + $x_offset;
-				$y = $this->height - $box_height + $y_offset + $box_height;
-				break;
-			case 'left':
-				$x = 0 + $x_offset;
-				$y = ($this->height / 2) - (($box_height / 2) - $box_height) + $y_offset;
-				break;
-			case 'right';
-				$x = $this->width - $box_width + $x_offset;
-				$y = ($this->height / 2) - (($box_height / 2) - $box_height) + $y_offset;
-				break;
-			case 'center':
-			default:
-				$x = ($this->width / 2) - ($box_width / 2) + $x_offset;
-				$y = ($this->height / 2) - (($box_height / 2) - $box_height) + $y_offset;
-				break;
-		}
-		
-		// Add the text
-		imagettftext($this->image, $font_size, $angle, $x, $y, $color, $font_file, $text);
-	
-		return $this;
-		
 	}
 	
 	/**
@@ -1052,6 +705,371 @@ class SimpleImage {
 	}
 	
 	/**
+	 * Overlay
+	 *
+	 * Overlay an image on top of another, works with 24-bit PNG alpha-transparency
+	 *
+	 * @param string		$overlay_file
+	 * @param string		$position		center|top|left|bottom|right|top left|top right|bottom left|bottom right
+	 * @param float|int		$opacity		Overlay opacity 0-1
+	 * @param int			$x_offset		Horizontal offset in pixels
+	 * @param int			$y_offset		Vertical offset in pixels
+	 *
+	 * @return SimpleImage
+	 *
+	 */
+	function overlay($overlay_file, $position = 'center', $opacity = 1, $x_offset = 0, $y_offset = 0) {
+		
+		// Load overlay image
+		$overlay = new SimpleImage($overlay_file);
+		
+		// Convert opacity
+		$opacity = $opacity * 100;
+		
+		// Determine position
+		switch (strtolower($position)) {
+			case 'top left':
+				$x = 0 + $x_offset;
+				$y = 0 + $y_offset;
+				break;
+			case 'top right':
+				$x = $this->width - $overlay->width + $x_offset;
+				$y = 0 + $y_offset;
+				break;
+			case 'top':
+				$x = ($this->width / 2) - ($overlay->width / 2) + $x_offset;
+				$y = 0 + $y_offset;
+				break;
+			case 'bottom left':
+				$x = 0 + $x_offset;
+				$y = $this->height - $overlay->height + $y_offset;
+				break;
+			case 'bottom right':
+				$x = $this->width - $overlay->width + $x_offset;
+				$y = $this->height - $overlay->height + $y_offset;
+				break;
+			case 'bottom':
+				$x = ($this->width / 2) - ($overlay->width / 2) + $x_offset;
+				$y = $this->height - $overlay->height + $y_offset;
+				break;
+			case 'left':
+				$x = 0 + $x_offset;
+				$y = ($this->height / 2) - ($overlay->height / 2) + $y_offset;
+				break;
+			case 'right':
+				$x = $this->width - $overlay->width + $x_offset;
+				$y = ($this->height / 2) - ($overlay->height / 2) + $y_offset;
+				break;
+			case 'center':
+			default:
+				$x = ($this->width / 2) - ($overlay->width / 2) + $x_offset;
+				$y = ($this->height / 2) - ($overlay->height / 2) + $y_offset;
+				break;
+		}
+		
+		// Perform the overlay
+		$this->imagecopymerge_alpha($this->image, $overlay->image, $x, $y, 0, 0, $overlay->width, $overlay->height, $opacity);
+		
+		return $this;
+		
+	}
+	
+	/**
+	 * Pixelate
+	 *
+	 * @param int			$block_size	Size in pixels of each resulting block
+	 *
+	 * @return SimpleImage
+	 *
+	 */
+	function pixelate($block_size = 10) {
+		imagefilter($this->image, IMG_FILTER_PIXELATE, $block_size, true);
+		return $this;
+	}
+	
+	/**
+	 * Resize an image to the specified dimensions
+	 *
+	 * @param int	$width
+	 * @param int	$height
+	 *
+	 * @return SimpleImage
+	 *
+	 */
+	function resize($width, $height) {
+		
+		// Generate new GD image
+		$new = imagecreatetruecolor($width, $height);
+		
+		if( $this->original_info['format'] === 'gif' ) {
+			// Preserve transparency in GIFs
+			$transparent_index = imagecolortransparent($this->image);
+			if ($transparent_index >= 0) {
+	            $transparent_color = imagecolorsforindex($this->image, $transparent_index);
+	            $transparent_index = imagecolorallocate($new, $transparent_color['red'], $transparent_color['green'], $transparent_color['blue']);
+	            imagefill($new, 0, 0, $transparent_index);
+	            imagecolortransparent($new, $transparent_index);
+			}
+		} else {
+			// Preserve transparency in PNGs (benign for JPEGs)
+			imagealphablending($new, false);
+			imagesavealpha($new, true);
+		}
+		
+		// Resize
+		imagecopyresampled($new, $this->image, 0, 0, 0, 0, $width, $height, $this->width, $this->height);
+		
+		// Update meta data
+		$this->width = $width;
+		$this->height = $height;
+		$this->image = $new;
+		
+		return $this;
+		
+	}
+	
+	/**
+	 * Rotate an image
+	 *
+	 * @param int			$angle		0-360
+	 * @param string		$bg_color	Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
+	 * 									Where red, green, blue - integers 0-255, alpha - integer 0-127
+	 *
+	 * @return SimpleImage
+	 *
+	 */
+	function rotate($angle, $bg_color = '#000000') {
+		
+		// Perform the rotation
+		$rgba = $this->normalize_color($bg_color);
+		$bg_color = imagecolorallocatealpha($this->image, $rgba['r'], $rgba['g'], $rgba['b'], $rgba['a']);
+		$new = imagerotate($this->image, -($this->keep_within($angle, -360, 360)), $bg_color);
+		imagesavealpha($new, true);
+		imagealphablending($new, true);
+		
+		// Update meta data
+		$this->width = imagesx($new);
+		$this->height = imagesy($new);
+		$this->image = $new;
+		
+		return $this;
+		
+	}
+	
+	/**
+	 * Save an image
+	 *
+	 * The resulting format will be determined by the file extension.
+	 *
+	 * @param null|string	$filename	If omitted - original file will be overwritten
+	 * @param null|int		$quality	Output image quality in percents 0-100
+	 *
+	 * @return SimpleImage
+	 * @throws Exception
+	 *
+	 */
+	function save($filename = null, $quality = null) {
+		
+		// Determine quality, filename, and format
+		$quality = $quality ?: $this->quality;
+		$filename = $filename ?: $this->filename;
+		$format = $this->file_ext($filename) ?: $this->original_info['format'];
+		
+		// Create the image
+		switch (strtolower($format)) {
+			case 'gif':
+				$result = imagegif($this->image, $filename);
+				break;
+			case 'jpg':
+			case 'jpeg':
+				imageinterlace($this->image, true);
+				$result = imagejpeg($this->image, $filename, round($quality));
+				break;
+			case 'png':
+				$result = imagepng($this->image, $filename, round(9 * $quality / 100));
+				break;
+			default:
+				throw new Exception('Unsupported format');
+		}
+		
+		if (!$result) {
+			throw new Exception('Unable to save image: ' . $filename);
+		}
+		
+		return $this;
+		
+	}
+	
+	/**
+	 * Sepia
+	 *
+	 * @return SimpleImage
+	 *
+	 */
+	function sepia() {
+		imagefilter($this->image, IMG_FILTER_GRAYSCALE);
+		imagefilter($this->image, IMG_FILTER_COLORIZE, 100, 50, 0);
+		return $this;
+	}
+	
+	/**
+	 * Sketch
+	 *
+	 * @return SimpleImage
+	 *
+	 */
+	function sketch() {
+		imagefilter($this->image, IMG_FILTER_MEAN_REMOVAL);
+		return $this;
+	}
+	
+	/**
+	 * Smooth
+	 *
+	 * @param int			$level	Min = -10, max = 10
+	 *
+	 * @return SimpleImage
+	 *
+	 */
+	function smooth($level) {
+		imagefilter($this->image, IMG_FILTER_SMOOTH, $this->keep_within($level, -10, 10));
+		return $this;
+	}
+	
+	/**
+	 * Add text to an image
+	 *
+	 * @param string		$text
+	 * @param string		$font_file
+	 * @param float|int		$font_size
+	 * @param string		$color
+	 * @param string		$position
+	 * @param int			$x_offset
+	 * @param int			$y_offset
+	 *
+	 * @return SimpleImage
+	 * @throws Exception
+	 *
+	 */
+	function text($text, $font_file, $font_size = 12, $color = '#000000', $position = 'center', $x_offset = 0, $y_offset = 0) {
+		
+		// todo - this method could be improved to support the text angle
+		$angle = 0;
+		
+		// Determine text color
+		$rgba = $this->normalize_color($color);
+		$color = imagecolorallocatealpha($this->image, $rgba['r'], $rgba['g'], $rgba['b'], $rgba['a']);
+		
+		// Determine textbox size
+		$box = imagettfbbox($font_size, $angle, $font_file, $text);
+		if (!$box) {
+			throw new Exception('Unable to load font: '.$font_file);
+		}
+		$box_width = abs($box[6] - $box[2]);
+		$box_height = abs($box[7] - $box[1]);
+		
+		// Determine position
+		switch (strtolower($position)) {
+			case 'top left':
+				$x = 0 + $x_offset;
+				$y = 0 + $y_offset + $box_height;
+				break;
+			case 'top right':
+				$x = $this->width - $box_width + $x_offset;
+				$y = 0 + $y_offset + $box_height;
+				break;
+			case 'top':
+				$x = ($this->width / 2) - ($box_width / 2) + $x_offset;
+				$y = 0 + $y_offset + $box_height;
+				break;
+			case 'bottom left':
+				$x = 0 + $x_offset;
+				$y = $this->height - $box_height + $y_offset + $box_height;
+				break;
+			case 'bottom right':
+				$x = $this->width - $box_width + $x_offset;
+				$y = $this->height - $box_height + $y_offset + $box_height;
+				break;
+			case 'bottom':
+				$x = ($this->width / 2) - ($box_width / 2) + $x_offset;
+				$y = $this->height - $box_height + $y_offset + $box_height;
+				break;
+			case 'left':
+				$x = 0 + $x_offset;
+				$y = ($this->height / 2) - (($box_height / 2) - $box_height) + $y_offset;
+				break;
+			case 'right';
+				$x = $this->width - $box_width + $x_offset;
+				$y = ($this->height / 2) - (($box_height / 2) - $box_height) + $y_offset;
+				break;
+			case 'center':
+			default:
+				$x = ($this->width / 2) - ($box_width / 2) + $x_offset;
+				$y = ($this->height / 2) - (($box_height / 2) - $box_height) + $y_offset;
+				break;
+		}
+		
+		// Add the text
+		imagettftext($this->image, $font_size, $angle, $x, $y, $color, $font_file, $text);
+	
+		return $this;
+		
+	}
+	
+	/**
+	 * Thumbnail
+	 *
+	 * This function attempts to get the image to as close to the provided dimensions as possible, and then crops the
+	 * remaining overflow (from the center) to get the image to be the size specified. Useful for generating thumbnails.
+	 *
+	 * @param int			$width
+	 * @param int|null		$height	If omitted - assumed equal to $width
+	 *
+	 * @return SimpleImage
+	 *
+	 */
+	function thumbnail($width, $height = null) {
+		
+		// Determine height
+		$height = $height ?: $width;
+		
+		// Determine aspect ratios
+		$current_aspect_ratio = $this->height / $this->width;
+		$new_aspect_ratio = $height / $width;
+		
+		// Fit to height/width
+		if ($new_aspect_ratio > $current_aspect_ratio) {
+			$this->fit_to_height($height);
+		} else {
+			$this->fit_to_width($width);
+		}
+		$left = ($this->width / 2) - ($width / 2);
+		$top = ($this->height / 2) - ($height / 2);
+		
+		// Return trimmed image
+		return $this->crop($left, $top, $width + $left, $height + $top);
+		
+	}	
+	
+	/**
+	 * Returns the file extension of the specified file
+	 *
+	 * @param string	$filename
+	 *
+	 * @return string
+	 *
+	 */
+	protected function file_ext($filename) {
+		
+		if (!preg_match('/\./', $filename)) {
+			return '';
+		}
+		
+		return preg_replace('/^.*\./', '', $filename);
+		
+	}
+	
+	/**
 	 * Same as PHP's imagecopymerge() function, except preserves alpha-transparency in 24-bit PNGs
 	 *
 	 * @param $dst_im
@@ -1141,24 +1159,6 @@ class SimpleImage {
 		}
 		
 		return $value;
-		
-	}
-	
-	/**
-	 * Returns the file extension of the specified file
-	 *
-	 * @param string	$filename
-	 *
-	 * @return string
-	 *
-	 */
-	protected function file_ext($filename) {
-		
-		if (!preg_match('/\./', $filename)) {
-			return '';
-		}
-		
-		return preg_replace('/^.*\./', '', $filename);
 		
 	}
 	
