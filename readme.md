@@ -215,6 +215,9 @@ $img->pixelate(8);
 // Sepia effect (simulated)
 $img->sepia();
 
+// Change opacity
+$img->opacity(.5);
+
 // Overlay watermark.png at 50% opacity at the bottom-right of the image with a 10 pixel horizontal and vertical margin
 $img->overlay('watermark.png', 'bottom right', .5, -10, -10);
 
@@ -261,58 +264,11 @@ $img->flip('x')->output();
 Change Log
 ----------
 
-##### 2013-07-08: Version 2.3 (by Nazar Mokrynskyi)
+2.4.0
+- added opacity method
+- reorganized public methods for easier access
 
-###### Differences from Version 2.1
-
-* `load` and `create` methods now are public
-* namespace changed to *abeautifulsite*
-* added composer support
-* examples update
-
-##### 2013-07-08: Version 2.2 (by Nazar Mokrynskyi)
-
-###### Differences from Version 2.1
-
-* `smart_crop` and `crop_center` methods removed, simplified `adaptive_resize` added instead, new method is compatible with old, but simpler
-
-##### 2013-07-07: Version 2.1 (by Nazar Mokrynskyi), a lot of refactoring and new features
-
-###### Differences from Version 2
-
-* `load` method hidden, use constructor instead
-* constructor extended with possibility to create empty image without source file (thanks to **strip** fork)
-* added method `fill` for filling image with specified color (thanks to **strip** fork)
-* added method `output_base64` for getting image in form of string as *data: URL* (thanks to **Fernando Cunha** fork)
-* added `crop_center` method for cropping image of certain size in the center of image (thanks to **Cezar Luiz** fork)
-* quality of output now in percents, which is the same for any image type
-* added `$quality` property for specifying default image quality value
-* private methods replaced by protected for inheritance possibility
-* added support of RGB and RGBA colors in addition to HEX
-* added interlacing to images in order to obtain progressive jpeg
-
-
-##### 2013-06-03: `square_crop` was replaced with `smart_crop`, which supports varying width/height as well as squares. Simply swap out `square_crop` with `smart_crop` to update.
-
-###### Differences from Version 1
-
-SimpleImage has been completely overhauled since version 1. Here are the
-most significant changes:
-
--   **Simple_Image** is now **SimpleImage**
--   For more efficient processing, the class now has public load and
-    save methods. In version 1, these methods were automatically
-    executed on every manipulation, which led to slower processing times
-    and potential quality loss.
--   Because load and save are now public methods, it only made sense to
-    support method chaining. You can now make as many modifications as
-    you want to an image and save it in just one line of code.
--   A positioning bug in the text() method was fixed so positioning is
-    100% accurate now. In version 1, the size of the text box was
-    erroneously calculating points instead of pixels.
--   Arguments for many methods have been normalized. Opacity is always 0
-    through 1 (like in CSS) instead of 0 through 100 and colors are
-    consistently passed in as hex color codes instead of RGB.
--   A few methods were consolidated to use the public resize and crop
-    methods instead of replicating the same functionality like in
-    version 1.
+2.3.3
+- added thumbnail method (replaces adaptive_resize)
+- deprecated adaptive_resize method (will be removed in 3.0)
+- restored double asterisks for comment documentation
