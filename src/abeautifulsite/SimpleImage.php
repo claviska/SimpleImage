@@ -524,8 +524,7 @@ class SimpleImage {
 	 * @return SimpleImage
 	 * 
 	 */ 
-	function load_base64($base64string)
-	{
+	function load_base64($base64string) {
 		if (!extension_loaded('gd')) {
 			throw new Exception('Required extension GD is not loaded.');
 		}
@@ -544,13 +543,11 @@ class SimpleImage {
 	 * @throws Exception
 	 * 
 	 */ 
-	protected function get_meta_data()
-	{
+	protected function get_meta_data() {
 		//gather meta data
-		if(empty($this->imagestring))
-		{
+		if(empty($this->imagestring)) {
 			$info = getimagesize($this->filename);
-		
+			
 			switch ($info['mime']) {
 				case 'image/gif':
 					$this->image = imagecreatefromgif($this->filename);
@@ -570,7 +567,7 @@ class SimpleImage {
 		} else {
 			throw new Exception('PHP 5.4 is required to use method getimagesizefromstring');
 		}
-
+		
 		$this->original_info = array(
 			'width' => $info[0],
 			'height' => $info[1],
@@ -586,7 +583,7 @@ class SimpleImage {
 		imagealphablending($this->image, true);
 		
 		return $this;
-	
+		
 	}
 	
 	/**
