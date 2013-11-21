@@ -568,7 +568,7 @@ class SimpleImage {
 		} elseif (function_exists('getimagesizefromstring')) {
 			$info = getimagesizefromstring($this->imagestring);
 		} else {
-			throw new Exception('getimagesizefromstring is required');
+			throw new Exception('PHP 5.4 is required to use method getimagesizefromstring');
 		}
 
 		$this->original_info = array(
