@@ -26,7 +26,7 @@ class SimpleImage {
 	 */
 	public $quality = 80;
 
-	protected $image, $filename, $original_info, $width, $height;
+	protected $image, $filename, $original_info, $width, $height, $imagestring;
 
 	/**
 	 * Create instance and load an image, or create an image from scratch
@@ -512,29 +512,70 @@ class SimpleImage {
 		if (!extension_loaded('gd')) {
 			throw new Exception('Required extension GD is not loaded.');
 		}
-		
-		// Gather meta data
 		$this->filename = $filename;
-		$info = getimagesize($this->filename);
-		switch ($info['mime']) {
-			case 'image/gif':
-				$this->image = imagecreatefromgif($this->filename);
-				break;
-			case 'image/jpeg':
-				$this->image = imagecreatefromjpeg($this->filename);
-				break;
-			case 'image/png':
-				$this->image = imagecreatefrompng($this->filename);
-				break;
-			default:
-				throw new Exception('Invalid image: '.$this->filename);
-				break;
+		return $this->get_meta_data();
+	}
+	
+	/**
+	 * Load a base64 string as image
+	 *
+	 * @param string		$filename	base64 string
+	 *
+	 * @return SimpleImage
+	 * 
+	 */ 
+	function load_base64($base64string)
+	{
+		if (!extension_loaded('gd')) {
+			throw new Exception('Required extension GD is not loaded.');
 		}
+		//remove data URI scheme and spaces from base64 string then decode it
+		$this->imagestring = base64_decode(str_replace(' ', '+',preg_replace('#^data:image/[^;]+;base64,#', '', $base64string)));
+		$this->image = imagecreatefromstring($this->imagestring);
+		return $this->get_meta_data();
+	}
+	
+	/**
+	 * Get meta data of image or base64 string
+	 *
+	 * @param string|null		$imagestring	If omitted treat as a normal image
+	 *
+	 * @return SimpleImage
+	 * @throws Exception
+	 * 
+	 */ 
+	protected function get_meta_data()
+	{
+		//gather meta data
+		if(empty($this->imagestring))
+		{
+			$info = getimagesize($this->filename);
+		
+			switch ($info['mime']) {
+				case 'image/gif':
+					$this->image = imagecreatefromgif($this->filename);
+					break;
+				case 'image/jpeg':
+					$this->image = imagecreatefromjpeg($this->filename);
+					break;
+				case 'image/png':
+					$this->image = imagecreatefrompng($this->filename);
+					break;
+				default:
+					throw new Exception('Invalid image: '.$this->filename);
+					break;
+			}
+		} elseif (function_exists('getimagesizefromstring')) {
+			$info = getimagesizefromstring($this->imagestring);
+		} else {
+			throw new Exception('PHP 5.4 is required to use method getimagesizefromstring');
+		}
+
 		$this->original_info = array(
 			'width' => $info[0],
 			'height' => $info[1],
 			'orientation' => $this->get_orientation(),
-			'exif' => function_exists('exif_read_data') && $info['mime'] === 'image/jpeg' ? $this->exif = @exif_read_data($this->filename) : null,
+			'exif' => function_exists('exif_read_data') && $info['mime'] === 'image/jpeg' && $imagestring === null ? $this->exif = @exif_read_data($this->filename) : null,
 			'format' => preg_replace('/^image\//', '', $info['mime']),
 			'mime' => $info['mime']
 		);
@@ -545,7 +586,7 @@ class SimpleImage {
 		imagealphablending($this->image, true);
 		
 		return $this;
-		
+	
 	}
 	
 	/**
@@ -617,7 +658,7 @@ class SimpleImage {
 				$mimetype = 'image/png';
 				break;
 			default:
-				$info = getimagesize($this->filename);
+				$info = (empty($this->imagestring)) ? getimagesize($this->filename) : getimagesizefromstring($this->imagestring);
 				$mimetype = $info['mime'];
 				unset($info);
 				break;
