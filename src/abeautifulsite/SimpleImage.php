@@ -1093,7 +1093,7 @@ class SimpleImage {
 			'width' => $info[0],
 			'height' => $info[1],
 			'orientation' => $this->get_orientation(),
-			'exif' => function_exists('exif_read_data') && $info['mime'] === 'image/jpeg' && $imagestring === null ? $this->exif = @exif_read_data($this->filename) : null,
+			'exif' => function_exists('exif_read_data') && $info['mime'] === 'image/jpeg' && $this->imagestring === null ? $this->exif = @exif_read_data($this->filename) : null,
 			'format' => preg_replace('/^image\//', '', $info['mime']),
 			'mime' => $info['mime']
 		);
