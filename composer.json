@@ -4,7 +4,6 @@
 	"license"     : [
 		"MIT"
 	],
-	"version"     : "2.5.0",
 	"require"     : {
 		"php" : ">=5.3.0"
 	},
@@ -24,6 +23,11 @@
 	"autoload"    : {
 		"psr-0" : {
 			"abeautifulsite" : "src/"
+		}
+	},
+	"extra": {
+		"branch-alias": {
+			"dev-master": "2.5-dev"
 		}
 	}
 }
