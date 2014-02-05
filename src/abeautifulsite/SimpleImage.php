@@ -700,14 +700,20 @@ class SimpleImage {
 	 * @param float|int		$opacity		Overlay opacity 0-1
 	 * @param int			$x_offset		Horizontal offset in pixels
 	 * @param int			$y_offset		Vertical offset in pixels
+	 * @param boolean		$fit			Fit overlay to image size
 	 *
 	 * @return SimpleImage
 	 *
 	 */
-	function overlay($overlay_file, $position = 'center', $opacity = 1, $x_offset = 0, $y_offset = 0) {
+	function overlay($overlay_file, $position = 'center', $opacity = 1, $x_offset = 0, $y_offset = 0, $fit = false) {
 		
 		// Load overlay image
 		$overlay = new SimpleImage($overlay_file);
+		
+		//Fit overlay to image
+		if ($fit) {
+			$overlay->best_fit($this->width, $this->height);
+		}
 		
 		// Convert opacity
 		$opacity = $opacity * 100;
