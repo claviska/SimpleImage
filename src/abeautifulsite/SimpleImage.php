@@ -366,13 +366,14 @@ class SimpleImage {
 	 * Fit to height (proportionally resize to specified height)
 	 *
 	 * @param int			$height
+	 * @param float|int		$aspect_ratio	If aspect ratio is supplied we use it otherwise we do the math
 	 *
 	 * @return SimpleImage
 	 *
 	 */
-	function fit_to_height($height) {
+	function fit_to_height($height, $aspect_ratio = false) {
 		
-		$aspect_ratio = $this->height / $this->width;
+		$aspect_ratio = ($aspect_ratio) ? $aspect_ratio : $this->height / $this->width;
 		$width = $height / $aspect_ratio;
 		
 		return $this->resize($width, $height);
@@ -383,13 +384,14 @@ class SimpleImage {
 	 * Fit to width (proportionally resize to specified width)
 	 *
 	 * @param int			$width
+	 * @param float_int		$aspect_ratio	If aspect ratio is supplied we use it otherwise we do the math
 	 *
 	 * @return SimpleImage
 	 *
 	 */
-	function fit_to_width($width) {
+	function fit_to_width($width,$aspect_ratio = false) {
 		
-		$aspect_ratio = $this->height / $this->width;
+		$aspect_ratio = ($aspect_ratio) ? $aspect_ratio : $this->height / $this->width;
 		$height = $width * $aspect_ratio;
 		
 		return $this->resize($width, $height);
@@ -524,8 +526,7 @@ class SimpleImage {
 	 * @return SimpleImage
 	 * 
 	 */ 
-	function load_base64($base64string)
-	{
+	function load_base64($base64string) {
 		if (!extension_loaded('gd')) {
 			throw new Exception('Required extension GD is not loaded.');
 		}
@@ -533,60 +534,6 @@ class SimpleImage {
 		$this->imagestring = base64_decode(str_replace(' ', '+',preg_replace('#^data:image/[^;]+;base64,#', '', $base64string)));
 		$this->image = imagecreatefromstring($this->imagestring);
 		return $this->get_meta_data();
-	}
-	
-	/**
-	 * Get meta data of image or base64 string
-	 *
-	 * @param string|null		$imagestring	If omitted treat as a normal image
-	 *
-	 * @return SimpleImage
-	 * @throws Exception
-	 * 
-	 */ 
-	protected function get_meta_data()
-	{
-		//gather meta data
-		if(empty($this->imagestring))
-		{
-			$info = getimagesize($this->filename);
-		
-			switch ($info['mime']) {
-				case 'image/gif':
-					$this->image = imagecreatefromgif($this->filename);
-					break;
-				case 'image/jpeg':
-					$this->image = imagecreatefromjpeg($this->filename);
-					break;
-				case 'image/png':
-					$this->image = imagecreatefrompng($this->filename);
-					break;
-				default:
-					throw new Exception('Invalid image: '.$this->filename);
-					break;
-			}
-		} elseif (function_exists('getimagesizefromstring')) {
-			$info = getimagesizefromstring($this->imagestring);
-		} else {
-			throw new Exception('PHP 5.4 is required to use method getimagesizefromstring');
-		}
-
-		$this->original_info = array(
-			'width' => $info[0],
-			'height' => $info[1],
-			'orientation' => $this->get_orientation(),
-			'exif' => function_exists('exif_read_data') && $info['mime'] === 'image/jpeg' && $imagestring === null ? $this->exif = @exif_read_data($this->filename) : null,
-			'format' => preg_replace('/^image\//', '', $info['mime']),
-			'mime' => $info['mime']
-		);
-		$this->width = $info[0];
-		$this->height = $info[1];
-		
-		imagesavealpha($this->image, true);
-		imagealphablending($this->image, true);
-		
-		return $this;
-	
 	}
 	
 	/**
@@ -857,8 +804,8 @@ class SimpleImage {
 			imagesavealpha($new, true);
 		}
 		
-		// Resize
-		imagecopyresampled($new, $this->image, 0, 0, 0, 0, $width, $height, $this->width, $this->height);
+		// Resize, we floor the two numbers to ensure proper resizing
+		imagecopyresampled($new, $this->image, 0, 0, 0, 0, floor($width), floor($height), $this->width, $this->height);
 		
 		// Update meta data
 		$this->width = $width;
@@ -1080,9 +1027,9 @@ class SimpleImage {
 		
 		// Fit to height/width
 		if ($new_aspect_ratio > $current_aspect_ratio) {
-			$this->fit_to_height($height);
+			$this->fit_to_height($height, $current_aspect_ratio);
 		} else {
-			$this->fit_to_width($width);
+			$this->fit_to_width($width, $current_aspect_ratio);
 		}
 		$left = ($this->width / 2) - ($width / 2);
 		$top = ($this->height / 2) - ($height / 2);
@@ -1107,6 +1054,58 @@ class SimpleImage {
 		}
 		
 		return preg_replace('/^.*\./', '', $filename);
+		
+	}
+	
+	/**
+	 * Get meta data of image or base64 string
+	 *
+	 * @param string|null		$imagestring	If omitted treat as a normal image
+	 *
+	 * @return SimpleImage
+	 * @throws Exception
+	 * 
+	 */ 
+	protected function get_meta_data() {
+		//gather meta data
+		if(empty($this->imagestring)) {
+			$info = getimagesize($this->filename);
+			
+			switch ($info['mime']) {
+				case 'image/gif':
+					$this->image = imagecreatefromgif($this->filename);
+					break;
+				case 'image/jpeg':
+					$this->image = imagecreatefromjpeg($this->filename);
+					break;
+				case 'image/png':
+					$this->image = imagecreatefrompng($this->filename);
+					break;
+				default:
+					throw new Exception('Invalid image: '.$this->filename);
+					break;
+			}
+		} elseif (function_exists('getimagesizefromstring')) {
+			$info = getimagesizefromstring($this->imagestring);
+		} else {
+			throw new Exception('PHP 5.4 is required to use method getimagesizefromstring');
+		}
+		
+		$this->original_info = array(
+			'width' => $info[0],
+			'height' => $info[1],
+			'orientation' => $this->get_orientation(),
+			'exif' => function_exists('exif_read_data') && $info['mime'] === 'image/jpeg' && $this->imagestring === null ? $this->exif = @exif_read_data($this->filename) : null,
+			'format' => preg_replace('/^image\//', '', $info['mime']),
+			'mime' => $info['mime']
+		);
+		$this->width = $info[0];
+		$this->height = $info[1];
+		
+		imagesavealpha($this->image, true);
+		imagealphablending($this->image, true);
+		
+		return $this;
 		
 	}
 	
