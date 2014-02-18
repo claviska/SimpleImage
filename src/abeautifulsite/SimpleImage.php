@@ -366,13 +366,14 @@ class SimpleImage {
 	 * Fit to height (proportionally resize to specified height)
 	 *
 	 * @param int			$height
+	 * @param float|int		$aspect_ratio	If aspect ratio is supplied we use it otherwise we do the math
 	 *
 	 * @return SimpleImage
 	 *
 	 */
-	function fit_to_height($height) {
+	function fit_to_height($height, $aspect_ratio = false) {
 		
-		$aspect_ratio = $this->height / $this->width;
+		$aspect_ratio = ($aspect_ratio) ? $aspect_ratio : $this->height / $this->width;
 		$width = $height / $aspect_ratio;
 		
 		return $this->resize($width, $height);
@@ -383,13 +384,14 @@ class SimpleImage {
 	 * Fit to width (proportionally resize to specified width)
 	 *
 	 * @param int			$width
+	 * @param float_int		$aspect_ratio	If aspect ratio is supplied we use it otherwise we do the math
 	 *
 	 * @return SimpleImage
 	 *
 	 */
-	function fit_to_width($width) {
+	function fit_to_width($width,$aspect_ratio = false) {
 		
-		$aspect_ratio = $this->height / $this->width;
+		$aspect_ratio = ($aspect_ratio) ? $aspect_ratio : $this->height / $this->width;
 		$height = $width * $aspect_ratio;
 		
 		return $this->resize($width, $height);
@@ -802,8 +804,8 @@ class SimpleImage {
 			imagesavealpha($new, true);
 		}
 		
-		// Resize
-		imagecopyresampled($new, $this->image, 0, 0, 0, 0, $width, $height, $this->width, $this->height);
+		// Resize, we floor the two numbers to ensure proper resizing
+		imagecopyresampled($new, $this->image, 0, 0, 0, 0, floor($width), floor($height), $this->width, $this->height);
 		
 		// Update meta data
 		$this->width = $width;
@@ -1025,9 +1027,9 @@ class SimpleImage {
 		
 		// Fit to height/width
 		if ($new_aspect_ratio > $current_aspect_ratio) {
-			$this->fit_to_height($height);
+			$this->fit_to_height($height, $current_aspect_ratio);
 		} else {
-			$this->fit_to_width($width);
+			$this->fit_to_width($width, $current_aspect_ratio);
 		}
 		$left = floor(($this->width / 2) - ($width / 2));
 		$top = floor(($this->height / 2) - ($height / 2));
