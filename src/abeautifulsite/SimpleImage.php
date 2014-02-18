@@ -1029,8 +1029,8 @@ class SimpleImage {
 		} else {
 			$this->fit_to_width($width);
 		}
-		$left = ($this->width / 2) - ($width / 2);
-		$top = ($this->height / 2) - ($height / 2);
+		$left = floor(($this->width / 2) - ($width / 2));
+		$top = floor(($this->height / 2) - ($height / 2));
 		
 		// Return trimmed image
 		return $this->crop($left, $top, $width + $left, $height + $top);
