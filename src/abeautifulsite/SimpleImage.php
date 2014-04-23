@@ -309,6 +309,51 @@ class SimpleImage {
 	}
 	
 	/**
+	 * Resize by center and colorize background
+	 *
+	 * @param int			$width			Target width in pixels
+	 * @param int			$$height		Target height in pixels
+	 * @param string		$color			Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
+	 * 							Where red, green, blue - integers 0-255, alpha - integer 0-127
+	 *
+	 * @return SimpleImage
+	 *
+	 */
+	function resize_by_center($width, $height, $color = '#000000') {
+
+		$rgba = $this->normalize_color($color);
+		
+		$x_ratio = $width / $this->width;
+		$y_ratio = $height / $this->height;
+
+		if (($this->width <= $width) && ($this->height <= $height)) {
+			$new_w = $this->width;
+			$new_h = $this->height;
+		} elseif (($x_ratio * $this->height) < $height) {
+			$new_h = ceil($x_ratio * $this->height);
+			$new_w = $width;
+		} else {
+			$new_w = ceil($y_ratio * $this->width);
+			$new_h = $height;
+		}
+
+		$newpic = imagecreatetruecolor(round($new_w), round($new_h));
+		imagecopyresampled($newpic, $this->image, 0, 0, 0, 0, $new_w, $new_h, $this->width, $this->height);
+		$final = imagecreatetruecolor($width, $height);
+		$backgroundColor = imagecolorallocate($final, $rgba['r'], $rgba['g'], $rgba['b']);
+		imagefill($final, 0, 0, $backgroundColor);
+		imagecopy($final, $newpic, (($width - $new_w)/ 2), (($height - $new_h) / 2), 0, 0, $new_w, $new_h);
+		
+		// Update meta data
+		$this->width = $width;
+		$this->height = $height;
+		$this->image = $final;
+
+		return $this;
+
+	}
+	
+	/**
 	 * Desaturate (grayscale)
 	 *
 	 * @return SimpleImage
