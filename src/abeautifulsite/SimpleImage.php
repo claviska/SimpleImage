@@ -312,7 +312,7 @@ class SimpleImage {
 	 * Resize by center and colorize background
 	 *
 	 * @param int			$width			Target width in pixels
-	 * @param int			$$height		Target height in pixels
+	 * @param int			$height			Target height in pixels
 	 * @param string		$color			Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
 	 * 							Where red, green, blue - integers 0-255, alpha - integer 0-127
 	 *
