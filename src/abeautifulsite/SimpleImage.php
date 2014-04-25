@@ -277,11 +277,13 @@ class SimpleImage {
 	 * @param int			$y1	Top
 	 * @param int			$x2	Right
 	 * @param int			$y2	Bottom
+	 * @param string		$bgcolor	Hex background color string, array(red, green, blue) or array(red, green, blue, alpha).
+	 * 									Where red, green, blue - integers 0-255, alpha - integer 0-127
 	 *
 	 * @return SimpleImage
 	 *
 	 */
-	function crop($x1, $y1, $x2, $y2) {
+	function crop($x1, $y1, $x2, $y2, $bgcolor = null) {
 		
 		// Determine crop size
 		if ($x2 < $x1) {
@@ -292,12 +294,44 @@ class SimpleImage {
 		}
 		$crop_width = $x2 - $x1;
 		$crop_height = $y2 - $y1;
-		
-		// Perform crop
-		$new = imagecreatetruecolor($crop_width, $crop_height);
-		imagealphablending($new, false);
-		imagesavealpha($new, true);
-		imagecopyresampled($new, $this->image, 0, 0, $x1, $y1, $crop_width, $crop_height, $crop_width, $crop_height);
+
+		// Classic Crop
+		if($bgcolor == null) {
+			// Perform crop
+			$new = imagecreatetruecolor($crop_width, $crop_height);
+			imagealphablending($new, false);
+			imagesavealpha($new, true);
+			imagecopyresampled($new, $this->image, 0, 0, $x1, $y1, $crop_width, $crop_height, $crop_width, $crop_height);
+		}
+		// Crop by center with custom bgcolor
+		else {
+			
+			$rgba = $this->normalize_color($bgcolor);
+
+			$x_ratio = $crop_width / $this->width;
+			$y_ratio = $crop_height / $this->height;
+
+			// Calc image position
+			if (($this->width <= $crop_width) && ($this->height <= $crop_height)) {
+				$new_w = $this->width;
+				$new_h = $this->height;
+			} elseif (($x_ratio * $this->height) < $crop_height) {
+				$new_h = ceil($x_ratio * $this->height);
+				$new_w = $crop_width;
+			} else {
+				$new_w = ceil($y_ratio * $this->width);
+				$new_h = $crop_height;
+			}
+
+			$tmp_pic = imagecreatetruecolor(round($new_w), round($new_h));
+			imagecopyresampled($tmp_pic, $this->image, 0, 0, 0, 0, $new_w, $new_h, $this->width, $this->height);
+			
+			$new = imagecreatetruecolor($crop_width, $crop_height);
+			$backgroundColor = imagecolorallocate($new, $rgba['r'], $rgba['g'], $rgba['b']);
+			imagefill($new, 0, 0, $backgroundColor);
+			imagecopy($new, $tmp_pic, (($crop_width - $new_w)/ 2), (($crop_height - $new_h) / 2), 0, 0, $new_w, $new_h);
+
+		}
 		
 		// Update meta data
 		$this->width = $crop_width;
@@ -306,51 +340,6 @@ class SimpleImage {
 		
 		return $this;
 		
-	}
-	
-	/**
-	 * Resize by center and colorize background
-	 *
-	 * @param int			$width			Target width in pixels
-	 * @param int			$height			Target height in pixels
-	 * @param string		$color			Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
-	 * 							Where red, green, blue - integers 0-255, alpha - integer 0-127
-	 *
-	 * @return SimpleImage
-	 *
-	 */
-	function resize_by_center($width, $height, $color = '#000000') {
-
-		$rgba = $this->normalize_color($color);
-		
-		$x_ratio = $width / $this->width;
-		$y_ratio = $height / $this->height;
-
-		if (($this->width <= $width) && ($this->height <= $height)) {
-			$new_w = $this->width;
-			$new_h = $this->height;
-		} elseif (($x_ratio * $this->height) < $height) {
-			$new_h = ceil($x_ratio * $this->height);
-			$new_w = $width;
-		} else {
-			$new_w = ceil($y_ratio * $this->width);
-			$new_h = $height;
-		}
-
-		$newpic = imagecreatetruecolor(round($new_w), round($new_h));
-		imagecopyresampled($newpic, $this->image, 0, 0, 0, 0, $new_w, $new_h, $this->width, $this->height);
-		$final = imagecreatetruecolor($width, $height);
-		$backgroundColor = imagecolorallocate($final, $rgba['r'], $rgba['g'], $rgba['b']);
-		imagefill($final, 0, 0, $backgroundColor);
-		imagecopy($final, $newpic, (($width - $new_w)/ 2), (($height - $new_h) / 2), 0, 0, $new_w, $new_h);
-		
-		// Update meta data
-		$this->width = $width;
-		$this->height = $height;
-		$this->image = $final;
-
-		return $this;
-
 	}
 	
 	/**
