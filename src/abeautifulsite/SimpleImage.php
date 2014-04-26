@@ -380,6 +380,26 @@ class SimpleImage {
 	}
 	
 	/**
+	 * Fit to height if larger (proportionally resize to specified height)
+	 *
+	 * @param int			$height
+	 *
+	 * @return SimpleImage
+	 *
+	 */
+	function fit_to_height_no_zoom_in($height) {
+		
+		if($height < $this->height)
+			return $this->image;
+		
+		$aspect_ratio = $this->height / $this->width;
+		$width = $height / $aspect_ratio;
+		
+		return $this->resize($width, $height);
+		
+	}
+	
+	/**
 	 * Fit to width (proportionally resize to specified width)
 	 *
 	 * @param int			$width
@@ -389,6 +409,26 @@ class SimpleImage {
 	 */
 	function fit_to_width($width) {
 		
+		$aspect_ratio = $this->height / $this->width;
+		$height = $width * $aspect_ratio;
+		
+		return $this->resize($width, $height);
+		
+	}
+
+	/**
+	 * Fit to width if larger (proportionally resize to specified width)
+	 *
+	 * @param int			$width
+	 *
+	 * @return SimpleImage
+	 *
+	 */
+	function fit_to_width_no_zoom_in($width) {
+		
+		if($width < $this->width)
+			return $this->image;
+
 		$aspect_ratio = $this->height / $this->width;
 		$height = $width * $aspect_ratio;
 		
@@ -1049,12 +1089,8 @@ class SimpleImage {
 	 */
 	protected function file_ext($filename) {
 		
-		if (!preg_match('/\./', $filename)) {
-			return '';
-		}
-		
-		return preg_replace('/^.*\./', '', $filename);
-		
+		$ext = pathinfo($filename, PATHINFO_EXTENSION);
+		return $ext;
 	}
 	
 	/**
