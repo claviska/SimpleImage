@@ -132,17 +132,20 @@ class SimpleImage {
 	 * Best fit (proportionally resize to fit in specified width/height)
 	 *
 	 * Shrink the image proportionally to fit inside a $width x $height box
+	 * If $force_size is enabled the resulting image be exactly the specified size
+	 * centered if neccessary.
 	 *
 	 * @param int			$max_width
 	 * @param int			$max_height
+	 * @param bool			$force_size
 	 *
 	 * @return	SimpleImage
 	 *
 	 */
-	function best_fit($max_width, $max_height) {
+	function best_fit($max_width, $max_height, $force_size = false) {
 		
 		// If it already fits, there's nothing to do
-		if ($this->width <= $max_width && $this->height <= $max_height) {
+		if ($this->width <= $max_width && $this->height <= $max_height && !$force_size) {
 			return $this;
 		}
 		
@@ -164,6 +167,9 @@ class SimpleImage {
 			$width = $height / $aspect_ratio;
 		}
 		
+		if ($force_size){
+			return $this->resize($width, $height, $max_width, $max_height);
+		}
 		return $this->resize($width, $height);
 		
 	}
@@ -777,26 +783,46 @@ class SimpleImage {
 	
 	/**
 	 * Resize an image to the specified dimensions
+	 * If container dimensions are specified, image will be centered within container
 	 *
 	 * @param int	$width
 	 * @param int	$height
+	 * @param int	$container_width
+	 * @param int	$container_height
 	 *
 	 * @return SimpleImage
+	 * @throws Exception
 	 *
 	 */
-	function resize($width, $height) {
+	function resize($width, $height, $container_width = null, $container_height = null) {
+		
+		if( !is_null($container_height) && $container_height < $height ) {
+			throw new Exception('Container height must be greater or equal to height');
+		}
+		
+		if( !is_null($container_width) && $container_width < $width ) {
+			throw new Exception('Container width must be greater or equal to width');
+		}
+		
+		if( is_null($container_width) !== is_null($container_height) ) {
+			throw new Exception('Both container dimensions must be specified');
+		}
 		
 		// Generate new GD image
-		$new = imagecreatetruecolor($width, $height);
+		if( !is_null($container_width) && !is_null($container_height) ) {
+			$new = imagecreatetruecolor($container_width, $container_height);
+		} else {
+			$new = imagecreatetruecolor($width, $height);
+		}
 		
 		if( $this->original_info['format'] === 'gif' ) {
 			// Preserve transparency in GIFs
 			$transparent_index = imagecolortransparent($this->image);
 			if ($transparent_index >= 0) {
-	            $transparent_color = imagecolorsforindex($this->image, $transparent_index);
-	            $transparent_index = imagecolorallocate($new, $transparent_color['red'], $transparent_color['green'], $transparent_color['blue']);
-	            imagefill($new, 0, 0, $transparent_index);
-	            imagecolortransparent($new, $transparent_index);
+				$transparent_color = imagecolorsforindex($this->image, $transparent_index);
+				$transparent_index = imagecolorallocate($new, $transparent_color['red'], $transparent_color['green'], $transparent_color['blue']);
+				imagefill($new, 0, 0, $transparent_index);
+				imagecolortransparent($new, $transparent_index);
 			}
 		} else {
 			// Preserve transparency in PNGs (benign for JPEGs)
@@ -805,7 +831,11 @@ class SimpleImage {
 		}
 		
 		// Resize
-		imagecopyresampled($new, $this->image, 0, 0, 0, 0, $width, $height, $this->width, $this->height);
+		if( !is_null($container_width) && !is_null($container_height) ) {
+			imagecopyresampled($new, $this->image, ($container_width - $width) / 2, ($container_height - $height) / 2, 0, 0, $width, $height, $this->width, $this->height);
+		} else {
+			imagecopyresampled($new, $this->image, 0, 0, 0, 0, $width, $height, $this->width, $this->height);
+		}
 		
 		// Update meta data
 		$this->width = $width;
