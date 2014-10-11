@@ -827,6 +827,8 @@ class SimpleImage {
 		} else {
 			// Preserve transparency in PNGs (benign for JPEGs)
 			imagealphablending($new, false);
+			$color = imagecolorallocatealpha($new, 0, 0, 0, 127);
+			imagefill($new, 0, 0, $color);
 			imagesavealpha($new, true);
 		}
 		
