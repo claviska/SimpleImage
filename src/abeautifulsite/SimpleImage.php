@@ -1080,6 +1080,13 @@ class SimpleImage {
 					break;
 				case 'image/png':
 					$this->image = imagecreatefrompng($this->filename);
+					$w = imagesx($this->image);
+					$h = imagesy($this->image);
+					$white = imagecreatetruecolor($w, $h);
+					$bg = imagecolorallocate($white, 255, 255, 255);
+					imagefill($white, 0, 0, $bg);
+					imagecopy($white, $this->image, 0, 0, 0, 0, $w, $h);
+					$this->image = $white;
 					break;
 				default:
 					throw new Exception('Invalid image: '.$this->filename);
