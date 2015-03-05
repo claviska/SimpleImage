@@ -281,27 +281,17 @@ class SimpleImage {
 	 * @return SimpleImage
 	 *
 	 */
-	function crop($x1, $y1, $x2, $y2) {
-		
-		// Determine crop size
-		if ($x2 < $x1) {
-			list($x1, $x2) = array($x2, $x1);
-		}
-		if ($y2 < $y1) {
-			list($y1, $y2) = array($y2, $y1);
-		}
-		$crop_width = $x2 - $x1;
-		$crop_height = $y2 - $y1;
+	function crop($x1, $y1, $x2, $y2, $wdith, $height) {
 		
 		// Perform crop
-		$new = imagecreatetruecolor($crop_width, $crop_height);
+		$new = imagecreatetruecolor($wdith, $height);
 		imagealphablending($new, false);
 		imagesavealpha($new, true);
-		imagecopyresampled($new, $this->image, 0, 0, $x1, $y1, $crop_width, $crop_height, $crop_width, $crop_height);
+		imagecopyresampled($new, $this->image, 0, 0, $x1, $y1, $wdith, $height, $x2, $y2);
 		
 		// Update meta data
-		$this->width = $crop_width;
-		$this->height = $crop_height;
+		$this->width = $wdith;
+		$this->height = $height;
 		$this->image = $new;
 		
 		return $this;
