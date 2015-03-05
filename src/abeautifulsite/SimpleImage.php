@@ -1025,7 +1025,7 @@ class SimpleImage {
 		$top = floor(($this->height / 2) - ($height / 2));
 		
 		// Return trimmed image
-		return $this->crop($left, $top, $width + $left, $height + $top);
+		return $this->crop($left, $top, $width + $left, $height + $top, $width, $height);
 		
 	}	
 	
