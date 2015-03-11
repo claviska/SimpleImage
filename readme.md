@@ -33,15 +33,15 @@ it 90 degrees clockwise, shrink it to fit within a 320x200 box, apply a sepia
 effect, convert it to a GIF, and save it to **result.gif**.
 
 With this class, you can effortlessly:
--	Resize images (free resize, resize to width, resize to height, resize to fit)
--	Crop images
--	Flip/rotate/adjust orientation
--	Adjust brightness & contrast
--	Desaturate, colorize, pixelate, blur, etc.
--	Overlay one image onto another (watermarking)
--	Add text using a font of your choice
--	Convert between GIF, JPEG, and PNG formats
--	Strip EXIF data
+-   Resize images (free resize, resize to width, resize to height, resize to fit)
+-   Crop images
+-   Flip/rotate/adjust orientation
+-   Adjust brightness & contrast
+-   Desaturate, colorize, pixelate, blur, etc.
+-   Overlay one image onto another (watermarking)
+-   Add text using a font of your choice
+-   Convert between GIF, JPEG, and PNG formats
+-   Strip EXIF data
 
 Requirements
 ------------
@@ -129,10 +129,10 @@ handle them properly:
 
 ```php
 try {
-	$img = new abeautifulsite\SimpleImage('image.jpg');
-	$img->flip('x')->save('flipped.jpg');
+    $img = new abeautifulsite\SimpleImage('image.jpg');
+    $img->flip('x')->save('flipped.jpg');
 } catch(Exception $e) {
-	echo 'Error: ' . $e->getMessage();
+    echo 'Error: ' . $e->getMessage();
 }
 ```
 
@@ -238,14 +238,14 @@ the image you're working with or output the image directly to the browser:
 //
 // Returns:
 //
-//	array(
-//		width => 320,
-//		height => 200,
-//		orientation => ['portrait', 'landscape', 'square'],
-//		exif => array(...),
-//		mime => ['image/jpeg', 'image/gif', 'image/png'],
-//		format => ['jpeg', 'gif', 'png']
-//	)
+//  array(
+//      width => 320,
+//      height => 200,
+//      orientation => ['portrait', 'landscape', 'square'],
+//      exif => array(...),
+//      mime => ['image/jpeg', 'image/gif', 'image/png'],
+//      format => ['jpeg', 'gif', 'png']
+//  )
 $info = $img->get_original_info();
 
 // Get the current width
