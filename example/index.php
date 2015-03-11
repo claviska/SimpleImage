@@ -23,7 +23,7 @@ try {
 
 	// Strip exif data (just load and save)
 	$img->load('butterfly.jpg')->save('processed/butterfly-strip-exif.jpg');
-	
+
 	// Flip horizontal
 	$img->load('butterfly.jpg')->flip('x')->save('processed/butterfly-flip-horizontal.jpg');
 
@@ -107,19 +107,19 @@ try {
 
 	// Change opacity
 	$img->load('butterfly.jpg')->opacity(.5)->save('processed/butterfly-opacity.png');
-	
+
 	// Text
 	$img->load('butterfly.jpg')->text('Butterfly', __DIR__.'/delicious.ttf', 32, '#FFFFFF', 'bottom', 0, -20)->save('processed/butterfly-text.jpg');
 
 	// Resizing GIFs with transparency
 	$img->load('basketball.gif')->resize(50, 50)->save('processed/basketball-resize.gif');
-	
+
 	// Manipulate base64 gif string and save as png (requires PHP 5.4+)
 	if( version_compare(PHP_VERSION, '5.4.0') >= 0 ) {
 		$base64 = 'data:image/gif;base64,R0lGODlhEAAQAOZeAHBwcKCgoOraIvDw8Mu9Hi4rBvPFJvTKJpyRF/bXJfPAJ/jeJU5IC0BAQOq0J+ewKPnmJffZJVc6FvPCJruuGz46CYyDFPXPJpCQkH10EqugGSYaC+GoKAAAALCwsNicKUlGQvbUJtGaKWBgYODg4LWBJDUnF/jhJa9+JXFgSl4/GUxHQjwpEdadKUxDOEM9NmNdVcaPJ9rLIPbRJtifKUEwGuSsKNmhKV1XDXdPG6p2JXhRG1U5FiMdFlpWU76DJ8DAwMuVKtDQ0GlFFrR8JEQtELF8KO24J3VNGT0zKG1lEIxgHdugKXBNGykbCzw3Mt6kKNOcKfXMJt6mKG5LG2JAFTgwJW5fSlNNRenSI/THJo5iIPC8J/rpJf///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAF4ALAAAAAAQABAAAAfZgF6CXiQAIBsbSSNAg40YTlstDw8cMVUrA40jKjcKWiEhMwZHRCYkggE8UxMLXa6uCVw/T14DPVETWQwarhoWXRFcOwEBTVwJCB0VrhUdFF0HNC8AKAoQAhkErggMsA5FDSIHr+SvCwoS4QcUAuVdBBYR6AAlBhYZ5QIFBBcOLB45uJwogOAVAYIQJgSB4cXKhwMCcBRQwqCCNilcqATw4mEIhwtdBFCQ0QXCBS5GQAwCgISJgQgLFiQw4ECHi0yDAtRY8sHGAyglJPjA2WgAhgZXUmABIKRRIAA7';
 		$img->load_base64($base64)->resize(32,32)->save('processed/smiley-base64.png');
 	}
-	
+
 	echo '<span style="color: green;">All processed images are saved in /example/processed</span>';
 
 } catch (Exception $e) {
