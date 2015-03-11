@@ -156,7 +156,7 @@ $img->auto_orient();
 $img->resize(320, 200);
 
 // Trim the image and resize to exactly 100x75
-$img->adaptive_resize(100, 75);
+$img->thumbnail(100, 75);
 
 // Shrink the image to the specified width while maintaining proportion (width)
 $img->fit_to_width(320);
