@@ -792,7 +792,8 @@ class SimpleImage {
 		if( $this->original_info['format'] === 'gif' ) {
 			// Preserve transparency in GIFs
 			$transparent_index = imagecolortransparent($this->image);
-			if ($transparent_index >= 0) {
+			$palletsize = imagecolorstotal($this->image);
+			if ($transparent_index >= 0 && $transparent_index < $palletsize) {
 	            $transparent_color = imagecolorsforindex($this->image, $transparent_index);
 	            $transparent_index = imagecolorallocate($new, $transparent_color['red'], $transparent_color['green'], $transparent_color['blue']);
 	            imagefill($new, 0, 0, $transparent_index);
