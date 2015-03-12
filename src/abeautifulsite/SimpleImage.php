@@ -1002,6 +1002,8 @@ class SimpleImage {
         }
 
         // Add the text
+        imagesavealpha($this->image, true);
+        imagealphablending($this->image, true);
         imagettftext($this->image, $font_size, $angle, $x, $y, $color, $font_file, $text);
 
         return $this;
