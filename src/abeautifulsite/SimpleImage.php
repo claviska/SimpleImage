@@ -56,7 +56,7 @@ class SimpleImage {
      *
      */
     function __destruct() {
-        if ($this->image) {
+        if( get_resource_type($this->image) === 'gd' ) {
             imagedestroy($this->image);
         }
     }
