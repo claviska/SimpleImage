@@ -852,17 +852,20 @@ class SimpleImage {
      *
      * @param null|string   $filename   If omitted - original file will be overwritten
      * @param null|int      $quality    Output image quality in percents 0-100
+     * @param null|string   $format     The format to use; determined by file extension if null
      *
      * @return SimpleImage
      * @throws Exception
      *
      */
-    function save($filename = null, $quality = null) {
+    function save($filename = null, $quality = null, $format = null) {
 
         // Determine quality, filename, and format
         $quality = $quality ?: $this->quality;
         $filename = $filename ?: $this->filename;
-        $format = $this->file_ext($filename) ?: $this->original_info['format'];
+        if( !$format ) {
+            $format = $this->file_ext($filename) ?: $this->original_info['format'];
+        }
 
         // Create the image
         switch (strtolower($format)) {
