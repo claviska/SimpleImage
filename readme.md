@@ -1,7 +1,7 @@
 The SimpleImage PHP class
 =========================
 
-*By Cory LaViska for A Beautiful Site, LLC.
+*By Cory LaViska for A Beautiful Site, LLC
 (http://www.abeautifulsite.net/)*
 
 *Licensed under the MIT license: http://opensource.org/licenses/MIT*
