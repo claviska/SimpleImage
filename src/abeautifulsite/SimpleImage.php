@@ -207,6 +207,7 @@ class SimpleImage {
 
             return $fit_image;
         }
+        
     }
 
     /**
