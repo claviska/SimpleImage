@@ -169,6 +169,47 @@ class SimpleImage {
     }
 
     /**
+     * Bestfit of image with background
+     *
+     * Shrink the image proportionally to fit inside a $width x $height box & fill empty area with selected color
+     *
+     * @param int           $width
+     * @param int           $height
+     * @param string        $color      Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
+     *                                  Where red, green, blue - integers 0-255, alpha - integer 0-127
+     *
+     * @return SimpleImage
+     *
+     */
+    function afit($max_width, $max_height, $color) {
+
+        $fit_image      = $this->best_fit($max_width, $max_height);
+        $clear_image    = new self(null, $max_width, $max_height, $color);
+
+        $fit_width      = $fit_image->width;
+        $fit_height     = $fit_image->height;
+
+        if ($fit_width == $max_width) {
+
+            $offset = floor(abs($fit_height - $max_height) / 2);
+            imagecopyresampled($clear_image->image, $fit_image->image, 0, $offset, 0, 0, $fit_width, $fit_height, $fit_width, $fit_height);
+
+            return $clear_image;
+
+        } elseif ($fit_height == $max_height) {
+
+            $offset = floor(abs($fit_width - $max_width) / 2);
+            imagecopyresampled($clear_image->image, $fit_image->image, $offset, 0, 0, 0, $fit_width, $fit_height, $fit_width, $fit_height);
+
+            return $clear_image;
+
+        } else {
+
+            return $fit_image;
+        }
+    }
+
+    /**
      * Blur
      *
      * @param string        $type   selective|gaussian
