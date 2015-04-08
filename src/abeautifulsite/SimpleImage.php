@@ -309,26 +309,34 @@ class SimpleImage {
     }
 
     /**
-     * Desaturate (grayscale if nothing specified)
+     * Desaturate
+     *
+     * @param int           $percentage Level of desaturization.
      *
      * @return SimpleImage
      *
      */
-    function desaturate($amount=1) {
-        // Determine amount
-        $amount = $this->keep_within($amount, 0, 1) * 100;
-        
-        // Make a desaturated copy of the image
-        $new = imagecreatetruecolor($this->width, $this->height);
-        imagealphablending($new, false);
-        imagesavealpha($new, true);
-        imagecopy($new, $this->image, 0, 0, 0, 0, $this->width, $this->height);
-        imagefilter($new, IMG_FILTER_GRAYSCALE);
-        
-        // Merge with specified amount
-        $this->imagecopymerge_alpha($this->image, $new, 0, 0, 0, 0, $this->width, $this->height, $amount);
-        imagedestroy($new);
-        
+    function desaturate($percentage = 100) {
+
+        // Determine percentage
+        $percentage = $this->keep_within($percentage, 0, 100);
+
+        if( $percentage === 100 ) {
+            imagefilter($this->image, IMG_FILTER_GRAYSCALE);
+        } else {
+            // Make a desaturated copy of the image
+            $new = imagecreatetruecolor($this->width, $this->height);
+            imagealphablending($new, false);
+            imagesavealpha($new, true);
+            imagecopy($new, $this->image, 0, 0, 0, 0, $this->width, $this->height);
+            imagefilter($new, IMG_FILTER_GRAYSCALE);
+
+            // Merge with specified percentage
+            $this->imagecopymerge_alpha($this->image, $new, 0, 0, 0, 0, $this->width, $this->height, $percentage);
+            imagedestroy($new);
+
+        }
+
         return $this;
     }
 
