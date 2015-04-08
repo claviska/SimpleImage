@@ -309,13 +309,26 @@ class SimpleImage {
     }
 
     /**
-     * Desaturate (grayscale)
+     * Desaturate (grayscale if nothing specified)
      *
      * @return SimpleImage
      *
      */
-    function desaturate() {
-        imagefilter($this->image, IMG_FILTER_GRAYSCALE);
+    function desaturate($amount=1) {
+        // Determine amount
+        $amount = $this->keep_within($amount, 0, 1) * 100;
+        
+        // Make a desaturated copy of the image
+        $new = imagecreatetruecolor($this->width, $this->height);
+        imagealphablending($new, false);
+        imagesavealpha($new, true);
+        imagecopy($new, $this->image, 0, 0, 0, 0, $this->width, $this->height);
+        imagefilter($new, IMG_FILTER_GRAYSCALE);
+        
+        // Merge with specified amount
+        $this->imagecopymerge_alpha($this->image, $new, 0, 0, 0, 0, $this->width, $this->height, $amount);
+        imagedestroy($new);
+        
         return $this;
     }
 
@@ -625,10 +638,6 @@ class SimpleImage {
                 throw new Exception('Unsupported image format: '.$this->filename);
                 break;
         }
-
-        // Since no more output can be sent, call the destructor to free up memory
-        $this->__destruct();
-
     }
 
     /**
