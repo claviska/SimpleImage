@@ -260,15 +260,3 @@ $orientation = $img->get_orientation();
 // Flip the image and output it directly to the browser (i.e. without saving to file)
 $img->flip('x')->output();
 ```
-
-Change Log
-----------
-
-2.4.0
-- added opacity method
-- reorganized public methods for easier editing
-
-2.3.3
-- added thumbnail method (replaces adaptive_resize)
-- deprecated adaptive_resize method (will be removed in 3.0)
-- restored double asterisks for comment documentation
