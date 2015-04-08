@@ -625,10 +625,6 @@ class SimpleImage {
                 throw new Exception('Unsupported image format: '.$this->filename);
                 break;
         }
-
-        // Since no more output can be sent, call the destructor to free up memory
-        $this->__destruct();
-
     }
 
     /**
