@@ -88,7 +88,9 @@ class SimpleImage {
      */
     function auto_orient() {
 
-        switch ($this->original_info['exif']['Orientation']) {
+        $exifOrientation = isset($this->original_info['exif']['Orientation']) ? $this->original_info['exif']['Orientation'] : false;
+
+        switch ($exifOrientation) {
             case 1:
                 // Do nothing
                 break;
