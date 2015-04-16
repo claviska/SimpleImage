@@ -43,8 +43,17 @@ class SimpleImage {
      *
      */
     function __construct($filename = null, $width = null, $height = null, $color = null) {
+
         if ($filename) {
-            $this->load($filename);
+			
+			$is_remote = filter_var($filename, FILTER_VALIDATE_URL) !== FALSE;
+			
+			if($is_remote) {
+                $this->load_from_remote($filename);
+            }else{
+                $this->load($filename);
+            }
+			
         } elseif ($width) {
             $this->create($width, $height, $color);
         }
@@ -88,7 +97,11 @@ class SimpleImage {
      */
     function auto_orient() {
 
-        switch ($this->original_info['exif']['Orientation']) {
+        $exif_orientation = isset($this->original_info['exif']) && isset($this->original_info['exif']['Orientation']) 
+							? $this->original_info['exif']['Orientation'] 
+							: false;
+
+        switch ($exif_orientation) {
             case 1:
                 // Do nothing
                 break;
@@ -553,6 +566,61 @@ class SimpleImage {
         $this->imagestring = base64_decode(str_replace(' ', '+',preg_replace('#^data:image/[^;]+;base64,#', '', $base64string)));
         $this->image = imagecreatefromstring($this->imagestring);
         return $this->get_meta_data();
+    }
+	
+	/**
+     * Load from remote path as image
+     *
+     * @param string        remote $filename   Path to image file
+     *
+     * @return SimpleImage
+     *
+     */
+	function load_from_remote($filename) {
+        if (!extension_loaded('gd')) {
+            throw new Exception('Required extension GD is not loaded.');
+        }
+
+        $this->filename = $filename;
+
+        // check domain if exist in white list
+        $this->check_white_list();
+
+        $ctx = stream_context_create([
+            'http' =>
+                [
+                    'timeout' => 10,
+                ]
+        ]);
+
+        if(($this->imagestring = @file_get_contents($this->filename, false, $ctx)) === false)
+            throw new Exception("File was not found");
+
+        if(($this->image = @imagecreatefromstring($this->imagestring)) == FALSE)
+            throw new Exception("An error occured while imagecreatefromstring is runnig.");
+
+        return $this->get_meta_data();
+    }
+
+    /**
+     * @return bool
+     * @throws Exception
+     */
+    private function check_white_list()
+    {
+        global $SIMPLE_IMAGE_ALLOWED_DOMAINS;
+
+        // $SIMPLE_IMAGE_ALLOWED_DOMAINS array variable is exist
+        if( is_array($SIMPLE_IMAGE_ALLOWED_DOMAINS) )
+        {
+            if( in_array($this->get_domain_base(), $SIMPLE_IMAGE_ALLOWED_DOMAINS) ) {
+                return true;
+            } else {
+                throw new Exception('You are not allowed to load images from an external website.');
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -1072,12 +1140,29 @@ class SimpleImage {
      */
     protected function file_ext($filename) {
 
-        if (!preg_match('/\./', $filename)) {
+        $path = parse_url($filename,  PHP_URL_PATH);
+
+        if(empty($path))
             return '';
-        }
 
-        return preg_replace('/^.*\./', '', $filename);
+        return pathinfo($path, PATHINFO_EXTENSION);
 
+    }
+
+    /**
+     * return domain base without subdomain
+     *
+     * @return bool
+     */
+    public function get_domain_base() {
+
+        $pieces = parse_url($this->filename);
+        $domain = isset($pieces['host']) ? $pieces['host'] : '';
+
+        if (preg_match('/(?P<domain>[a-z0-9][a-z0-9\-]{1,63}\.[a-z\.]{2,6})$/i', $domain, $regs))
+            return $regs['domain'];
+
+        return false;
     }
 
     /**
@@ -1092,7 +1177,9 @@ class SimpleImage {
     protected function get_meta_data() {
         //gather meta data
         if(empty($this->imagestring)) {
-            $info = getimagesize($this->filename);
+
+            if(($info = @getimagesize($this->filename)) == FALSE)
+                throw new Exception('The image size could not get');
 
             switch ($info['mime']) {
                 case 'image/gif':
