@@ -44,7 +44,15 @@ class SimpleImage {
      */
     function __construct($filename = null, $width = null, $height = null, $color = null) {
         if ($filename) {
-            $this->load($filename);
+			
+			$is_remote = filter_var($filename, FILTER_VALIDATE_URL) !== FALSE;
+			
+			if($is_remote) {
+                $this->load_from_remote($filename);
+            }else{
+                $this->load($filename);
+            }
+			
         } elseif ($width) {
             $this->create($width, $height, $color);
         }
@@ -88,7 +96,11 @@ class SimpleImage {
      */
     function auto_orient() {
 
-        switch ($this->original_info['exif']['Orientation']) {
+        $exif_orientation = isset($this->original_info['exif']) && isset($this->original_info['exif']['Orientation']) 
+							? $this->original_info['exif']['Orientation'] 
+							: false;
+
+        switch ($exif_orientation) {
             case 1:
                 // Do nothing
                 break;
@@ -551,6 +563,32 @@ class SimpleImage {
         }
         //remove data URI scheme and spaces from base64 string then decode it
         $this->imagestring = base64_decode(str_replace(' ', '+',preg_replace('#^data:image/[^;]+;base64,#', '', $base64string)));
+        $this->image = imagecreatefromstring($this->imagestring);
+        return $this->get_meta_data();
+    }
+	
+	/**
+     * Load a base64 string as image
+     *
+     * @param string        remote $filename   Path to image file
+     *
+     * @return SimpleImage
+     *
+     */
+	function load_from_remote($filename) {
+        if (!extension_loaded('gd')) {
+            throw new Exception('Required extension GD is not loaded.');
+        }
+
+        $ctx = stream_context_create([
+            'http' =>
+                [
+                    'timeout' => 10,
+                ]
+        ]);
+
+        $this->filename = $filename;
+        $this->imagestring = file_get_contents($this->filename, false, $ctx);
         $this->image = imagecreatefromstring($this->imagestring);
         return $this->get_meta_data();
     }
@@ -1072,11 +1110,12 @@ class SimpleImage {
      */
     protected function file_ext($filename) {
 
-        if (!preg_match('/\./', $filename)) {
-            return '';
-        }
+        $path = parse_url($filename,  PHP_URL_PATH);
 
-        return preg_replace('/^.*\./', '', $filename);
+        if(empty($path))
+            return '';
+
+        return pathinfo($path, PATHINFO_EXTENSION);
 
     }
 
