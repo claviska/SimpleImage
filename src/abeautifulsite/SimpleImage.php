@@ -596,7 +596,8 @@ class SimpleImage {
         if(($this->imagestring = @file_get_contents($this->filename, false, $ctx)) === false)
             throw new Exception("File was not found");
 
-        $this->image = imagecreatefromstring($this->imagestring);
+        if(($this->image = @imagecreatefromstring($this->imagestring)) == FALSE)
+            throw new Exception("An error occured while imagecreatefromstring is runnig.");
 
         return $this->get_meta_data();
     }
