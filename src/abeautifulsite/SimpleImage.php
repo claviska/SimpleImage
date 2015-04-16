@@ -568,7 +568,7 @@ class SimpleImage {
     }
 	
 	/**
-     * Load a base64 string as image
+     * Load from remote as image
      *
      * @param string        remote $filename   Path to image file
      *
@@ -588,8 +588,11 @@ class SimpleImage {
         ]);
 
         $this->filename = $filename;
-        $this->imagestring = file_get_contents($this->filename, false, $ctx);
+        if(($this->imagestring = @file_get_contents($this->filename, false, $ctx)) === false)
+            throw new Exception("File was not found");
+
         $this->image = imagecreatefromstring($this->imagestring);
+
         return $this->get_meta_data();
     }
 
@@ -1131,7 +1134,9 @@ class SimpleImage {
     protected function get_meta_data() {
         //gather meta data
         if(empty($this->imagestring)) {
-            $info = getimagesize($this->filename);
+
+            if(($info = @getimagesize($this->filename)) == FALSE)
+                throw new Exception('The image size could not get');
 
             switch ($info['mime']) {
                 case 'image/gif':
