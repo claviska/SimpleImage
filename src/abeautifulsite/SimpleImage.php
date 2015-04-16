@@ -43,6 +43,7 @@ class SimpleImage {
      *
      */
     function __construct($filename = null, $width = null, $height = null, $color = null) {
+
         if ($filename) {
 			
 			$is_remote = filter_var($filename, FILTER_VALIDATE_URL) !== FALSE;
@@ -568,7 +569,7 @@ class SimpleImage {
     }
 	
 	/**
-     * Load from remote as image
+     * Load from remote path as image
      *
      * @param string        remote $filename   Path to image file
      *
@@ -580,6 +581,11 @@ class SimpleImage {
             throw new Exception('Required extension GD is not loaded.');
         }
 
+        $this->filename = $filename;
+
+        // check domain if exist in white list
+        $this->check_white_list();
+
         $ctx = stream_context_create([
             'http' =>
                 [
@@ -587,13 +593,33 @@ class SimpleImage {
                 ]
         ]);
 
-        $this->filename = $filename;
         if(($this->imagestring = @file_get_contents($this->filename, false, $ctx)) === false)
             throw new Exception("File was not found");
 
         $this->image = imagecreatefromstring($this->imagestring);
 
         return $this->get_meta_data();
+    }
+
+    /**
+     * @return bool
+     * @throws Exception
+     */
+    private function check_white_list()
+    {
+        global $SIMPLE_IMAGE_ALLOWED_DOMAINS;
+
+        // $SIMPLE_IMAGE_ALLOWED_DOMAINS array variable is exist
+        if( is_array($SIMPLE_IMAGE_ALLOWED_DOMAINS) )
+        {
+            if( in_array($this->get_domain_base(), $SIMPLE_IMAGE_ALLOWED_DOMAINS) ) {
+                return true;
+            } else {
+                throw new Exception('You are not allowed to load images from an external website.');
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -1120,6 +1146,22 @@ class SimpleImage {
 
         return pathinfo($path, PATHINFO_EXTENSION);
 
+    }
+
+    /**
+     * return domain base without subdomain
+     *
+     * @return bool
+     */
+    public function get_domain_base() {
+
+        $pieces = parse_url($this->filename);
+        $domain = isset($pieces['host']) ? $pieces['host'] : '';
+
+        if (preg_match('/(?P<domain>[a-z0-9][a-z0-9\-]{1,63}\.[a-z\.]{2,6})$/i', $domain, $regs))
+            return $regs['domain'];
+
+        return false;
     }
 
     /**
