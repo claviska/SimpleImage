@@ -168,6 +168,33 @@ class SimpleImage {
 
     }
 
+	/**
+	 * Creates thumbnails by resizing then cropping the image if its "square" enough else it resizes and gives it a background
+	 *
+	 * @param int				$width				Image width
+	 * @param int|null	$height				If omitted - assumed equal to $width
+	 * @param float			$switch_ratio	The point at which images stop getting cropped and get given a background
+	 * @param string		$background		Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
+	 *																Where red, green, blue - integers 0-255, alpha - integer 0-127
+	 *
+	 * @return \SimpleImageExt
+	 *
+	 */
+	function best_fit_thumbnail($width, $height = null, $switch_ratio = 0.6, $background = '#fff'){
+		$height = $height ?: $width;
+		$info = $this->get_original_info();
+		if($info['orientation'] == 'landscape' && $info['height'] / $info['width'] > $switch_ratio ||
+			$info['orientation'] == 'portrait' && $info['width'] / $info['height'] > $switch_ratio ||
+			$info['orientation'] == 'square'){
+			$this->thumbnail((int)$width, (int)$height);
+		}
+		else{
+			$fg = clone $this;
+			$this->create((int)$width, (int)$height, $background)->overlay($fg->best_fit((int)$width, (int)$height));
+		}
+		return $this;
+	}
+
     /**
      * Blur
      *
