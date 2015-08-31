@@ -118,8 +118,7 @@ $img = new abeautifulsite\SimpleImage('image.jpg');
 $img->flip('x')->rotate(90)->best_fit(320, 200)->desaturate()->invert()->save('result.jpg')
 ```
 
-You can chain all of the methods below as well methods above.  (You cannot chain the constructor,
-however, as this is not supported by PHP.)
+You can chain all of the methods below as well methods above.
 
 ### Error Handling
 
