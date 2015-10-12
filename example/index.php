@@ -115,8 +115,7 @@ try {
     $img->load('butterfly.jpg')->text('Butterfly', __DIR__.'/delicious.ttf', 32, '#FFFFFF', 'bottom', 0, -20, '#000', 2)->save('processed/butterfly-text-with-stroke.jpg');
 
     // Right align text
-    $paragraph = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.';
-    $img->load('butterfly.jpg')->text($paragraph, __DIR__.'/delicious.ttf', 32, '#FFFFFF', 'top right', 0, 0, null, null, 'right')->save('processed/butterfly-right-align-text.jpg');
+    $img->load('butterfly.jpg')->text('Lorem Ipsum', __DIR__.'/delicious.ttf', 32, '#FFFFFF', 'top right', 0, 0, null, null, 'right')->save('processed/butterfly-right-align-text.jpg');
 
     // Resizing GIFs with transparency
     $img->load('basketball.gif')->resize(50, 50)->save('processed/basketball-resize.gif');
