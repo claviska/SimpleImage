@@ -960,7 +960,7 @@ class SimpleImage {
      * @throws Exception
      *
      */
-    function text($text, $font_file, $font_size = 12, $color = '#000000', $position = 'center', $x_offset = 0, $y_offset = 0, $stroke_color = null, $stroke_size = null) {
+    function text($text, $font_file, $font_size = 12, $color = '#000000', $position = 'center', $x_offset = 0, $y_offset = 0, $stroke_color = null, $stroke_size = null, $alignment = null) {
 
         // todo - this method could be improved to support the text angle
         $angle = 0;
@@ -1016,6 +1016,16 @@ class SimpleImage {
                 $x = ($this->width / 2) - ($box_width / 2) + $x_offset;
                 $y = ($this->height / 2) - (($box_height / 2) - $box_height) + $y_offset;
                 break;
+        }
+
+        if($alignment === "left") {
+            // Left aligned text
+            $x = -($x * 2);
+        } else if($alignment === "right") {
+            // Right aligned text
+            $dimensions = imagettfbbox($font_size, $angle, $font_file, $text);
+            $alignment_offset = abs($dimensions[4] - $dimensions[0]);
+            $x = -(($x * 2) + $alignment_offset);
         }
 
         // Add the text
