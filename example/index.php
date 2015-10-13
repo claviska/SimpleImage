@@ -117,6 +117,10 @@ try {
     // Right align text
     $img->load('butterfly.jpg')->text('Lorem Ipsum', __DIR__.'/delicious.ttf', 32, '#FFFFFF', 'top right', 0, 0, null, null, 'right')->save('processed/butterfly-right-align-text.jpg');
 
+    // Multi Color text
+    $img->load('butterfly.jpg')->text('Multi Color Text', __DIR__.'/delicious.ttf', 32, ['#FFFFFF', '#000000'], 'center', 0, 0, null, null)->save('processed/butterfly-multi-color-text.jpg');
+    $img->load('butterfly.jpg')->text('Multi Color Text', __DIR__.'/delicious.ttf', 32, '#FFFFFF', 'center', 0, 0, null, null)->save('processed/butterfly-multi-color-text2.jpg');
+
     // Resizing GIFs with transparency
     $img->load('basketball.gif')->resize(50, 50)->save('processed/basketball-resize.gif');
 

@@ -951,7 +951,7 @@ class SimpleImage {
      * @param string        $text
      * @param string        $font_file
      * @param float|int     $font_size
-     * @param string        $color
+     * @param string|array  $color
      * @param string        $position
      * @param int           $x_offset
      * @param int           $y_offset
@@ -966,8 +966,16 @@ class SimpleImage {
         $angle = 0;
 
         // Determine text color
-        $rgba = $this->normalize_color($color);
-        $color = imagecolorallocatealpha($this->image, $rgba['r'], $rgba['g'], $rgba['b'], $rgba['a']);
+        if(is_array($color)) {
+            foreach($color as $var) {
+                $rgba = $this->normalize_color($var);
+                $color_arr[] = imagecolorallocatealpha($this->image, $rgba['r'], $rgba['g'], $rgba['b'], $rgba['a']);
+            }
+        } else {
+            $rgba = $this->normalize_color($color);
+            $color_arr[] = imagecolorallocatealpha($this->image, $rgba['r'], $rgba['g'], $rgba['b'], $rgba['a']);
+        }
+
 
         // Determine textbox size
         $box = imagettfbbox($font_size, $angle, $font_file, $text);
@@ -1033,12 +1041,42 @@ class SimpleImage {
         imagealphablending($this->image, true);
         if( isset($stroke_color) && isset($stroke_size) ) {
             // Text with stroke
-            $rgba = $this->normalize_color($color);
+            $rgba = $this->normalize_color($color_arr[0]);
             $stroke_color = imagecolorallocatealpha($this->image, $rgba['r'], $rgba['g'], $rgba['b'], $rgba['a']);
-            $this->imagettfstroketext($this->image, $font_size, $angle, $x, $y, $color, $stroke_color, $stroke_size, $font_file, $text);
+            $this->imagettfstroketext($this->image, $font_size, $angle, $x, $y, $color_arr[0], $stroke_color, $stroke_size, $font_file, $text);
         } else {
             // Text without stroke
-            imagettftext($this->image, $font_size, $angle, $x, $y, $color, $font_file, $text);
+
+            // TODO get this working for multiple colors
+            if(is_array($color_arr) && is_array($color)) {
+
+                $number_of_characters = strlen($text);
+                $text_array = str_split($text, 1);
+                $pos = 0;
+
+                $number_of_available_colors = count($color_arr);
+                $color_arrPos = 0;
+
+                for($i = 0; $i < $number_of_characters; $i++) {
+
+                    if($i > 0) {
+                        $dimensions = imagettfbbox($font_size, $angle, $font_file, $text_array[$i]);
+                        $pos += abs($dimensions[4] - $dimensions[0]);
+                    }
+
+                    $color_arrPos++;
+
+                    if($color_arrPos >= $number_of_available_colors) {
+                        $color_arrPos = 0;
+                    }
+
+                    imagettftext($this->image, $font_size, $angle, $x + $pos, $y, $color_arr[$color_arrPos], $font_file, $text_array[$i]);
+                }
+
+
+            } else {
+                imagettftext($this->image, $font_size, $angle, $x, $y, $color_arr[0], $font_file, $text);
+            }
         }
 
         return $this;
