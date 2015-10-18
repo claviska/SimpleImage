@@ -955,7 +955,7 @@ class SimpleImage {
      * @param string        $position
      * @param int           $x_offset
      * @param int           $y_offset
-     * @param string        $stroke_color
+     * @param string|array  $stroke_color
      * @param string        $stroke_size
      * @param string        $alignment
      * @param int           $letter_spacing
@@ -1044,39 +1044,55 @@ class SimpleImage {
         imagesavealpha($this->image, true);
         imagealphablending($this->image, true);
 
-        
         if( isset($stroke_color) && isset($stroke_size) ) {
             // Text with stroke
-            $rgba = $this->normalize_color($color_arr[0]);
+            $rgba = $this->normalize_color($color[0]);
+
             $stroke_color = imagecolorallocatealpha($this->image, $rgba['r'], $rgba['g'], $rgba['b'], $rgba['a']);
-            $this->imagettfstroketext($this->image, $font_size, $angle, $x, $y, $color_arr[0], $stroke_color, $stroke_size, $font_file, $text);
-        } else {
-            // Text without stroke
 
-            // TODO get this working for multiple colors
-            if(is_array($color_arr) && is_array($color)) {
-
+            if(is_array($color)) {
+                $color_arr_pos = 0;
                 $number_of_characters = strlen($text);
                 $text_array = str_split($text, 1);
-                $pos = 0;
-
-                $number_of_available_colors = count($color_arr);
-                $color_arrPos = 0;
+                $x_pos = 0;
 
                 for($i = 0; $i < $number_of_characters; $i++) {
 
                     if($i > 0) {
                         $dimensions = imagettfbbox($font_size, $angle, $font_file, $text_array[$i-1]);
-                        $pos += abs($dimensions[4] - $dimensions[0]) + $letter_spacing;
+                        $x_pos += abs($dimensions[4] - $dimensions[0]) + $letter_spacing;
                     }
 
-                    imagettftext($this->image, $font_size, $angle, $x + $pos, $y, $color_arr[$color_arrPos], $font_file, $text_array[$i]);
+                    $this->imagettfstroketext($this->image, $font_size, $angle, $x + $x_pos, $y, $color_arr[$color_arr_pos], $stroke_color, $stroke_size, $font_file, $text_array[$i]);
 
-                    if($color_arrPos >= $number_of_available_colors - 1) {
-                        $color_arrPos = 0;
-                    } else {
-                        $color_arrPos++;
+                    $color_arr_pos = $this->returnWhatColorToUse($color_arr, $color_arr_pos);
+                }
+
+            } else {
+                $this->imagettfstroketext($this->image, $font_size, $angle, $x, $y, $color_arr[0], $stroke_color, $stroke_size, $font_file, $text);
+            }
+
+        } else {
+
+            // Text without stroke
+
+            if(is_array($color)) {
+
+                $number_of_characters = strlen($text);
+                $text_array = str_split($text, 1);
+                $x_pos = 0;
+                $color_arr_pos = 0;
+
+                for($i = 0; $i < $number_of_characters; $i++) {
+
+                    if($i > 0) {
+                        $dimensions = imagettfbbox($font_size, $angle, $font_file, $text_array[$i-1]);
+                        $x_pos += abs($dimensions[4] - $dimensions[0]) + $letter_spacing;
                     }
+
+                    imagettftext($this->image, $font_size, $angle, $x + $x_pos, $y, $color_arr[$color_arr_pos], $font_file, $text_array[$i]);
+
+                    $color_arr_pos = $this->returnWhatColorToUse($color_arr, $color_arr_pos);
                 }
 
             } else {
@@ -1086,6 +1102,18 @@ class SimpleImage {
 
         return $this;
 
+    }
+
+    private function returnWhatColorToUse($color_arr, $color_arr_pos) {
+        $number_of_available_colors = count($color_arr);
+
+        if($color_arr_pos >= $number_of_available_colors - 1) {
+            $color_arr_pos = 0;
+        } else {
+            $color_arr_pos++;
+        };
+
+        return $color_arr_pos;
     }
 
     /**
