@@ -111,17 +111,17 @@ try {
     // Text
     $img->load('butterfly.jpg')->text('Butterfly', __DIR__.'/delicious.ttf', 32, '#FFFFFF', 'bottom', 0, -20)->save('processed/butterfly-text.jpg');
 
+    // Text with multiple colors
+    $img->load('butterfly.jpg')->text('Butterfly', __DIR__.'/delicious.ttf', 32, ['#F00', '#FF7F00', '#FF0', '#0F0', '#0FF', '#00F'], 'bottom', 0, -20, null, null, null, 3)->save("processed/butterfly-text-stroke-multi-colored-text.jpg");
+
     // Text with stroke
     $img->load('butterfly.jpg')->text('Butterfly', __DIR__.'/delicious.ttf', 32, '#FFFFFF', 'bottom', 0, -20, '#000', 2)->save('processed/butterfly-text-with-stroke.jpg');
 
+    // Text with multiple colored stroke
+    $img->load('butterfly.jpg')->text('Butterfly', __DIR__.'/delicious.ttf', 32, '#000', 'bottom', 0, -20, ['#F00', '#FF7F00', '#FF0', '#0F0', '#0FF', '#00F'], 2, null, 3)->save("processed/butterfly-text-with-stroke-multi-colored-stroke.jpg");
+
     // Right align text
     $img->load('butterfly.jpg')->text('Lorem Ipsum', __DIR__.'/delicious.ttf', 32, '#FFFFFF', 'top right', 0, 0, null, null, 'right')->save('processed/butterfly-right-align-text.jpg');
-
-    // Multi color text
-    $img->load('butterfly.jpg')->text('Lorem Ipsum', __DIR__.'/delicious.ttf', 32, ['#F00', '#FF7F00', '#FF0', '#0F0', '#0FF', '#00F'], 'center', 0, 0, null, null, null, 3)->save("processed/butterfly-multi-color-text.jpg");
-
-    // Multi color stroke
-    $img->load('butterfly.jpg')->text('Lorem Ipsum', __DIR__.'/delicious.ttf', 32, '#000', 'center', 0, 0, ['#F00', '#FF7F00', '#FF0', '#0F0', '#0FF', '#00F'], 2, null, 3)->save("processed/butterfly-multi-color-stroke2.jpg");
 
     // Resizing GIFs with transparency
     $img->load('basketball.gif')->resize(50, 50)->save('processed/basketball-resize.gif');
