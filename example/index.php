@@ -120,8 +120,11 @@ try {
     // Multi color text
     $img->load('butterfly.jpg')->text('Lorem Ipsum', __DIR__.'/delicious.ttf', 32, ['#F00', '#FF7F00', '#FF0', '#0F0', '#0FF', '#00F'], 'center', 0, 0, null, null, null, 3)->save("processed/butterfly-multi-color-text.jpg");
 
-    // Multi color text with stroke
-    $img->load('butterfly.jpg')->text('Lorem Ipsum', __DIR__.'/delicious.ttf', 32, ['#F00', '#FF7F00', '#FF0', '#0F0', '#0FF', '#00F'], 'center', 0, 0, ['#000', '#FF0', '#000'], 1, null, 3)->save("processed/butterfly-multi-color-text-with-stroke.jpg");
+    // Multi color text
+    $img->load('butterfly.jpg')->text('Lorem Ipsum', __DIR__.'/delicious.ttf', 32, ['#F00', '#FF7F00', '#FF0', '#0F0', '#0FF', '#00F'], 'center', 0, 0, ['#FF7F00', '#FF0', '#0F0', '#0FF', '#00F', '#F00'], 2, null, 3)->save("processed/butterfly-multi-color-text-with-stroke.jpg");
+
+    // Multi color stroke
+    $img->load('butterfly.jpg')->text('Lorem Ipsum', __DIR__.'/delicious.ttf', 32, '#000', 'center', 0, 0, ['#F00', '#FF7F00', '#FF0', '#0F0', '#0FF', '#00F'], 2, null, 3)->save("processed/butterfly-multi-color-stroke.jpg");
 
     // Resizing GIFs with transparency
     $img->load('basketball.gif')->resize(50, 50)->save('processed/basketball-resize.gif');
