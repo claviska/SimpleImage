@@ -1060,20 +1060,18 @@ class SimpleImage {
                     $stroke_color = imagecolorallocatealpha($this->image, $rgba['r'], $rgba['g'], $rgba['b'], $rgba['a']);
                 }
 
-                $number_of_characters = strlen($text);
                 $array_of_letters = str_split($text, 1);
-                $x_pos = 0;
 
-                for($i = 0; $i < $number_of_characters; $i++) {
+                foreach($array_of_letters as $key => $var) {
 
-                    if($i > 0) {
-                        $dimensions = imagettfbbox($font_size, $angle, $font_file, $array_of_letters[$i-1]);
-                        $x_pos += abs($dimensions[4] - $dimensions[0]) + $letter_spacing;
+                    if($key > 0) {
+                        $dimensions = imagettfbbox($font_size, $angle, $font_file, $array_of_letters[$key - 1]);
+                        $x += abs($dimensions[4] - $dimensions[0]) + $letter_spacing;
                     }
 
                     // If the next letter is empty, we just move forward to the next letter
-                    if($array_of_letters[$i] !== " ") {
-                        $this->imagettfstroketext($this->image, $font_size, $angle, $x + $x_pos, $y, current($color_arr), current($stroke_color), $stroke_size, $font_file, $array_of_letters[$i]);
+                    if($var !== " ") {
+                        $this->imagettfstroketext($this->image, $font_size, $angle, $x, $y, current($color_arr), current($stroke_color), $stroke_size, $font_file, $var[$i]);
 
                        // #000 is 0, black will reset the array so we write it this way
                         if(next($color_arr) === false) {
@@ -1100,20 +1098,18 @@ class SimpleImage {
             if(is_array($color)) {
                 // Multi colored text
 
-                $number_of_characters = strlen($text);
                 $array_of_letters = str_split($text, 1);
-                $x_pos = 0;
 
-                for($i = 0; $i < $number_of_characters; $i++) {
+                foreach($array_of_letters as $key => $var) {
 
-                    if($i > 0) {
-                        $dimensions = imagettfbbox($font_size, $angle, $font_file, $array_of_letters[$i-1]);
-                        $x_pos += abs($dimensions[4] - $dimensions[0]) + $letter_spacing;
+                    if($key > 0) {
+                        $dimensions = imagettfbbox($font_size, $angle, $font_file, $array_of_letters[$key - 1]);
+                        $x += abs($dimensions[4] - $dimensions[0]) + $letter_spacing;
                     }
 
                     // If the next letter is empty, we just move forward to the next letter
-                    if($array_of_letters[$i] !== " ") {
-                        imagettftext($this->image, $font_size, $angle, $x + $x_pos, $y, current($color_arr), $font_file, $array_of_letters[$i]);
+                    if($var !== " ") {
+                        imagettftext($this->image, $font_size, $angle, $x, $y, current($color_arr), $font_file, $var);
 
                         // #000 is 0, black will reset the array so we write it this way
                         if(next($color_arr) === false) {
