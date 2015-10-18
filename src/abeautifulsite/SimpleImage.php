@@ -955,12 +955,16 @@ class SimpleImage {
      * @param string        $position
      * @param int           $x_offset
      * @param int           $y_offset
+     * @param string        $stroke_color
+     * @param string        $stroke_size
+     * @param string        $alignment
+     * @param int           $letter_spacing
      *
      * @return SimpleImage
      * @throws Exception
      *
      */
-    function text($text, $font_file, $font_size = 12, $color = '#000000', $position = 'center', $x_offset = 0, $y_offset = 0, $stroke_color = null, $stroke_size = null, $alignment = null) {
+    function text($text, $font_file, $font_size = 12, $color = '#000000', $position = 'center', $x_offset = 0, $y_offset = 0, $stroke_color = null, $stroke_size = null, $alignment = null, $letter_spacing = 0) {
 
         // todo - this method could be improved to support the text angle
         $angle = 0;
@@ -1039,6 +1043,8 @@ class SimpleImage {
         // Add the text
         imagesavealpha($this->image, true);
         imagealphablending($this->image, true);
+
+        
         if( isset($stroke_color) && isset($stroke_size) ) {
             // Text with stroke
             $rgba = $this->normalize_color($color_arr[0]);
@@ -1060,19 +1066,18 @@ class SimpleImage {
                 for($i = 0; $i < $number_of_characters; $i++) {
 
                     if($i > 0) {
-                        $dimensions = imagettfbbox($font_size, $angle, $font_file, $text_array[$i]);
-                        $pos += abs($dimensions[4] - $dimensions[0]);
-                    }
-
-                    $color_arrPos++;
-
-                    if($color_arrPos >= $number_of_available_colors) {
-                        $color_arrPos = 0;
+                        $dimensions = imagettfbbox($font_size, $angle, $font_file, $text_array[$i-1]);
+                        $pos += abs($dimensions[4] - $dimensions[0]) + $letter_spacing;
                     }
 
                     imagettftext($this->image, $font_size, $angle, $x + $pos, $y, $color_arr[$color_arrPos], $font_file, $text_array[$i]);
-                }
 
+                    if($color_arrPos >= $number_of_available_colors - 1) {
+                        $color_arrPos = 0;
+                    } else {
+                        $color_arrPos++;
+                    }
+                }
 
             } else {
                 imagettftext($this->image, $font_size, $angle, $x, $y, $color_arr[0], $font_file, $text);
