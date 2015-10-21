@@ -977,7 +977,7 @@ class SimpleImage {
             }
         } else {
             $rgba = $this->normalize_color($color);
-            $color = imagecolorallocatealpha($this->image, $rgba['r'], $rgba['g'], $rgba['b'], $rgba['a']);
+            $color_arr[] = imagecolorallocatealpha($this->image, $rgba['r'], $rgba['g'], $rgba['b'], $rgba['a']);
         }
 
 
@@ -1044,7 +1044,7 @@ class SimpleImage {
         imagesavealpha($this->image, true);
         imagealphablending($this->image, true);
 
-        if( isset($stroke_color) && isset($stroke_size) ) {
+        if(isset($stroke_color) && isset($stroke_size)) {
 
             // Text with stroke
             if(is_array($color) || is_array($stroke_color)) {
@@ -1088,7 +1088,7 @@ class SimpleImage {
             } else {
                 $rgba = $this->normalize_color($stroke_color);
                 $stroke_color = imagecolorallocatealpha($this->image, $rgba['r'], $rgba['g'], $rgba['b'], $rgba['a']);
-                $this->imagettfstroketext($this->image, $font_size, $angle, $x, $y, $color, $stroke_color, $stroke_size, $font_file, $text);
+                $this->imagettfstroketext($this->image, $font_size, $angle, $x, $y, $color_arr[0], $stroke_color, $stroke_size, $font_file, $text);
             }
 
         } else {
@@ -1119,7 +1119,7 @@ class SimpleImage {
                 }
 
             } else {
-                imagettftext($this->image, $font_size, $angle, $x, $y, $color, $font_file, $text);
+                imagettftext($this->image, $font_size, $angle, $x, $y, $color_arr[0], $font_file, $text);
             }
         }
 
