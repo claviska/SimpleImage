@@ -88,40 +88,42 @@ class SimpleImage {
      */
     function auto_orient() {
 
-        switch ($this->original_info['exif']['Orientation']) {
-            case 1:
-                // Do nothing
-                break;
-            case 2:
-                // Flip horizontal
-                $this->flip('x');
-                break;
-            case 3:
-                // Rotate 180 counterclockwise
-                $this->rotate(-180);
-                break;
-            case 4:
-                // vertical flip
-                $this->flip('y');
-                break;
-            case 5:
-                // Rotate 90 clockwise and flip vertically
-                $this->flip('y');
-                $this->rotate(90);
-                break;
-            case 6:
-                // Rotate 90 clockwise
-                $this->rotate(90);
-                break;
-            case 7:
-                // Rotate 90 clockwise and flip horizontally
-                $this->flip('x');
-                $this->rotate(90);
-                break;
-            case 8:
-                // Rotate 90 counterclockwise
-                $this->rotate(-90);
-                break;
+        if(isset($this->original_info['exif']['Orientation'])) {
+            switch ($this->original_info['exif']['Orientation']) {
+                case 1:
+                    // Do nothing
+                    break;
+                case 2:
+                    // Flip horizontal
+                    $this->flip('x');
+                    break;
+                case 3:
+                    // Rotate 180 counterclockwise
+                    $this->rotate(-180);
+                    break;
+                case 4:
+                    // vertical flip
+                    $this->flip('y');
+                    break;
+                case 5:
+                    // Rotate 90 clockwise and flip vertically
+                    $this->flip('y');
+                    $this->rotate(90);
+                    break;
+                case 6:
+                    // Rotate 90 clockwise
+                    $this->rotate(90);
+                    break;
+                case 7:
+                    // Rotate 90 clockwise and flip horizontally
+                    $this->flip('x');
+                    $this->rotate(90);
+                    break;
+                case 8:
+                    // Rotate 90 counterclockwise
+                    $this->rotate(-90);
+                    break;
+            }
         }
 
         return $this;
