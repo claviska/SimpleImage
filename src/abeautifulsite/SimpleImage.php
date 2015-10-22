@@ -953,23 +953,35 @@ class SimpleImage {
      * @param string        $text
      * @param string        $font_file
      * @param float|int     $font_size
-     * @param string        $color
+     * @param string|array  $color
      * @param string        $position
      * @param int           $x_offset
      * @param int           $y_offset
+     * @param string|array  $stroke_color
+     * @param string        $stroke_size
+     * @param string        $alignment
+     * @param int           $letter_spacing
      *
      * @return SimpleImage
      * @throws Exception
      *
      */
-    function text($text, $font_file, $font_size = 12, $color = '#000000', $position = 'center', $x_offset = 0, $y_offset = 0, $stroke_color = null, $stroke_size = null, $alignment = null) {
+    function text($text, $font_file, $font_size = 12, $color = '#000000', $position = 'center', $x_offset = 0, $y_offset = 0, $stroke_color = null, $stroke_size = null, $alignment = null, $letter_spacing = 0) {
 
         // todo - this method could be improved to support the text angle
         $angle = 0;
 
         // Determine text color
-        $rgba = $this->normalize_color($color);
-        $color = imagecolorallocatealpha($this->image, $rgba['r'], $rgba['g'], $rgba['b'], $rgba['a']);
+        if(is_array($color)) {
+            foreach($color as $var) {
+                $rgba = $this->normalize_color($var);
+                $color_arr[] = imagecolorallocatealpha($this->image, $rgba['r'], $rgba['g'], $rgba['b'], $rgba['a']);
+            }
+        } else {
+            $rgba = $this->normalize_color($color);
+            $color_arr[] = imagecolorallocatealpha($this->image, $rgba['r'], $rgba['g'], $rgba['b'], $rgba['a']);
+        }
+
 
         // Determine textbox size
         $box = imagettfbbox($font_size, $angle, $font_file, $text);
@@ -1033,14 +1045,84 @@ class SimpleImage {
         // Add the text
         imagesavealpha($this->image, true);
         imagealphablending($this->image, true);
-        if( isset($stroke_color) && isset($stroke_size) ) {
+
+        if(isset($stroke_color) && isset($stroke_size)) {
+
             // Text with stroke
-            $rgba = $this->normalize_color($color);
-            $stroke_color = imagecolorallocatealpha($this->image, $rgba['r'], $rgba['g'], $rgba['b'], $rgba['a']);
-            $this->imagettfstroketext($this->image, $font_size, $angle, $x, $y, $color, $stroke_color, $stroke_size, $font_file, $text);
+            if(is_array($color) || is_array($stroke_color)) {
+                // Multi colored text and/or multi colored stroke
+
+                if(is_array($stroke_color)) {
+                    foreach($stroke_color as $key => $var) {
+                        $rgba = $this->normalize_color($stroke_color[$key]);
+                        $stroke_color[$key] = imagecolorallocatealpha($this->image, $rgba['r'], $rgba['g'], $rgba['b'], $rgba['a']);
+                    }
+                } else {
+                    $rgba = $this->normalize_color($stroke_color);
+                    $stroke_color = imagecolorallocatealpha($this->image, $rgba['r'], $rgba['g'], $rgba['b'], $rgba['a']);
+                }
+
+                $array_of_letters = str_split($text, 1);
+
+                foreach($array_of_letters as $key => $var) {
+
+                    if($key > 0) {
+                        $dimensions = imagettfbbox($font_size, $angle, $font_file, $array_of_letters[$key - 1]);
+                        $x += abs($dimensions[4] - $dimensions[0]) + $letter_spacing;
+                    }
+
+                    // If the next letter is empty, we just move forward to the next letter
+                    if($var !== " ") {
+                        $this->imagettfstroketext($this->image, $font_size, $angle, $x, $y, current($color_arr), current($stroke_color), $stroke_size, $font_file, $var);
+
+                       // #000 is 0, black will reset the array so we write it this way
+                        if(next($color_arr) === false) {
+                            reset($color_arr);
+                        }
+
+                        // #000 is 0, black will reset the array so we write it this way
+                        if(next($stroke_color) === false) {
+                            reset($stroke_color);
+                        }
+                    }
+                }
+
+            } else {
+                $rgba = $this->normalize_color($stroke_color);
+                $stroke_color = imagecolorallocatealpha($this->image, $rgba['r'], $rgba['g'], $rgba['b'], $rgba['a']);
+                $this->imagettfstroketext($this->image, $font_size, $angle, $x, $y, $color_arr[0], $stroke_color, $stroke_size, $font_file, $text);
+            }
+
         } else {
+
             // Text without stroke
-            imagettftext($this->image, $font_size, $angle, $x, $y, $color, $font_file, $text);
+
+            if(is_array($color)) {
+                // Multi colored text
+
+                $array_of_letters = str_split($text, 1);
+
+                foreach($array_of_letters as $key => $var) {
+
+                    if($key > 0) {
+                        $dimensions = imagettfbbox($font_size, $angle, $font_file, $array_of_letters[$key - 1]);
+                        $x += abs($dimensions[4] - $dimensions[0]) + $letter_spacing;
+                    }
+
+                    // If the next letter is empty, we just move forward to the next letter
+                    if($var !== " ") {
+                        imagettftext($this->image, $font_size, $angle, $x, $y, current($color_arr), $font_file, $var);
+
+                        // #000 is 0, black will reset the array so we write it this way
+                        if(next($color_arr) === false) {
+                            reset($color_arr);
+                        }
+                    }
+                }
+
+            } else {
+                imagettftext($this->image, $font_size, $angle, $x, $y, $color_arr[0], $font_file, $text);
+            }
         }
 
         return $this;
