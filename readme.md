@@ -169,6 +169,9 @@ $img->best_fit(500, 500);
 // Crop a portion of the image from x1, y1 to x2, y2
 $img->crop(100, 100, 400, 400);
 
+// Crop the image into a square of the given size
+$img->square(100);
+
 // Fill image with white color
 $img->fill('#fff');
 
