@@ -310,6 +310,39 @@ class SimpleImage {
 
     }
 
+	/**
+	 * Square crop 
+	 *
+	 * This function crops the image to fit the given size which is both the width and the height
+	 *
+	 * @param int	$size
+	 *
+	 * @return SimpleImage
+	 */
+
+	function square($size) {
+		$new = imagecreatetruecolor($size, $size);
+
+		$sourceX = 0;
+		$sourceY = 0;
+
+		if($this->width > $this->height) {
+			$this->fit_to_height($size);
+			$sourceX = ($this->width - $size) / 2;
+		}
+		else {
+			$this->fit_to_width($size);
+			$sourceY = ($this->height - $size) / 2;
+		}
+
+		imagealphablending($new, false);
+		imagesavealpha($new, true);
+		imagecopy($new, $this->image, 0, 0, $sourceX, $sourceY, $size, $size);
+		$this->image = $new;
+
+		return $this;
+	}
+
     /**
      * Desaturate
      *
