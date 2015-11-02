@@ -639,6 +639,7 @@ class SimpleImage {
                 imagegif($this->image);
                 break;
             case 'image/jpeg':
+                imageinterlace($this->image, true);
                 imagejpeg($this->image, null, round($quality));
                 break;
             case 'image/png':
