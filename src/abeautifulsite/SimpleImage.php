@@ -1412,5 +1412,62 @@ class SimpleImage {
         }
         return false;
     }
+    
+    /**
+     * Returns raw binary data image without saving
+     *
+     * @param null|string   $format     If omitted or null - format of original file will be used, may be gif|jpg|png
+     * @param int|null      $quality    Output image quality in percents 0-100
+     *
+     * @throws Exception
+     *
+     */
+    function get_raw($format = null, $quality = null) {
+
+        // Determine quality
+        $quality = $quality ?: $this->quality;
+
+        // Determine mimetype
+        switch (strtolower($format)) {
+            case 'gif':
+                $mimetype = 'image/gif';
+                break;
+            case 'jpeg':
+            case 'jpg':
+                imageinterlace($this->image, true);
+                $mimetype = 'image/jpeg';
+                break;
+            case 'png':
+                $mimetype = 'image/png';
+                break;
+            default:
+                $info = getimagesize($this->filename);
+                $mimetype = $info['mime'];
+                unset($info);
+                break;
+        }
+
+        // Output the image
+        ob_start();
+        switch ($mimetype) {
+            case 'image/gif':
+                imagegif($this->image);
+                break;
+            case 'image/jpeg':
+                imagejpeg($this->image, null, round($quality));
+                break;
+            case 'image/png':
+                imagepng($this->image, null, round(9 * $quality / 100));
+                break;
+            default:
+                throw new Exception('Unsupported image format: '.$this->filename);
+                break;
+        }
+        $image_data = ob_get_contents();
+        ob_end_clean();
+
+        // Returns binary data
+        return $image_data;
+    }    
 
 }
