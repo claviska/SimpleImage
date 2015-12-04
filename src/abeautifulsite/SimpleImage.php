@@ -603,11 +603,13 @@ class SimpleImage {
      *
      * @param null|string   $format     If omitted or null - format of original file will be used, may be gif|jpg|png
      * @param int|null      $quality    Output image quality in percents 0-100
+     * @param true|false    $raw        Returns raw binary data image if true
      *
+     * @return binary data if $raw = true or none
      * @throws Exception
      *
      */
-    function output($format = null, $quality = null) {
+    function output($format = null, $quality = null, $raw = false) {
 
         // Determine quality
         $quality = $quality ?: $this->quality;
@@ -633,7 +635,11 @@ class SimpleImage {
         }
 
         // Output the image
-        header('Content-Type: '.$mimetype);
+        if ($raw) {
+            ob_start();
+        } else {
+            header('Content-Type: '.$mimetype);
+        }
         switch ($mimetype) {
             case 'image/gif':
                 imagegif($this->image);
@@ -648,6 +654,13 @@ class SimpleImage {
             default:
                 throw new Exception('Unsupported image format: '.$this->filename);
                 break;
+        }
+        if ($raw) {
+            $image_data = ob_get_contents();
+            ob_end_clean();
+
+            // Returns binary data
+            return $image_data;
         }
     }
 
