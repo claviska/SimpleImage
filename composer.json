@@ -1,5 +1,5 @@
 {
-    "name"        : "abeautifulsite/simpleimage",
+    "name"        : "jbzoo/image",
     "description" : "A PHP class that simplifies working with images",
     "license"     : [
         "MIT"
