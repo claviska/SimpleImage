@@ -1,5 +1,8 @@
-The SimpleImage PHP class
-=========================
+# JBZoo Image  [![Build Status](https://travis-ci.org/JBZoo/Image.svg?branch=master)](https://travis-ci.org/JBZoo/Image)      [![Coverage Status](https://coveralls.io/repos/JBZoo/Image/badge.svg?branch=master&service=github)](https://coveralls.io/github/JBZoo/Image?branch=master)
+
+#### PHP Library for Image-based development
+
+[![License](https://poser.pugx.org/JBZoo/Image/license)](https://packagist.org/packages/JBZoo/Image) [![Latest Stable Version](https://poser.pugx.org/JBZoo/Image/v/stable)](https://packagist.org/packages/JBZoo/Image) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/JBZoo/Image/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/JBZoo/Image/?branch=master)
 
 *By Cory LaViska for A Beautiful Site, LLC
 (http://www.abeautifulsite.net/)*
