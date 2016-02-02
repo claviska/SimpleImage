@@ -1,4 +1,7 @@
-.DS_Store
-
-# Ignore processed example folder
-example/processed
+build
+vendor
+resources
+tests/fixtures/result
+phpunit.xml
+phpunit-*.xml
+composer.lock
