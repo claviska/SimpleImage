@@ -14,20 +14,27 @@
 
 namespace JBZoo\Image;
 
-require '../../autoload.php';
 
-if (!is_dir('processed/')) {
-    mkdir('processed/');
-}
+$dir = realpath(__DIR__ . '/../../../');
+
+require_once $dir . '/vendor/autoload.php';
+
+$resultDir = realpath($dir . '/tests/fixtures/result');
 
 try {
     // Create an image from scratch
-    $img = new SimpleImage(null, 500, 200, '#FFCC00');
+    $img = new Image(null, 500, 200, '#FFCC00');
     $img->text('Dynamically Created Image', 'delicious.ttf');
-    $img->save('processed/created-image.png');
+    $img->save($resultDir . '/created-image.png');
+
     // If you use create function instead of loading image
     // you have to define output extension
     $img->output('png');
-} catch (\Exception $e) {
-    echo '<span style="color: red;">' . $e->getMessage() . '</span>';
+
+    echo 'ok';
+    die(0);
+
+} catch (Exception $e) {
+    echo $e->getMessage();
+    die(1);
 }
