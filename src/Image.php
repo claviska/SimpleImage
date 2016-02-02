@@ -9,7 +9,7 @@
  *
  */
 
-namespace abeautifulsite;
+namespace JBZoo\Image;
 use Exception;
 
 /**
