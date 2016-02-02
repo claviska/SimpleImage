@@ -1,14 +1,11 @@
 {
-    "name"        : "jbzoo/image",
-    "description" : "A PHP class that simplifies working with images",
-    "license"     : [
-        "MIT"
-    ],
-    "require"     : {
-        "php" : ">=5.3.0",
-        "ext-gd" : "*"
-    },
-    "authors"     : [
+    "name"              : "jbzoo/image",
+    "type"              : "library",
+    "description"       : "A PHP class that simplifies working with images (fork abeautifulsite/simpleimage)",
+    "license"           : "MIT",
+    "keywords"          : ["Image", "resize", "images", "jbzoo"],
+    "minimum-stability" : "stable",
+    "authors"           : [
         {
             "name"     : "Cory LaViska",
             "homepage" : "http://www.abeautifulsite.net/",
@@ -19,16 +16,56 @@
             "email"    : "nazar@mokrynskyi.com",
             "homepage" : "http://cleverstyle.org/",
             "role"     : "Developer"
+        },
+        {
+            "name"  : "SmetDenis",
+            "email" : "denis@jbzoo.com"
         }
     ],
-    "autoload"    : {
-        "psr-0" : {
-            "abeautifulsite" : "src/"
+    "require"           : {
+        "php" : ">=5.4"
+    },
+    "require-dev"       : {
+        "jbzoo/phpunit" : "^1.0"
+    },
+    "autoload"          : {
+        "psr-4" : {
+            "JBZoo\\Image\\" : "src"
         }
     },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "2.5-dev"
+    "extra"             : {
+        "branch-alias" : {
+            "dev-master" : "1.x-dev"
         }
+    },
+    "config"            : {
+        "optimize-autoloader" : true
+    },
+    "scripts"           : {
+        "test"       : [
+            "@manifest",
+            "@autoload",
+            "@phpunit",
+            "@phpmd",
+            "@phpcs",
+            "@phpcpd",
+            "@phploc"
+        ],
+        "update-all" : [
+            "composer self-update --no-interaction",
+            "composer update --no-interaction --optimize-autoloader"
+        ],
+        "git-reset"  : "git reset --hard",
+        "manifest"   : "composer validate --no-interaction",
+        "autoload"   : "composer dump-autoload --optimize --no-interaction",
+        "phpunit"    : "php ./vendor/phpunit/phpunit/phpunit --configuration ./phpunit.xml.dist",
+        "phpmd"      : "php ./vendor/phpmd/phpmd/src/bin/phpmd ./src text ./vendor/jbzoo/misc/phpmd/jbzoo.xml --verbose",
+        "phpcs"      : "php ./vendor/squizlabs/php_codesniffer/scripts/phpcs ./src --standard=./vendor/jbzoo/misc/phpcs/JBZoo/ruleset.xml --report=full",
+        "phpcpd"     : "php ./vendor/sebastian/phpcpd/phpcpd ./src --verbose",
+        "phploc"     : "php ./vendor/phploc/phploc/phploc ./src --verbose",
+        "coveralls"  : "php ./vendor/satooshi/php-coveralls/bin/coveralls --verbose"
+    },
+    "support"           : {
+        "issues" : "https://github.com/JBZoo/Image/issues"
     }
 }
