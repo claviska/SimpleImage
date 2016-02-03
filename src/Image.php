@@ -683,57 +683,78 @@ class Image
     protected function _normalizeColor($origColor)
     {
         if (is_string($origColor)) {
-
-            $color = trim($origColor, '#');
-            $color = trim($color);
-
-            if (strlen($color) === 6) {
-                list($red, $green, $blue) = array(
-                    $color[0] . $color[1],
-                    $color[2] . $color[3],
-                    $color[4] . $color[5],
-                );
-
-            } elseif (strlen($color) === 3) {
-                list($red, $green, $blue) = array(
-                    $color[0] . $color[0],
-                    $color[1] . $color[1],
-                    $color[2] . $color[2],
-                );
-
-            } else {
-                throw new Exception('Undefined color format (string): ' . $origColor);  // @codeCoverageIgnore
-            }
-
-            return array(
-                'r' => (int)hexdec($red),
-                'g' => (int)hexdec($green),
-                'b' => (int)hexdec($blue),
-                'a' => 0,
-            );
+            $result = $this->_normalizeColorString($origColor);
 
         } elseif (is_array($origColor) && (count($origColor) === 3 || count($origColor) === 4)) {
+            $result = $this->_normalizeColorArray($origColor);
 
-            if (Arr::key('r', $origColor) && Arr::key('g', $origColor) && Arr::key('b', $origColor)) {
-                return array(
-                    'r' => $this->_keepWithin($origColor['r'], 0, 255),
-                    'g' => $this->_keepWithin($origColor['g'], 0, 255),
-                    'b' => $this->_keepWithin($origColor['b'], 0, 255),
-                    'a' => $this->_keepWithin(isset($origColor['a']) ? $origColor['a'] : 0, 0, 127),
-                );
-
-            } elseif (Arr::key(0, $origColor) && Arr::key(1, $origColor) && Arr::key(2, $origColor)) {
-                return array(
-                    'r' => $this->_keepWithin($origColor[0], 0, 255),
-                    'g' => $this->_keepWithin($origColor[1], 0, 255),
-                    'b' => $this->_keepWithin($origColor[2], 0, 255),
-                    'a' => $this->_keepWithin(isset($origColor[3]) ? $origColor[3] : 0, 0, 127),
-                );
-            }
+        } else {
+            throw new Exception('Undefined color format (string): ' . $origColor);  // @codeCoverageIgnore
         }
 
-        throw new Exception('Undefined color format: ' . $origColor);  // @codeCoverageIgnore
+        return array('r' => $result[0], 'g' => $result[1], 'b' => $result[2], 'a' => $result[3]);
     }
+
+    /**
+     * Normalize color from string
+     *
+     * @param string $origColor
+     * @return array
+     * @throws Exception
+     */
+    protected function _normalizeColorString($origColor)
+    {
+        $color = trim($origColor, '#');
+        $color = trim($color);
+
+        if (strlen($color) === 6) {
+            list($red, $green, $blue) = array(
+                $color[0] . $color[1],
+                $color[2] . $color[3],
+                $color[4] . $color[5],
+            );
+
+        } elseif (strlen($color) === 3) {
+            list($red, $green, $blue) = array(
+                $color[0] . $color[0],
+                $color[1] . $color[1],
+                $color[2] . $color[2],
+            );
+
+        } else {
+            throw new Exception('Undefined color format (string): ' . $origColor);  // @codeCoverageIgnore
+        }
+
+        return array((int)hexdec($red), (int)hexdec($green), (int)hexdec($blue), 0);
+    }
+
+    /**
+     * Normalize color from array
+     *
+     * @param string $origColor
+     * @return array
+     * @throws Exception
+     */
+    protected function _normalizeColorArray($origColor)
+    {
+        if (Arr::key('r', $origColor) && Arr::key('g', $origColor) && Arr::key('b', $origColor)) {
+            return array(
+                $this->_keepWithin($origColor['r'], 0, 255),
+                $this->_keepWithin($origColor['g'], 0, 255),
+                $this->_keepWithin($origColor['b'], 0, 255),
+                $this->_keepWithin(isset($origColor['a']) ? $origColor['a'] : 0, 0, 127),
+            );
+
+        } elseif (Arr::key(0, $origColor) && Arr::key(1, $origColor) && Arr::key(2, $origColor)) {
+            return array(
+                $this->_keepWithin($origColor[0], 0, 255),
+                $this->_keepWithin($origColor[1], 0, 255),
+                $this->_keepWithin($origColor[2], 0, 255),
+                $this->_keepWithin(isset($origColor[3]) ? $origColor[3] : 0, 0, 127),
+            );
+        }
+    }
+
 
     /**
      * Ensures $value is always within $min and $max range.
