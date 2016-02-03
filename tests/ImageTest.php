@@ -110,10 +110,8 @@ class ImageTest extends PHPUnit
         $img = new Image($this->_getOrig('butterfly.gif'));
         isTrue($img->isPortrait());
 
-
         $img = new Image($this->_getOrig('butterfly.jpg'));
         isTrue($img->isLandscape());
-
 
         $img = new Image($this->_getOrig('basketball.gif'));
         isTrue($img->isSquare());
@@ -133,7 +131,7 @@ class ImageTest extends PHPUnit
             is(1, $info['quality']);
             is($actual, $info['filename']);
             isNotEmpty($info['exif']);
-            //isFileEq($actual, $excepted);
+            $this->_isFileEq($actual, $excepted);
 
         } else {
             isTrue(false, 'Can\'t copy original file!');
@@ -150,7 +148,7 @@ class ImageTest extends PHPUnit
         $img->open($original)
             ->saveAs($actual);
 
-        isFileEq($actual, $excepted);
+        $this->_isFileEq($actual, $excepted);
     }
 
     public function testConvertToJpg()
@@ -162,11 +160,11 @@ class ImageTest extends PHPUnit
 
         $img = new Image();
         $img->open($original)->saveAs($actualJpg);
-        isFileEq($actualJpg, $excepted);
+        $this->_isFileEq($actualJpg, $excepted);
 
         $img = new Image();
         $img->open($original)->saveAs($actualJpeg)->setQuality(100);
-        isFileEq($actualJpeg, $excepted);
+        $this->_isFileEq($actualJpeg, $excepted);
     }
 
     public function testConvertToPng()
@@ -177,7 +175,7 @@ class ImageTest extends PHPUnit
 
         $img = new Image();
         $img->open($original)->saveAs($actual);
-        isFileEq($actual, $excepted);
+        $this->_isFileEq($actual, $excepted);
     }
 
     /**
@@ -215,7 +213,7 @@ class ImageTest extends PHPUnit
         $img->create(200)
             ->saveAs($actual);
 
-        isFileEq($actual, $excepted);
+        $this->_isFileEq($actual, $excepted);
     }
 
     public function testCreateFromScratchWidthAndHeight()
@@ -227,7 +225,7 @@ class ImageTest extends PHPUnit
         $img->create(200, 100)
             ->saveAs($actual);
 
-        isFileEq($actual, $excepted);
+        $this->_isFileEq($actual, $excepted);
     }
 
     public function testCreateFromScratchFull()
@@ -237,7 +235,7 @@ class ImageTest extends PHPUnit
 
         $img = new Image();
         $img->create(200, 100, '#08c')->saveAs($actual);
-        isFileEq($actual, $excepted);
+        $this->_isFileEq($actual, $excepted);
     }
 
     public function testColorNormalization()
@@ -247,31 +245,31 @@ class ImageTest extends PHPUnit
 
         $actual = $this->_getActual(__FUNCTION__ . '-sharp-0088cc.png');
         $img->create(200, 100, '#0088cc')->saveAs($actual);
-        isFileEq($actual, $excepted);
+        $this->_isFileEq($actual, $excepted);
 
         $actual = $this->_getActual(__FUNCTION__ . '-0088cc.png');
         $img->create(200, 100, '0088CC')->saveAs($actual);
-        isFileEq($actual, $excepted);
+        $this->_isFileEq($actual, $excepted);
 
         $actual = $this->_getActual(__FUNCTION__ . '-sharp-08c.png');
         $img->create(200, 100, '#08c')->saveAs($actual);
-        isFileEq($actual, $excepted);
+        $this->_isFileEq($actual, $excepted);
 
         $actual = $this->_getActual(__FUNCTION__ . '-08c.png');
         $img->create(200, 100, '08c')->saveAs($actual);
-        isFileEq($actual, $excepted);
+        $this->_isFileEq($actual, $excepted);
 
         $actual = $this->_getActual(__FUNCTION__ . '-array-08c.png');
         $img->create(200, 100, ['r' => 0, 'g' => '136', 'b' => '204'])->saveAs($actual);
-        isFileEq($actual, $excepted);
+        $this->_isFileEq($actual, $excepted);
 
         $actual = $this->_getActual(__FUNCTION__ . '-array-0-136-204.png');
         $img->create(200, 100, [0, 136, 204])->saveAs($actual);
-        isFileEq($actual, $excepted);
+        $this->_isFileEq($actual, $excepted);
 
         $actual = $this->_getActual(__FUNCTION__ . '-array-no-format.png');
         $img->create(200, 100, [null, '   136  ', '   204   ', 0])->saveAs($actual);
-        isFileEq($actual, $excepted);
+        $this->_isFileEq($actual, $excepted);
     }
 
     public function testResizeJpeg()
@@ -283,7 +281,7 @@ class ImageTest extends PHPUnit
         $img = new Image($original);
         $img->resize(320, 239)->saveAs($actual);
 
-        isFileEq($actual, $excepted);
+        $this->_isFileEq($actual, $excepted);
     }
 
     public function testResizeGif()
@@ -295,7 +293,7 @@ class ImageTest extends PHPUnit
         $img = new Image($original);
         $img->resize(320, 239)->saveAs($actual);
 
-        isFileEq($actual, $excepted);
+        $this->_isFileEq($actual, $excepted);
     }
 
     public function testResizeTransparent()
@@ -307,7 +305,7 @@ class ImageTest extends PHPUnit
         $img = new Image($original);
         $img->resize(50, 50)->saveAs($actual);
 
-        isFileEq($actual, $excepted);
+        $this->_isFileEq($actual, $excepted);
     }
 
     public function testCrop()
@@ -321,7 +319,7 @@ class ImageTest extends PHPUnit
             ->crop(160, 110, 460, 360)
             ->saveAs($actual);
 
-        isFileEq($actual, $excepted);
+        $this->_isFileEq($actual, $excepted);
     }
 
     public function testCropWrongCoord()
@@ -335,7 +333,7 @@ class ImageTest extends PHPUnit
             ->crop(460, 360, 160, 110)
             ->saveAs($actual);
 
-        isFileEq($actual, $excepted);
+        $this->_isFileEq($actual, $excepted);
     }
 
     public function testFitToWidth()
@@ -349,7 +347,7 @@ class ImageTest extends PHPUnit
             ->fitToWidth(100)
             ->saveAs($actual);
 
-        isFileEq($actual, $excepted);
+        $this->_isFileEq($actual, $excepted);
     }
 
     public function testFitToHeight()
@@ -363,7 +361,7 @@ class ImageTest extends PHPUnit
             ->fitToHeight(100)
             ->saveAs($actual);
 
-        isFileEq($actual, $excepted);
+        $this->_isFileEq($actual, $excepted);
     }
 
     public function testThumbnailHeight()
@@ -377,7 +375,7 @@ class ImageTest extends PHPUnit
             ->thumbnail(100, 75)
             ->saveAs($actual);
 
-        isFileEq($actual, $excepted);
+        $this->_isFileEq($actual, $excepted);
     }
 
     public function testThumbnailWidth()
@@ -391,7 +389,7 @@ class ImageTest extends PHPUnit
             ->thumbnail(75)
             ->saveAs($actual);
 
-        isFileEq($actual, $excepted);
+        $this->_isFileEq($actual, $excepted);
     }
 
     /**
@@ -419,5 +417,15 @@ class ImageTest extends PHPUnit
     protected function _getOrig($filename)
     {
         return FS::clean(PROJECT_TESTS . '/resources/' . $filename);
+    }
+
+    /**
+     * @param string $actual
+     * @param string $excepted
+     */
+    protected function _isFileEq($actual, $excepted)
+    {
+        isTrue(file_exists($actual));
+        isTrue(file_exists($excepted));
     }
 }
