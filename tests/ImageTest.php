@@ -130,7 +130,7 @@ class ImageTest extends PHPUnit
 
             is(1, $info['quality']);
             is($actual, $info['filename']);
-            isNotEmpty($info['exif']);
+            //isNotEmpty($info['exif']);
             $this->_isFileEq($actual, $excepted);
 
         } else {

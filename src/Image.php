@@ -17,7 +17,6 @@ namespace JBZoo\Image;
 use JBZoo\Utils\Filter;
 use JBZoo\Utils\FS;
 use JBZoo\Utils\Vars;
-use JBZoo\Utils\Arr;
 
 /**
  * Class Image
@@ -77,10 +76,7 @@ class Image
      */
     public function __construct($filename = null)
     {
-        // Require GD library
-        if (!extension_loaded('gd')) {
-            throw new Exception('Required extension GD is not loaded.'); // @codeCoverageIgnore
-        }
+        Helper::checkSystem();
 
         if (null !== $filename) {
             $this->open($filename);
@@ -170,7 +166,7 @@ class Image
      */
     public function isGif()
     {
-        return $this->_isFormatGif($this->_mime);
+        return Helper::isFormatGif($this->_mime);
     }
 
     /**
@@ -178,7 +174,7 @@ class Image
      */
     public function isPng()
     {
-        return $this->_isFormatPng($this->_mime);
+        return Helper::isFormatPng($this->_mime);
     }
 
     /**
@@ -186,7 +182,7 @@ class Image
      */
     public function isJpeg()
     {
-        return $this->_isFormatJpeg($this->_mime);
+        return Helper::isFormatJpeg($this->_mime);
     }
 
     /**
@@ -234,20 +230,20 @@ class Image
         $quality = Vars::limit($quality, 0, 100);
         $quality = $quality ?: $this->_quality;
 
-        $format = $this->_fileExt($filename) ?: $this->_mime;
+        $format = FS::ext($filename) ?: $this->_mime;
         $format = strtolower($format);
 
         $filename = FS::clean($filename);
 
         // Create the image
         $result = false;
-        if ($this->_isFormatJpeg($format)) {
+        if (Helper::isFormatJpeg($format)) {
             $result = $this->_saveJpeg($filename, $quality);
 
-        } elseif ($this->_isFormatPng($format)) {
+        } elseif (Helper::isFormatPng($format)) {
             $result = $this->_savePng($filename, $quality);
 
-        } elseif ($this->_isFormatGif($format)) {
+        } elseif (Helper::isFormatGif($format)) {
             $result = $this->_saveGif($filename);
         }
 
@@ -346,7 +342,7 @@ class Image
         $result = array();
 
         if (function_exists('exif_read_data')) {
-            if ($this->_isFormatJpeg($this->_mime)) {
+            if (Helper::isFormatJpeg($this->_mime)) {
                 $result = exif_read_data($this->_filename);
             }
         }
@@ -363,13 +359,13 @@ class Image
      */
     protected function _imageCreate($format)
     {
-        if ($this->_isFormatJpeg($format)) {
+        if (Helper::isFormatJpeg($format)) {
             $result = imagecreatefromjpeg($this->_filename);
 
-        } elseif ($this->_isFormatPng($format)) {
+        } elseif (Helper::isFormatPng($format)) {
             $result = imagecreatefrompng($this->_filename);
 
-        } elseif ($this->_isFormatGif($format)) {
+        } elseif (Helper::isFormatGif($format)) {
             $result = imagecreatefromgif($this->_filename);
 
         } else {
@@ -377,47 +373,6 @@ class Image
         }
 
         return $result;
-    }
-
-    /**
-     * @param string $format
-     * @return bool
-     */
-    protected function _isFormatJpeg($format)
-    {
-        $format = strtolower($format);
-        return 'image/jpg' === $format || 'jpg' === $format || 'image/jpeg' === $format || 'jpeg' === $format;
-    }
-
-    /**
-     * @param string $format
-     * @return bool
-     */
-    protected function _isFormatGif($format)
-    {
-        $format = strtolower($format);
-        return 'image/gif' === $format || 'gif' === $format;
-    }
-
-    /**
-     * @param string $format
-     * @return bool
-     */
-    protected function _isFormatPng($format)
-    {
-        $format = strtolower($format);
-        return 'image/png' === $format || 'png' === $format;
-    }
-
-    /**
-     * Returns the file extension of the specified file
-     *
-     * @param string $filename
-     * @return string
-     */
-    protected function _fileExt($filename)
-    {
-        return FS::ext($filename);
     }
 
     /**
@@ -551,7 +506,7 @@ class Image
      */
     public function fill($color = '#000')
     {
-        $rgba      = $this->_normalizeColor($color);
+        $rgba      = Helper::normalizeColor($color);
         $fillColor = imagecolorallocatealpha($this->_image, $rgba['r'], $rgba['g'], $rgba['b'], $rgba['a']);
 
         imagealphablending($this->_image, false);
@@ -670,118 +625,5 @@ class Image
         $this->_height = $cropedH;
 
         return $this;
-    }
-
-    /**
-     * Converts a hex color value to its RGB equivalent
-     *
-     * @param string|array $origColor Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
-     *                                Where red, green, blue - integers 0-255, alpha - integer 0-127
-     * @return array|bool
-     * @throws Exception
-     */
-    protected function _normalizeColor($origColor)
-    {
-        $result = array();
-
-        if (is_string($origColor)) {
-            $result = $this->_normalizeColorString($origColor);
-
-        } elseif (is_array($origColor) && (count($origColor) === 3 || count($origColor) === 4)) {
-            $result = $this->_normalizeColorArray($origColor);
-        }
-
-        if (count($result) !== 4) {
-            throw new Exception('Undefined color format (string): ' . $origColor); // @codeCoverageIgnore
-        }
-
-        return array('r' => $result[0], 'g' => $result[1], 'b' => $result[2], 'a' => $result[3]);
-    }
-
-    /**
-     * Normalize color from string
-     *
-     * @param string $origColor
-     * @return integer[]
-     * @throws Exception
-     */
-    protected function _normalizeColorString($origColor)
-    {
-        $color = trim($origColor, '#');
-        $color = trim($color);
-
-        if (strlen($color) === 6) {
-            list($red, $green, $blue) = array(
-                $color[0] . $color[1],
-                $color[2] . $color[3],
-                $color[4] . $color[5],
-            );
-
-        } elseif (strlen($color) === 3) {
-            list($red, $green, $blue) = array(
-                $color[0] . $color[0],
-                $color[1] . $color[1],
-                $color[2] . $color[2],
-            );
-
-        } else {
-            throw new Exception('Undefined color format (string): ' . $origColor); // @codeCoverageIgnore
-        }
-
-        $red   = Filter::int(hexdec($red));
-        $green = Filter::int(hexdec($green));
-        $blue  = Filter::int(hexdec($blue));
-
-        return array($red, $green, $blue, 0);
-    }
-
-    /**
-     * Normalize color from array
-     *
-     * @param array $origColor
-     * @return integer[]
-     * @throws Exception
-     */
-    protected function _normalizeColorArray(array $origColor)
-    {
-        $result = array();
-
-        if (Arr::key('r', $origColor) && Arr::key('g', $origColor) && Arr::key('b', $origColor)) {
-            $result = array(
-                $this->_keepWithin($origColor['r'], 0, 255),
-                $this->_keepWithin($origColor['g'], 0, 255),
-                $this->_keepWithin($origColor['b'], 0, 255),
-                $this->_keepWithin(isset($origColor['a']) ? $origColor['a'] : 0, 0, 127),
-            );
-
-        } elseif (Arr::key(0, $origColor) && Arr::key(1, $origColor) && Arr::key(2, $origColor)) {
-            $result = array(
-                $this->_keepWithin($origColor[0], 0, 255),
-                $this->_keepWithin($origColor[1], 0, 255),
-                $this->_keepWithin($origColor[2], 0, 255),
-                $this->_keepWithin(isset($origColor[3]) ? $origColor[3] : 0, 0, 127),
-            );
-        }
-
-        return $result;
-    }
-
-    /**
-     * Ensures $value is always within $min and $max range.
-     * If lower, $min is returned. If higher, $max is returned.
-     *
-     * @param mixed $value
-     * @param int   $min
-     * @param int   $max
-     *
-     * @return int
-     */
-    protected function _keepWithin($value, $min, $max)
-    {
-        $value = Filter::int($value);
-        $min   = Filter::int($min);
-        $max   = Filter::int($max);
-
-        return Vars::limit($value, $min, $max);
     }
 }
