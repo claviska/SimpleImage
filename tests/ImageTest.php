@@ -427,5 +427,12 @@ class ImageTest extends PHPUnit
     {
         isTrue(file_exists($actual));
         isTrue(file_exists($excepted));
+
+        $diff = filesize($actual) - filesize($excepted);
+        if ($diff !== 0) {
+            cliMessage(FS::filename($actual) . ' = ' . $diff);
+        } else {
+            is(0, $diff);
+        }
     }
 }
