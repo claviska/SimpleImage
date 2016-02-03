@@ -675,8 +675,8 @@ class Image
     /**
      * Converts a hex color value to its RGB equivalent
      *
-     * @param string $origColor     Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
-     *                              Where red, green, blue - integers 0-255, alpha - integer 0-127
+     * @param string|array $origColor Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
+     *                                Where red, green, blue - integers 0-255, alpha - integer 0-127
      * @return array|bool
      * @throws Exception
      */
@@ -731,11 +731,11 @@ class Image
     /**
      * Normalize color from array
      *
-     * @param string $origColor
+     * @param array $origColor
      * @return array
      * @throws Exception
      */
-    protected function _normalizeColorArray($origColor)
+    protected function _normalizeColorArray(array $origColor)
     {
         if (Arr::key('r', $origColor) && Arr::key('g', $origColor) && Arr::key('b', $origColor)) {
             return array(
@@ -754,7 +754,6 @@ class Image
             );
         }
     }
-
 
     /**
      * Ensures $value is always within $min and $max range.
