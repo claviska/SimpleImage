@@ -47,9 +47,9 @@ class Image
     protected $_filename = null;
 
     /**
-     * @var string|null
+     * @var array
      */
-    protected $_exif = null;
+    protected $_exif = [];
 
     /**
      * @var int
@@ -72,7 +72,7 @@ class Image
     protected $_mime = null;
 
     /**
-     * @param string $filename
+     * @param string|null $filename
      * @throws Exception
      */
     public function __construct($filename = null)
@@ -82,7 +82,7 @@ class Image
             throw new Exception('Required extension GD is not loaded.'); // @codeCoverageIgnore
         }
 
-        if ($filename) {
+        if (null !== $filename) {
             $this->open($filename);
         }
     }
@@ -143,15 +143,15 @@ class Image
      * Save an image
      * The resulting format will be determined by the file extension.
      *
-     * @param null|string $filename If omitted - original file will be overwritten
-     * @param null|int    $quality  Output image quality in percents 0-100
+     * @param string   $filename If omitted - original file will be overwritten
+     * @param null|int $quality  Output image quality in percents 0-100
      * @return Image
      *
      * @throws Exception
      */
     public function saveAs($filename, $quality = null)
     {
-        if (!$filename) {
+        if (strlen($filename) === 0) {
             throw new Exception('Empty filename to save image');   // @codeCoverageIgnore
         }
 
@@ -318,7 +318,7 @@ class Image
         $this->_mime    = null;
         $this->_width   = null;
         $this->_height  = null;
-        $this->_exif    = null;
+        $this->_exif    = [];
         $this->_orient  = null;
         $this->_quality = self::QUALITY;
 
@@ -484,7 +484,7 @@ class Image
 
         $this->_orient = $this->_getOrientation();
 
-        if ($color) {
+        if (null !== $color) {
             return $this->fill($color);
         }
 
