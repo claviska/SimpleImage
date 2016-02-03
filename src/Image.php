@@ -49,7 +49,7 @@ class Image
     /**
      * @var array
      */
-    protected $_exif = [];
+    protected $_exif = array();
 
     /**
      * @var int
@@ -318,7 +318,7 @@ class Image
         $this->_mime    = null;
         $this->_width   = null;
         $this->_height  = null;
-        $this->_exif    = [];
+        $this->_exif    = array();
         $this->_orient  = null;
         $this->_quality = self::QUALITY;
 
@@ -343,7 +343,7 @@ class Image
      */
     protected function _getExif()
     {
-        $result = [];
+        $result = array();
 
         if (function_exists('exif_read_data')) {
             if ($this->_isFormatJpeg($this->_mime)) {
@@ -480,7 +480,7 @@ class Image
         $this->_height = Filter::int($height);
         $this->_image  = imagecreatetruecolor($this->_width, $this->_height);
         $this->_mime   = 'image/png';
-        $this->_exif   = [];
+        $this->_exif   = array();
 
         $this->_orient = $this->_getOrientation();
 
@@ -682,7 +682,7 @@ class Image
      */
     protected function _normalizeColor($origColor)
     {
-        $result = [];
+        $result = array();
 
         if (is_string($origColor)) {
             $result = $this->_normalizeColorString($origColor);
@@ -744,7 +744,7 @@ class Image
      */
     protected function _normalizeColorArray(array $origColor)
     {
-        $result = [];
+        $result = array();
 
         if (Arr::key('r', $origColor) && Arr::key('g', $origColor) && Arr::key('b', $origColor)) {
             $result = array(

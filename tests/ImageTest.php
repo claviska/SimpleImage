@@ -260,15 +260,15 @@ class ImageTest extends PHPUnit
         $this->_isFileEq($actual, $excepted);
 
         $actual = $this->_getActual(__FUNCTION__ . '-array-08c.png');
-        $img->create(200, 100, ['r' => 0, 'g' => '136', 'b' => '204'])->saveAs($actual);
+        $img->create(200, 100, array('r' => 0, 'g' => '136', 'b' => '204'))->saveAs($actual);
         $this->_isFileEq($actual, $excepted);
 
         $actual = $this->_getActual(__FUNCTION__ . '-array-0-136-204.png');
-        $img->create(200, 100, [0, 136, 204])->saveAs($actual);
+        $img->create(200, 100, array(0, 136, 204))->saveAs($actual);
         $this->_isFileEq($actual, $excepted);
 
         $actual = $this->_getActual(__FUNCTION__ . '-array-no-format.png');
-        $img->create(200, 100, [null, '   136  ', '   204   ', 0])->saveAs($actual);
+        $img->create(200, 100, array(null, '   136  ', '   204   ', 0))->saveAs($actual);
         $this->_isFileEq($actual, $excepted);
     }
 
