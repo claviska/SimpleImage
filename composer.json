@@ -23,7 +23,9 @@
         }
     ],
     "require"           : {
-        "php" : ">=5.4"
+        "php"         : ">=5.4",
+        "ext-gd"      : "*",
+        "jbzoo/utils" : "^1.2"
     },
     "require-dev"       : {
         "jbzoo/phpunit" : "^1.0"
