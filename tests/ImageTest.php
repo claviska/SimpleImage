@@ -15,6 +15,7 @@
 namespace JBZoo\PHPUnit;
 
 use JBZoo\Image\Image;
+use JBZoo\Utils\FS;
 
 /**
  * Class ImageTest
@@ -22,214 +23,401 @@ use JBZoo\Image\Image;
  */
 class ImageTest extends PHPUnit
 {
+    protected $_class = '\JBZoo\Image\Image';
 
-    public function test()
+    public function testCreateInstance()
     {
-        $resultDir = PROJECT_TESTS . '/fixtures/result';
-        $origDir   = PROJECT_TESTS . '/fixtures/original';
+        $img = new Image();
+        isClass($this->_class, $img);
+    }
+
+    public function testOpen()
+    {
+        $original = $this->_getOrig('butterfly.jpg');
+
+        $img = new Image($original);
+        isClass($this->_class, $img->open($original));
+    }
+
+    /**
+     * @expectedException \JBZoo\Image\Exception
+     */
+    public function testOpenUndefined()
+    {
+        $img = new Image();
+        $img->open($this->_getOrig('undefined.jpg'));
+    }
+
+    public function testCleanup()
+    {
+        $original = $this->_getOrig('butterfly.jpg');
+
+        $img = new Image($original);
+        isClass($this->_class, $img->open($original));
+
+        $img->cleanup();
+        isCount(1, array_filter($img->getInfo()));
+    }
+
+    public function testGetInfoJpeg()
+    {
+        $original = $this->_getOrig('butterfly.jpg');
+
+        $img  = new Image($original);
+        $info = $img->getInfo();
+
+        is(640, $info['width']);
+        is(478, $info['height']);
+        is('image/jpeg', $info['mime']);
+        is('landscape', $info['orient']);
+        isTrue(is_array($info['exif']));
+        isTrue($img->isJpeg());
+    }
+
+    public function testGetInfoPng()
+    {
+        $original = $this->_getOrig('butterfly.png');
+
+        $img  = new Image($original);
+        $info = $img->getInfo();
+
+        is(640, $info['width']);
+        is(478, $info['height']);
+        is('image/png', $info['mime']);
+        is('landscape', $info['orient']);
+        isNull($info['exif']);
+        isTrue($img->isPng());
+    }
+
+    public function testGetInfoGif()
+    {
+        $original = $this->_getOrig('butterfly.gif');
+
+        $img  = new Image($original);
+        $info = $img->getInfo();
+
+        is(478, $info['width']);
+        is(640, $info['height']);
+        is('image/gif', $info['mime']);
+        is('portrait', $info['orient']);
+        isNull($info['exif']);
+
+        isTrue($img->isGif());
+    }
+
+    public function testOrientation()
+    {
+        $img = new Image($this->_getOrig('butterfly.gif'));
+        isTrue($img->isPortrait());
+
+
+        $img = new Image($this->_getOrig('butterfly.jpg'));
+        isTrue($img->isLandscape());
+
+
+        $img = new Image($this->_getOrig('basketball.gif'));
+        isTrue($img->isSquare());
+    }
+
+    public function testSave()
+    {
+        $original = $this->_getOrig('butterfly.jpg');
+        $actual   = $this->_getActual(__FUNCTION__ . '.jpg');
+        $excepted = $this->_getExpected(__FUNCTION__ . '.jpg');
+
+        if (copy($original, $actual)) {
+
+            $img  = new Image($actual);
+            $info = $img->save(1)->getInfo();
+
+            is(1, $info['quality']);
+            is($actual, $info['filename']);
+            isNotEmpty($info['exif']);
+            isFileEq($actual, $excepted);
+
+        } else {
+            isTrue(false, 'Can\'t copy original file!');
+        }
+    }
+
+    public function testConvertToGif()
+    {
+        $original = $this->_getOrig('butterfly.jpg');
+        $actual   = $this->_getActual(__FUNCTION__ . '.gif');
+        $excepted = $this->_getExpected(__FUNCTION__ . '.gif');
 
         $img = new Image();
+        $img->open($original)
+            ->saveAs($actual);
 
-        // Create from scratch
-        $img->create(200, 100, '#08c')
-            ->save($resultDir . '/create-from-scratch.png');
+        isFileEq($actual, $excepted);
+    }
 
-        // Convert to GIF
-        $img->load($origDir . '/butterfly.jpg')
-            ->save($resultDir . '/butterfly-convert-to-gif.gif');
+    public function testConvertToJpg()
+    {
+        $original   = $this->_getOrig('butterfly.jpg');
+        $excepted   = $this->_getExpected(__FUNCTION__ . '.jpg');
+        $actualJpg  = $this->_getActual(__FUNCTION__ . '.jpg');
+        $actualJpeg = $this->_getActual(__FUNCTION__ . '.jpeg');
 
-        // Strip exif data (just load and save)
-        $img->load($origDir . '/butterfly.jpg')
-            ->save($resultDir . '/butterfly-strip-exif.jpg');
+        $img = new Image();
+        $img->open($original)->saveAs($actualJpg);
+        isFileEq($actualJpg, $excepted);
 
-        // Flip horizontal
-        $img->load($origDir . '/butterfly.jpg')
-            ->flip('x')
-            ->save($resultDir . '/butterfly-flip-horizontal.jpg');
+        $img = new Image();
+        $img->open($original)->saveAs($actualJpeg)->setQuality(100);
+        isFileEq($actualJpeg, $excepted);
+    }
 
-        // Flip vertical
-        $img->load($origDir . '/butterfly.jpg')
-            ->flip('y')
-            ->save($resultDir . '/butterfly-flip-vertical.jpg');
+    public function testConvertToPng()
+    {
+        $original = $this->_getOrig('butterfly.jpg');
+        $excepted = $this->_getExpected(__FUNCTION__ . '.png');
+        $actual   = $this->_getActual(__FUNCTION__ . '.png');
 
-        // Flip both
-        $img->load($origDir . '/butterfly.jpg')
-            ->flip('x')
-            ->flip('y')
-            ->save($resultDir . '/butterfly-flip-both.jpg');
+        $img = new Image();
+        $img->open($original)->saveAs($actual);
+        isFileEq($actual, $excepted);
+    }
 
-        // Rotate 90
-        $img->load($origDir . '/butterfly.jpg')
-            ->rotate(90)
-            ->save($resultDir . '/butterfly-rotate-90.jpg');
+    /**
+     * @expectedException \JBZoo\Image\Exception
+     */
+    public function testConvertToUndefindFormat()
+    {
+        $original = $this->_getOrig('butterfly.jpg');
+        $actual   = $this->_getActual(__FUNCTION__ . '.qwerty');
 
-        // Auto-orient
-        $img->load($origDir . '/butterfly.jpg')
-            ->auto_orient()
-            ->save($resultDir . '/butterfly-auto-orient.jpg');
+        $img = new Image();
+        $img->open($original)
+            ->saveAs($actual);
+    }
 
-        // Resize
-        $img->load($origDir . '/butterfly.jpg')
-            ->resize(320, 239)
-            ->save($resultDir . '/butterfly-resize.jpg');
+    /**
+     * @expectedException \JBZoo\Image\Exception
+     */
+    public function testConvertToUndefindPath()
+    {
+        $original = $this->_getOrig('butterfly.jpg');
+        $actual   = $this->_getActual('qwerty/' . __FUNCTION__ . '.png');
 
-        // Thumbnail
-        $img->load($origDir . '/butterfly.jpg')
-            ->thumbnail(100, 75)
-            ->save($resultDir . '/butterfly-thumbnail.jpg');
+        $img = new Image();
+        $img->open($original)
+            ->saveAs($actual);
+    }
 
-        // Fit to width
-        $img->load($origDir . '/butterfly.jpg')
-            ->fit_to_width(100)
-            ->save($resultDir . '/butterfly-fit-to-width.jpg');
+    public function testCreateFromScratchOnlyWidth()
+    {
+        $actual   = $this->_getActual(__FUNCTION__ . '.png');
+        $excepted = $this->_getExpected(__FUNCTION__ . '.png');
 
-        // Fit to height
-        $img->load($origDir . '/butterfly.jpg')
-            ->fit_to_height(100)
-            ->save($resultDir . '/butterfly-fit-to-height.jpg');
+        $img = new Image();
+        $img->create(200)
+            ->saveAs($actual);
 
-        // Best fit
-        $img->load($origDir . '/butterfly.jpg')
-            ->best_fit(100, 400)
-            ->save($resultDir . '/butterfly-best-fit.jpg');
+        isFileEq($actual, $excepted);
+    }
 
-        // Crop
-        $img->load($origDir . '/butterfly.jpg')
+    public function testCreateFromScratchWidthAndHeight()
+    {
+        $actual   = $this->_getActual(__FUNCTION__ . '.png');
+        $excepted = $this->_getExpected(__FUNCTION__ . '.png');
+
+        $img = new Image();
+        $img->create(200, 100)
+            ->saveAs($actual);
+
+        isFileEq($actual, $excepted);
+    }
+
+    public function testCreateFromScratchFull()
+    {
+        $actual   = $this->_getActual(__FUNCTION__ . '.png');
+        $excepted = $this->_getExpected(__FUNCTION__ . '.png');
+
+        $img = new Image();
+        $img->create(200, 100, '#08c')->saveAs($actual);
+        isFileEq($actual, $excepted);
+    }
+
+    public function testColorNormalization()
+    {
+        $img      = new Image();
+        $excepted = $this->_getExpected(__FUNCTION__ . '.png');
+
+        $actual = $this->_getActual(__FUNCTION__ . '-sharp-0088cc.png');
+        $img->create(200, 100, '#0088cc')->saveAs($actual);
+        isFileEq($actual, $excepted);
+
+        $actual = $this->_getActual(__FUNCTION__ . '-0088cc.png');
+        $img->create(200, 100, '0088CC')->saveAs($actual);
+        isFileEq($actual, $excepted);
+
+        $actual = $this->_getActual(__FUNCTION__ . '-sharp-08c.png');
+        $img->create(200, 100, '#08c')->saveAs($actual);
+        isFileEq($actual, $excepted);
+
+        $actual = $this->_getActual(__FUNCTION__ . '-08c.png');
+        $img->create(200, 100, '08c')->saveAs($actual);
+        isFileEq($actual, $excepted);
+
+        $actual = $this->_getActual(__FUNCTION__ . '-array-08c.png');
+        $img->create(200, 100, ['r' => 0, 'g' => '136', 'b' => '204'])->saveAs($actual);
+        isFileEq($actual, $excepted);
+
+        $actual = $this->_getActual(__FUNCTION__ . '-array-0-136-204.png');
+        $img->create(200, 100, [0, 136, 204])->saveAs($actual);
+        isFileEq($actual, $excepted);
+
+        $actual = $this->_getActual(__FUNCTION__ . '-array-no-format.png');
+        $img->create(200, 100, [null, '   136  ', '   204   ', 0])->saveAs($actual);
+        isFileEq($actual, $excepted);
+    }
+
+    public function testResizeJpeg()
+    {
+        $excepted = $this->_getExpected(__FUNCTION__ . '.jpg');
+        $actual   = $this->_getActual(__FUNCTION__ . '-320-239.jpg');
+        $original = $this->_getOrig('butterfly.png');
+
+        $img = new Image($original);
+        $img->resize(320, 239)->saveAs($actual);
+
+        isFileEq($actual, $excepted);
+    }
+
+    public function testResizeGif()
+    {
+        $excepted = $this->_getExpected(__FUNCTION__ . '.gif');
+        $actual   = $this->_getActual(__FUNCTION__ . '-320-239.gif');
+        $original = $this->_getOrig('butterfly.gif');
+
+        $img = new Image($original);
+        $img->resize(320, 239)->saveAs($actual);
+
+        isFileEq($actual, $excepted);
+    }
+
+    public function testResizeTransparent()
+    {
+        $excepted = $this->_getExpected(__FUNCTION__ . '.gif');
+        $actual   = $this->_getActual(__FUNCTION__ . '.gif');
+        $original = $this->_getOrig('1x1.gif');
+
+        $img = new Image($original);
+        $img->resize(50, 50)->saveAs($actual);
+
+        isFileEq($actual, $excepted);
+    }
+
+    public function testCrop()
+    {
+        $excepted = $this->_getExpected(__FUNCTION__ . '.jpg');
+        $actual   = $this->_getActual(__FUNCTION__ . '.jpg');
+        $original = $this->_getOrig('butterfly.jpg');
+
+        $img = new Image();
+        $img->open($original)
             ->crop(160, 110, 460, 360)
-            ->save($resultDir . '/butterfly-crop.jpg');
+            ->saveAs($actual);
 
-        // Desaturate
-        $img->load($origDir . '/butterfly.jpg')
-            ->desaturate()
-            ->save($resultDir . '/butterfly-desaturate.jpg');
+        isFileEq($actual, $excepted);
+    }
 
-        // Invert
-        $img->load($origDir . '/butterfly.jpg')
-            ->invert()
-            ->save($resultDir . '/butterfly-invert.jpg');
+    public function testCropWrongCoord()
+    {
+        $excepted = $this->_getExpected(__FUNCTION__ . '.jpg');
+        $actual   = $this->_getActual(__FUNCTION__ . '.jpg');
+        $original = $this->_getOrig('butterfly.jpg');
 
-        // Brighten
-        $img->load($origDir . '/butterfly.jpg')
-            ->brightness(100)
-            ->save($resultDir . '/butterfly-brighten.jpg');
+        $img = new Image();
+        $img->open($original)
+            ->crop(460, 360, 160, 110)
+            ->saveAs($actual);
 
-        // Darken
-        $img->load($origDir . '/butterfly.jpg')
-            ->brightness(-100)
-            ->save($resultDir . '/butterfly-darken.jpg');
+        isFileEq($actual, $excepted);
+    }
 
-        // Contrast
-        $img->load($origDir . '/butterfly.jpg')
-            ->contrast(-50)
-            ->save($resultDir . '/butterfly-contrast.jpg');
+    public function testFitToWidth()
+    {
+        $excepted = $this->_getExpected(__FUNCTION__ . '.jpg');
+        $actual   = $this->_getActual(__FUNCTION__ . '.jpg');
+        $original = $this->_getOrig('butterfly.jpg');
 
-        // Colorize
-        $img->load($origDir . '/butterfly.jpg')
-            ->colorize('#08c', .75)
-            ->save($resultDir . '/butterfly-colorize.jpg');
+        $img = new Image();
+        $img->open($original)
+            ->fitToWidth(100)
+            ->saveAs($actual);
 
-        // Edge Detect
-        $img->load($origDir . '/butterfly.jpg')
-            ->edges()
-            ->save($resultDir . '/butterfly-edges.jpg');
+        isFileEq($actual, $excepted);
+    }
 
-        // Mean Removal
-        $img->load($origDir . '/butterfly.jpg')
-            ->mean_remove()
-            ->save($resultDir . '/butterfly-mean-remove.jpg');
+    public function testFitToHeight()
+    {
+        $excepted = $this->_getExpected(__FUNCTION__ . '.jpg');
+        $actual   = $this->_getActual(__FUNCTION__ . '.jpg');
+        $original = $this->_getOrig('butterfly.jpg');
 
-        // Emboss
-        $img->load($origDir . '/butterfly.jpg')
-            ->emboss()
-            ->save($resultDir . '/butterfly-emboss.jpg');
+        $img = new Image();
+        $img->open($original)
+            ->fitToHeight(100)
+            ->saveAs($actual);
 
-        // Selective Blur
-        $img->load($origDir . '/butterfly.jpg')
-            ->blur('selective', 10)
-            ->save($resultDir . '/butterfly-blur-selective.jpg');
+        isFileEq($actual, $excepted);
+    }
 
-        // Gaussian Blur
-        $img->load($origDir . '/butterfly.jpg')
-            ->blur('gaussian', 10)
-            ->save($resultDir . '/butterfly-blur-gaussian.jpg');
+    public function testThumbnailHeight()
+    {
+        $excepted = $this->_getExpected(__FUNCTION__ . '.jpg');
+        $actual   = $this->_getActual(__FUNCTION__ . '.jpg');
+        $original = $this->_getOrig('butterfly.jpg');
 
-        // Sketch
-        $img->load($origDir . '/butterfly.jpg')
-            ->sketch()
-            ->save($resultDir . '/butterfly-sketch.jpg');
+        $img = new Image();
+        $img->open($original)
+            ->thumbnail(100, 75)
+            ->saveAs($actual);
 
-        // Smooth
-        $img->load($origDir . '/butterfly.jpg')
-            ->smooth(6)
-            ->save($resultDir . '/butterfly-smooth.jpg');
+        isFileEq($actual, $excepted);
+    }
 
-        // Pixelate
-        $img->load($origDir . '/butterfly.jpg')
-            ->pixelate(8)
-            ->save($resultDir . '/butterfly-pixelate.jpg');
+    public function testThumbnailWidth()
+    {
+        $excepted = $this->_getExpected(__FUNCTION__ . '.jpg');
+        $actual   = $this->_getActual(__FUNCTION__ . '.jpg');
+        $original = $this->_getOrig('butterfly.gif');
 
-        // Sepia
-        $img->load($origDir . '/butterfly.jpg')
-            ->sepia(8)
-            ->save($resultDir . '/butterfly-sepia.jpg');
+        $img = new Image();
+        $img->open($original)
+            ->thumbnail(75)
+            ->saveAs($actual);
 
-        // Overlay
-        $img->load($origDir . '/butterfly.jpg')
-            ->overlay($origDir . '/overlay.png', 'bottom right', .8)
-            ->save($resultDir . '/butterfly-overlay.jpg');
+        isFileEq($actual, $excepted);
+    }
 
-        // Change opacity
-        $img->load($origDir . '/butterfly.jpg')
-            ->opacity(.5)
-            ->save($resultDir . '/butterfly-opacity.png');
+    /**
+     * @param $filename
+     * @return string
+     */
+    protected function _getActual($filename)
+    {
+        return FS::clean(PROJECT_ROOT . '/build/' . $filename);
+    }
 
-        // Text
-        $img->load($origDir . '/butterfly.jpg')
-            ->text('Butterfly', $origDir . '/delicious.ttf', 32, '#FFFFFF', 'bottom', 0, -20)
-            ->save($resultDir . '/butterfly-text.jpg');
+    /**
+     * @param $filename
+     * @return string
+     */
+    protected function _getExpected($filename)
+    {
+        return FS::clean(PROJECT_TESTS . '/expected/' . $filename);
+    }
 
-        // Text with multiple colors
-        $colors = ['#F00', '#FF7F00', '#FF0', '#0F0', '#0FF', '#00F'];
-        $img->load($origDir . '/butterfly.jpg')
-            ->text('Butterfly', $origDir . '/delicious.ttf', 32, $colors, 'bottom', 0, -20, null, null, null, 3)
-            ->save($resultDir . '/butterfly-text-stroke-multi-colored-text.jpg');
-
-        // Text with stroke
-        $img->load($origDir . '/butterfly.jpg')
-            ->text('Butterfly', $origDir . '/delicious.ttf', 32, '#FFFFFF', 'bottom', 0, -20, '#000', 2)
-            ->save($resultDir . '/butterfly-text-with-stroke.jpg');
-
-        // Text with multiple colored stroke
-        $colors = ['#F00', '#FF7F00', '#FF0', '#0F0', '#0FF', '#00F'];
-        $img->load($origDir . '/butterfly.jpg')
-            ->text('Butterfly', $origDir . '/delicious.ttf', 32, '#000', 'bottom', 0, -20, $colors, 2, null, 3)
-            ->save($resultDir . '/butterfly-text-with-stroke-multi-colored-stroke.jpg');
-
-        // Right align text
-        $img->load($origDir . '/butterfly.jpg')
-            ->text('Lorem Ipsum', $origDir . '/delicious.ttf', 32, '#FFFFFF', 'top right', 0, 0, null, null, 'right')
-            ->save($resultDir . '/butterfly-right-align-text.jpg');
-
-        // Resizing GIFs with transparency
-        $img->load($origDir . '/basketball.gif')
-            ->resize(50, 50)
-            ->save($resultDir . '/basketball-resize.gif');
-
-        // Manipulate base64 gif string and save as png (requires PHP 5.4+)
-        $base64 = 'data:image/gif;base64,R0lGODlhEAAQAOZeAHBwcKCgoOraIvDw8Mu9Hi4rBvPFJvTKJpyRF/bXJfPAJ/jeJU5IC0B'
-            . 'AQOq0J+ewKPnmJffZJVc6FvPCJruuGz46CYyDFPXPJpCQkH10EqugGSYaC+GoKAAAALCwsNicKUlGQvbUJtGaKWBgYODg4LWB'
-            . 'JDUnF/jhJa9+JXFgSl4/GUxHQjwpEdadKUxDOEM9NmNdVcaPJ9rLIPbRJtifKUEwGuSsKNmhKV1XDXdPG6p2JXhRG1U5FiMdF'
-            . 'lpWU76DJ8DAwMuVKtDQ0GlFFrR8JEQtELF8KO24J3VNGT0zKG1lEIxgHdugKXBNGykbCzw3Mt6kKNOcKfXMJt6mKG5LG2JAFT'
-            . 'gwJW5fSlNNRenSI/THJo5iIPC8J/rpJf///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
-            . 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAF4ALAAAAAAQABAAAAfZ'
-            . 'gF6CXiQAIBsbSSNAg40YTlstDw8cMVUrA40jKjcKWiEhMwZHRCYkggE8UxMLXa6uCVw/T14DPVETWQwarhoWXRFcOwEBTVwJC'
-            . 'B0VrhUdFF0HNC8AKAoQAhkErggMsA5FDSIHr+SvCwoS4QcUAuVdBBYR6AAlBhYZ5QIFBBcOLB45uJwogOAVAYIQJgSB4cXKhw'
-            . 'MCcBRQwqCCNilcqATw4mEIhwtdBFCQ0QXCBS5GQAwCgISJgQgLFiQw4ECHi0yDAtRY8sHGAyglJPjA2WgAhgZXUmABIKRRIAA7';
-
-        $img->load_base64($base64)
-            ->resize(32, 32)
-            ->save($resultDir . '/smiley-base64.png');
-
-        isTrue(true);
+    /**
+     * @param $filename
+     * @return string
+     */
+    protected function _getOrig($filename)
+    {
+        return FS::clean(PROJECT_TESTS . '/resources/' . $filename);
     }
 }
