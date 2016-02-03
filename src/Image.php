@@ -117,7 +117,7 @@ class Image
      */
     public function setQuality($newQuality)
     {
-        $this->_quality = (int)$newQuality;
+        $this->_quality = Filter::int($newQuality);
         return $this;
     }
 
@@ -476,8 +476,8 @@ class Image
 
         $height = $height ? $height : $width;
 
-        $this->_width  = (int)$width;
-        $this->_height = (int)$height;
+        $this->_width  = Filter::int($width);
+        $this->_height = Filter::int($height);
         $this->_image  = imagecreatetruecolor($this->_width, $this->_height);
         $this->_mime   = 'image/png';
         $this->_exif   = [];
@@ -514,9 +514,9 @@ class Image
             if ($transIndex >= 0 && $transIndex < $palletsize) {
                 $trColor = imagecolorsforindex($this->_image, $transIndex);
 
-                $red   = (int)$trColor['red'];
-                $green = (int)$trColor['green'];
-                $blue  = (int)$trColor['blue'];
+                $red   = Filter::int($trColor['red']);
+                $green = Filter::int($trColor['green']);
+                $blue  = Filter::int($trColor['blue']);
 
                 $transIndex = imagecolorallocate($newImage, $red, $green, $blue);
 
