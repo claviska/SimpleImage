@@ -1,7 +1,5 @@
 build
 vendor
-resources
-tests/fixtures/result
+tests/fixtures/actual
 phpunit.xml
-phpunit-*.xml
 composer.lock
