@@ -609,9 +609,7 @@ class Image
     public function fitToHeight($height)
     {
         $height = Filter::int($height);
-
-        $aspectRatio = $this->_height / $this->_width;
-        $width       = $height / $aspectRatio;
+        $width  = $height / ($this->_height / $this->_width);
 
         return $this->resize($width, $height);
     }
@@ -624,10 +622,8 @@ class Image
      */
     public function fitToWidth($width)
     {
-        $width = Filter::int($width);
-
-        $aspectRatio = $this->_height / $this->_width;
-        $height      = $width * $aspectRatio;
+        $width  = Filter::int($width);
+        $height = $width * ($this->_height / $this->_width);
 
         return $this->resize($width, $height);
     }
