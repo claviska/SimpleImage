@@ -152,7 +152,7 @@ class Image
     public function saveAs($filename, $quality = null)
     {
         if (strlen($filename) === 0) {
-            throw new Exception('Empty filename to save image');   // @codeCoverageIgnore
+            throw new Exception('Empty filename to save image'); // @codeCoverageIgnore
         }
 
         $dir = FS::dirname($filename);
@@ -373,7 +373,7 @@ class Image
             $result = imagecreatefromgif($this->_filename);
 
         } else {
-            throw new Exception('Invalid image: ' . $this->_filename);  // @codeCoverageIgnore
+            throw new Exception('Invalid image: ' . $this->_filename); // @codeCoverageIgnore
         }
 
         return $result;
@@ -689,7 +689,7 @@ class Image
             $result = $this->_normalizeColorArray($origColor);
 
         } else {
-            throw new Exception('Undefined color format (string): ' . $origColor);  // @codeCoverageIgnore
+            throw new Exception('Undefined color format (string): ' . $origColor); // @codeCoverageIgnore
         }
 
         return array('r' => $result[0], 'g' => $result[1], 'b' => $result[2], 'a' => $result[3]);
@@ -699,7 +699,7 @@ class Image
      * Normalize color from string
      *
      * @param string $origColor
-     * @return array
+     * @return integer[]
      * @throws Exception
      */
     protected function _normalizeColorString($origColor)
@@ -722,7 +722,7 @@ class Image
             );
 
         } else {
-            throw new Exception('Undefined color format (string): ' . $origColor);  // @codeCoverageIgnore
+            throw new Exception('Undefined color format (string): ' . $origColor); // @codeCoverageIgnore
         }
 
         return array((int)hexdec($red), (int)hexdec($green), (int)hexdec($blue), 0);
@@ -759,11 +759,11 @@ class Image
      * Ensures $value is always within $min and $max range.
      * If lower, $min is returned. If higher, $max is returned.
      *
-     * @param int|float $value
-     * @param int|float $min
-     * @param int|float $max
+     * @param mixed $value
+     * @param int   $min
+     * @param int   $max
      *
-     * @return int|float
+     * @return int
      */
     protected function _keepWithin($value, $min, $max)
     {
