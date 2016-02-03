@@ -682,13 +682,16 @@ class Image
      */
     protected function _normalizeColor($origColor)
     {
+        $result = [];
+
         if (is_string($origColor)) {
             $result = $this->_normalizeColorString($origColor);
 
         } elseif (is_array($origColor) && (count($origColor) === 3 || count($origColor) === 4)) {
             $result = $this->_normalizeColorArray($origColor);
+        }
 
-        } else {
+        if (count($result) !== 4) {
             throw new Exception('Undefined color format (string): ' . $origColor); // @codeCoverageIgnore
         }
 
@@ -736,13 +739,15 @@ class Image
      * Normalize color from array
      *
      * @param array $origColor
-     * @return array
+     * @return integer[]
      * @throws Exception
      */
     protected function _normalizeColorArray(array $origColor)
     {
+        $result = [];
+
         if (Arr::key('r', $origColor) && Arr::key('g', $origColor) && Arr::key('b', $origColor)) {
-            return array(
+            $result = array(
                 $this->_keepWithin($origColor['r'], 0, 255),
                 $this->_keepWithin($origColor['g'], 0, 255),
                 $this->_keepWithin($origColor['b'], 0, 255),
@@ -750,13 +755,15 @@ class Image
             );
 
         } elseif (Arr::key(0, $origColor) && Arr::key(1, $origColor) && Arr::key(2, $origColor)) {
-            return array(
+            $result = array(
                 $this->_keepWithin($origColor[0], 0, 255),
                 $this->_keepWithin($origColor[1], 0, 255),
                 $this->_keepWithin($origColor[2], 0, 255),
                 $this->_keepWithin(isset($origColor[3]) ? $origColor[3] : 0, 0, 127),
             );
         }
+
+        return $result;
     }
 
     /**
