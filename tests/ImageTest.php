@@ -85,7 +85,7 @@ class ImageTest extends PHPUnit
         is(478, $info['height']);
         is('image/png', $info['mime']);
         is('landscape', $info['orient']);
-        isNull($info['exif']);
+        isEmpty($info['exif']);
         isTrue($img->isPng());
     }
 
@@ -100,7 +100,7 @@ class ImageTest extends PHPUnit
         is(640, $info['height']);
         is('image/gif', $info['mime']);
         is('portrait', $info['orient']);
-        isNull($info['exif']);
+        isEmpty($info['exif']);
 
         isTrue($img->isGif());
     }

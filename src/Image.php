@@ -339,11 +339,11 @@ class Image
     }
 
     /**
-     * @return array|null
+     * @return array
      */
     protected function _getExif()
     {
-        $result = null;
+        $result = [];
 
         if (function_exists('exif_read_data')) {
             if ($this->_isFormatJpeg($this->_mime)) {
@@ -480,7 +480,7 @@ class Image
         $this->_height = (int)$height;
         $this->_image  = imagecreatetruecolor($this->_width, $this->_height);
         $this->_mime   = 'image/png';
-        $this->_exif   = null;
+        $this->_exif   = [];
 
         $this->_orient = $this->_getOrientation();
 
