@@ -512,13 +512,13 @@ class Image
             $palletsize = imagecolorstotal($this->_image);
 
             if ($transIndex >= 0 && $transIndex < $palletsize) {
-                $trColor    = imagecolorsforindex($this->_image, $transIndex);
-                $transIndex = imagecolorallocate(
-                    $newImage,
-                    (int)$trColor['red'],
-                    (int)$trColor['green'],
-                    (int)$trColor['blue']
-                );
+                $trColor = imagecolorsforindex($this->_image, $transIndex);
+
+                $red   = (int)$trColor['red'];
+                $green = (int)$trColor['green'];
+                $blue  = (int)$trColor['blue'];
+
+                $transIndex = imagecolorallocate($newImage, $red, $green, $blue);
 
                 imagefill($newImage, 0, 0, $transIndex);
                 imagecolortransparent($newImage, $transIndex);
@@ -725,7 +725,11 @@ class Image
             throw new Exception('Undefined color format (string): ' . $origColor); // @codeCoverageIgnore
         }
 
-        return array((int)hexdec($red), (int)hexdec($green), (int)hexdec($blue), 0);
+        $red   = Filter::int(hexdec($red));
+        $green = Filter::int(hexdec($green));
+        $blue  = Filter::int(hexdec($blue));
+
+        return array($red, $green, $blue, 0);
     }
 
     /**
