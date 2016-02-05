@@ -470,7 +470,7 @@ class ImageTest extends PHPUnit
 
         $img = new Image();
         $img->open($original)
-            ->rotate(-275, [255, 255, 255, 127])
+            ->rotate(-275, array(255, 255, 255, 127))
             ->saveAs($actual);
 
         $this->_isFileEq($actual, $excepted);
@@ -677,7 +677,7 @@ class ImageTest extends PHPUnit
 
         $img = new Image();
         $img->open($original)
-            ->addFilter('pixelate', [25])
+            ->addFilter('pixelate', array(25))
             ->saveAs($actual);
 
         $this->_isFileEq($actual, $excepted);
@@ -693,7 +693,7 @@ class ImageTest extends PHPUnit
         $img->open($original)
             ->addFilter(function ($image, $blockSize) {
                 imagefilter($image, IMG_FILTER_PIXELATE, $blockSize, true);
-            }, [2])
+            }, array(2))
             ->saveAs($actual);
 
         $this->_isFileEq($actual, $excepted);
