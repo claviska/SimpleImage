@@ -392,6 +392,49 @@ class ImageTest extends PHPUnit
         $this->_isFileEq($actual, $excepted);
     }
 
+    public function testFlipX()
+    {
+        $excepted = $this->_getExpected(__FUNCTION__ . '.jpg');
+        $actual   = $this->_getActual(__FUNCTION__ . '.jpg');
+        $original = $this->_getOrig('butterfly.jpg');
+
+        $img = new Image();
+        $img->open($original)
+            ->flip('x')
+            ->saveAs($actual);
+
+        $this->_isFileEq($actual, $excepted);
+    }
+
+    public function testFlipY()
+    {
+        $excepted = $this->_getExpected(__FUNCTION__ . '.jpg');
+        $actual   = $this->_getActual(__FUNCTION__ . '.jpg');
+        $original = $this->_getOrig('butterfly.jpg');
+
+        $img = new Image();
+        $img->open($original)
+            ->flip('y')
+            ->saveAs($actual);
+
+        $this->_isFileEq($actual, $excepted);
+    }
+
+    public function testFlipXY()
+    {
+        $excepted = $this->_getExpected(__FUNCTION__ . '.jpg');
+        $actual   = $this->_getActual(__FUNCTION__ . '.jpg');
+        $original = $this->_getOrig('butterfly.jpg');
+
+        $img = new Image();
+        $img->open($original)
+            ->flip('x')
+            ->flip('y')
+            ->saveAs($actual);
+
+        $this->_isFileEq($actual, $excepted);
+    }
+
     /**
      * @param $filename
      * @return string
@@ -430,7 +473,7 @@ class ImageTest extends PHPUnit
 
         $diff = filesize($actual) - filesize($excepted);
         if ($diff !== 0) {
-            cliMessage(FS::filename($actual) . ' = ' . $diff);
+            cliMessage(FS::base($actual) . ' = ' . $diff);
         } else {
             is(0, $diff);
         }

@@ -42,7 +42,7 @@ class Helper
      * @param string $format
      * @return bool
      */
-    public static function isFormatJpeg($format)
+    public static function isJpeg($format)
     {
         $format = strtolower($format);
         return 'image/jpg' === $format || 'jpg' === $format || 'image/jpeg' === $format || 'jpeg' === $format;
@@ -52,7 +52,7 @@ class Helper
      * @param string $format
      * @return bool
      */
-    public static function isFormatGif($format)
+    public static function isGif($format)
     {
         $format = strtolower($format);
         return 'image/gif' === $format || 'gif' === $format;
@@ -62,7 +62,7 @@ class Helper
      * @param string $format
      * @return bool
      */
-    public static function isFormatPng($format)
+    public static function isPng($format)
     {
         $format = strtolower($format);
         return 'image/png' === $format || 'png' === $format;

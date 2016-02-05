@@ -166,7 +166,7 @@ class Image
      */
     public function isGif()
     {
-        return Helper::isFormatGif($this->_mime);
+        return Helper::isGif($this->_mime);
     }
 
     /**
@@ -174,7 +174,7 @@ class Image
      */
     public function isPng()
     {
-        return Helper::isFormatPng($this->_mime);
+        return Helper::isPng($this->_mime);
     }
 
     /**
@@ -182,7 +182,7 @@ class Image
      */
     public function isJpeg()
     {
-        return Helper::isFormatJpeg($this->_mime);
+        return Helper::isJpeg($this->_mime);
     }
 
     /**
@@ -237,13 +237,13 @@ class Image
 
         // Create the image
         $result = false;
-        if (Helper::isFormatJpeg($format)) {
+        if (Helper::isJpeg($format)) {
             $result = $this->_saveJpeg($filename, $quality);
 
-        } elseif (Helper::isFormatPng($format)) {
+        } elseif (Helper::isPng($format)) {
             $result = $this->_savePng($filename, $quality);
 
-        } elseif (Helper::isFormatGif($format)) {
+        } elseif (Helper::isGif($format)) {
             $result = $this->_saveGif($filename);
         }
 
@@ -342,7 +342,7 @@ class Image
         $result = array();
 
         if (function_exists('exif_read_data')) {
-            if (Helper::isFormatJpeg($this->_mime)) {
+            if (Helper::isJpeg($this->_mime)) {
                 $result = exif_read_data($this->_filename);
             }
         }
@@ -359,13 +359,13 @@ class Image
      */
     protected function _imageCreate($format)
     {
-        if (Helper::isFormatJpeg($format)) {
+        if (Helper::isJpeg($format)) {
             $result = imagecreatefromjpeg($this->_filename);
 
-        } elseif (Helper::isFormatPng($format)) {
+        } elseif (Helper::isPng($format)) {
             $result = imagecreatefrompng($this->_filename);
 
-        } elseif (Helper::isFormatGif($format)) {
+        } elseif (Helper::isGif($format)) {
             $result = imagecreatefromgif($this->_filename);
 
         } else {
@@ -623,6 +623,37 @@ class Image
         $this->_image  = $newImage;
         $this->_width  = $cropedW;
         $this->_height = $cropedH;
+
+        return $this;
+    }
+
+    /**
+     * Flip an image horizontally or vertically
+     *
+     * @param string $direction x|y
+     * @return $this
+     */
+    public function flip($direction)
+    {
+        $newImage = imagecreatetruecolor($this->_width, $this->_height);
+        imagealphablending($newImage, false);
+        imagesavealpha($newImage, true);
+
+        switch (strtolower($direction)) {
+            case 'y':
+                for ($y = 0; $y < $this->_height; $y++) {
+                    imagecopy($newImage, $this->_image, 0, $y, 0, $this->_height - $y - 1, $this->_width, 1);
+                }
+                break;
+            default:
+                for ($x = 0; $x < $this->_width; $x++) {
+                    imagecopy($newImage, $this->_image, $x, 0, $this->_width - $x - 1, 0, 1, $this->_height);
+                }
+                break;
+        }
+
+        $this->_destroyImage();
+        $this->_image = $newImage;
 
         return $this;
     }
