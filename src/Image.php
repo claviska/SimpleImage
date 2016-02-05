@@ -725,31 +725,28 @@ class Image
     {
         if (!isset($this->_exif['Orientation'])) {
             return $this;
-        }
 
-        $orient = $this->_exif['Orientation'];
-
-        if ($orient == 2) { // Flip horizontal
+        } elseif ($this->_exif['Orientation'] == 2) { // Flip horizontal
             $this->flip('x');
 
-        } elseif ($orient == 3) { // Rotate 180 counterclockwise
+        } elseif ($this->_exif['Orientation'] == 3) { // Rotate 180 counterclockwise
             $this->rotate(-180);
 
-        } elseif ($orient == 4) { // Vertical flip
+        } elseif ($this->_exif['Orientation'] == 4) { // Vertical flip
             $this->flip('y');
 
-        } elseif ($orient == 5) { // Rotate 90 clockwise and flip vertically
+        } elseif ($this->_exif['Orientation'] == 5) { // Rotate 90 clockwise and flip vertically
             $this->flip('y');
             $this->rotate(90);
 
-        } elseif ($orient == 6) { // Rotate 90 clockwise
+        } elseif ($this->_exif['Orientation'] == 6) { // Rotate 90 clockwise
             $this->rotate(90);
 
-        } elseif ($orient == 7) { // Rotate 90 clockwise and flip horizontally
+        } elseif ($this->_exif['Orientation'] == 7) { // Rotate 90 clockwise and flip horizontally
             $this->flip('x');
             $this->rotate(90);
 
-        } elseif ($orient == 8) { // Rotate 90 counterclockwise
+        } elseif ($this->_exif['Orientation'] == 8) { // Rotate 90 counterclockwise
             $this->rotate(-90);
         }
 
