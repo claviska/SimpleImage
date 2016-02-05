@@ -889,7 +889,7 @@ class Image
             if (method_exists($filterClass, $filter)) {
 
                 array_unshift($args, $this->_image);
-                call_user_func_array([__NAMESPACE__ . '\Filter', $filter], $args);
+                call_user_func_array(array(__NAMESPACE__ . '\Filter', $filter), $args);
 
                 return $this;
             }
@@ -900,6 +900,7 @@ class Image
             return $this;
         }
 
-        throw new Exception('Undefined Image Filter: ' . (is_string($filter) ? $filter : gettype($filter)));
+        $filterType = is_string($filter) ? $filter : gettype($filter);
+        throw new Exception('Undefined Image Filter: ' . $filterType);
     }
 }
