@@ -490,6 +490,175 @@ class ImageTest extends PHPUnit
         $this->_isFileEq($actual, $excepted);
     }
 
+    public function testWatermark()
+    {
+        $excepted = $this->_getExpected(__FUNCTION__ . '.png');
+        $actual   = $this->_getActual(__FUNCTION__ . '.png');
+        $original = $this->_getOrig('butterfly.jpg');
+        $overlay  = $this->_getOrig('overlay.png');
+
+        $img = new Image();
+        $img->open($original)
+            ->overlay($overlay)
+            ->saveAs($actual);
+
+        $this->_isFileEq($actual, $excepted);
+    }
+
+    public function testWatermarkTopLeft()
+    {
+        $excepted = $this->_getExpected(__FUNCTION__ . '.png');
+        $actual   = $this->_getActual(__FUNCTION__ . '.png');
+        $original = $this->_getOrig('butterfly.jpg');
+        $overlay  = $this->_getOrig('overlay.png');
+
+        $img = new Image();
+        $img->open($original)
+            ->overlay($overlay, 'top left')
+            ->saveAs($actual);
+
+        $this->_isFileEq($actual, $excepted);
+    }
+
+    public function testWatermarkTopRight()
+    {
+        $excepted = $this->_getExpected(__FUNCTION__ . '.png');
+        $actual   = $this->_getActual(__FUNCTION__ . '.png');
+        $original = $this->_getOrig('butterfly.jpg');
+        $overlay  = $this->_getOrig('overlay.png');
+
+        $img = new Image();
+        $img->open($original)
+            ->overlay($overlay, 'top right')
+            ->saveAs($actual);
+
+        $this->_isFileEq($actual, $excepted);
+    }
+
+    public function testWatermarkTop()
+    {
+        $excepted = $this->_getExpected(__FUNCTION__ . '.png');
+        $actual   = $this->_getActual(__FUNCTION__ . '.png');
+        $original = $this->_getOrig('butterfly.jpg');
+        $overlay  = $this->_getOrig('overlay.png');
+
+        $img = new Image();
+        $img->open($original)
+            ->overlay($overlay, 'top')
+            ->saveAs($actual);
+
+        $this->_isFileEq($actual, $excepted);
+    }
+
+    public function testWatermarkBottomLeft()
+    {
+        $excepted = $this->_getExpected(__FUNCTION__ . '.png');
+        $actual   = $this->_getActual(__FUNCTION__ . '.png');
+        $original = $this->_getOrig('butterfly.jpg');
+        $overlay  = $this->_getOrig('overlay.png');
+
+        $img = new Image();
+        $img->open($original)
+            ->overlay($overlay, 'bottom left')
+            ->saveAs($actual);
+
+        $this->_isFileEq($actual, $excepted);
+    }
+
+    public function testWatermarkBottomRight()
+    {
+        $excepted = $this->_getExpected(__FUNCTION__ . '.png');
+        $actual   = $this->_getActual(__FUNCTION__ . '.png');
+        $original = $this->_getOrig('butterfly.jpg');
+        $overlay  = $this->_getOrig('overlay.png');
+
+        $img = new Image();
+        $img->open($original)
+            ->overlay($overlay, 'bottom right')
+            ->saveAs($actual);
+
+        $this->_isFileEq($actual, $excepted);
+    }
+
+    public function testWatermarkBottom()
+    {
+        $excepted = $this->_getExpected(__FUNCTION__ . '.png');
+        $actual   = $this->_getActual(__FUNCTION__ . '.png');
+        $original = $this->_getOrig('butterfly.jpg');
+        $overlay  = $this->_getOrig('overlay.png');
+
+        $img = new Image();
+        $img->open($original)
+            ->overlay($overlay, 'bottom')
+            ->saveAs($actual);
+
+        $this->_isFileEq($actual, $excepted);
+    }
+
+    public function testWatermarkLeft()
+    {
+        $excepted = $this->_getExpected(__FUNCTION__ . '.png');
+        $actual   = $this->_getActual(__FUNCTION__ . '.png');
+        $original = $this->_getOrig('butterfly.jpg');
+        $overlay  = $this->_getOrig('overlay.png');
+
+        $img = new Image();
+        $img->open($original)
+            ->overlay($overlay, 'left')
+            ->saveAs($actual);
+
+        $this->_isFileEq($actual, $excepted);
+    }
+
+    public function testWatermarkRight()
+    {
+        $excepted = $this->_getExpected(__FUNCTION__ . '.png');
+        $actual   = $this->_getActual(__FUNCTION__ . '.png');
+        $original = $this->_getOrig('butterfly.jpg');
+        $overlay  = $this->_getOrig('overlay.png');
+
+        $img = new Image();
+        $img->open($original)
+            ->overlay($overlay, 'right')
+            ->saveAs($actual);
+
+        $this->_isFileEq($actual, $excepted);
+    }
+
+    public function testWatermarkCenter()
+    {
+        $excepted = $this->_getExpected(__FUNCTION__ . '.png');
+        $actual   = $this->_getActual(__FUNCTION__ . '.png');
+        $original = $this->_getOrig('butterfly.jpg');
+        $overlay  = $this->_getOrig('overlay.png');
+
+        $img = new Image();
+        $img->open($original)
+            ->overlay($overlay, 'center')
+            ->saveAs($actual);
+
+        $this->_isFileEq($actual, $excepted);
+    }
+
+    public function testWatermarkOpacity()
+    {
+        $excepted = $this->_getExpected(__FUNCTION__ . '.png');
+        $actual   = $this->_getActual(__FUNCTION__ . '.png');
+        $original = $this->_getOrig('butterfly.jpg');
+        $overlay  = $this->_getOrig('overlay.png');
+
+        $img = new Image();
+        $img->open($original)
+            ->overlay($overlay, 'bottom', 200, 25, 25)
+            ->saveAs($actual);
+
+        $this->_isFileEq($actual, $excepted);
+    }
+
+
+    /**** Tools *******************************************************************************************************/
+
+
     /**
      * @param $filename
      * @return string

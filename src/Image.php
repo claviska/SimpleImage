@@ -108,6 +108,33 @@ class Image
     }
 
     /**
+     * Get the current width
+     * @return int
+     */
+    public function getWidth()
+    {
+        return $this->_width;
+    }
+
+    /**
+     * Get the current height
+     * @return int
+     */
+    public function getHeight()
+    {
+        return $this->_width;
+    }
+
+    /**
+     * Get the current image resource
+     * @return int
+     */
+    public function getImage()
+    {
+        return $this->_image;
+    }
+
+    /**
      * @param int $newQuality
      * @return $this
      */
@@ -727,5 +754,172 @@ class Image
         }
 
         return $this;
+    }
+
+
+    /**
+     * Overlay an image on top of another, works with 24-bit PNG alpha-transparency
+     *
+     * @param string    $overlay     An image filename or a Image object
+     * @param string    $position    center|top|left|bottom|right|top left|top right|bottom left|bottom right
+     * @param float|int $opacity     Overlay opacity 0-1 or 0-100
+     * @param int       $globOffsetX Horizontal offset in pixels
+     * @param int       $globOffsetY Vertical offset in pixels
+     *
+     * @return $this
+     */
+    public function overlay($overlay, $position = 'bottom right', $opacity = .4, $globOffsetX = 0, $globOffsetY = 0)
+    {
+        // Load overlay image
+        if (!($overlay instanceof self)) {
+            $overlay = new self($overlay);
+        }
+
+        // Convert opacity
+        if ($opacity < 1) {
+            $opacity = $opacity * 100;
+        }
+
+        $opacity     = Vars::limit($opacity, 0, 100);
+        $globOffsetX = Filter::int($globOffsetX);
+        $globOffsetY = Filter::int($globOffsetY);
+
+        // Determine position
+        switch (strtolower($position)) {
+            case 'top left':
+                $xOffset = 0 + $globOffsetX;
+                $yOffset = 0 + $globOffsetY;
+                break;
+
+            case 'top right':
+                $xOffset = $this->_width - $overlay->getWidth() + $globOffsetX;
+                $yOffset = 0 + $globOffsetY;
+                break;
+
+            case 'top':
+                $xOffset = ($this->_width / 2) - ($overlay->getWidth() / 2) + $globOffsetX;
+                $yOffset = 0 + $globOffsetY;
+                break;
+
+            case 'bottom left':
+                $xOffset = 0 + $globOffsetX;
+                $yOffset = $this->_height - $overlay->getHeight() + $globOffsetY;
+                break;
+
+            case 'bottom right':
+                $xOffset = $this->_width - $overlay->getWidth() + $globOffsetX;
+                $yOffset = $this->_height - $overlay->getHeight() + $globOffsetY;
+                break;
+
+            case 'bottom':
+                $xOffset = ($this->_width / 2) - ($overlay->getWidth() / 2) + $globOffsetX;
+                $yOffset = $this->_height - $overlay->getHeight() + $globOffsetY;
+                break;
+
+            case 'left':
+                $xOffset = 0 + $globOffsetX;
+                $yOffset = ($this->_height / 2) - ($overlay->getHeight() / 2) + $globOffsetY;
+                break;
+
+            case 'right':
+                $xOffset = $this->_width - $overlay->getWidth() + $globOffsetX;
+                $yOffset = ($this->_height / 2) - ($overlay->getHeight() / 2) + $globOffsetY;
+                break;
+
+            case 'center':
+            default:
+                $xOffset = ($this->_width / 2) - ($overlay->getWidth() / 2) + $globOffsetX;
+                $yOffset = ($this->_height / 2) - ($overlay->getHeight() / 2) + $globOffsetY;
+                break;
+        }
+
+        // Perform the overlay
+        $this->_imageCopyMergeAlpha(
+            $this->_image,
+            $overlay->getImage(),
+            $xOffset,
+            $yOffset,
+            0,
+            0,
+            $overlay->getWidth(),
+            $overlay->getHeight(),
+            $opacity
+        );
+
+        return $this;
+    }
+
+    /**
+     * Same as PHP's imagecopymerge() function, except preserves alpha-transparency in 24-bit PNGs
+     * @link http://www.php.net/manual/en/function.imagecopymerge.php#88456
+     *
+     * @param mixed $dstIm     Image resource
+     * @param mixed $srcIm     Source resource
+     * @param int   $dstX      Left offset of dist
+     * @param int   $dstY      Top offset
+     * @param int   $srcX      Left offset of source
+     * @param int   $srcY      Top offset of source
+     * @param int   $srcWidth  Source width
+     * @param int   $srcHeight Source height
+     * @param int   $pct       Opacity
+     */
+    protected function _imageCopyMergeAlpha($dstIm, $srcIm, $dstX, $dstY, $srcX, $srcY, $srcWidth, $srcHeight, $pct)
+    {
+        // Get image width and height and percentage
+        $pct /= 100;
+        $width  = imagesx($srcIm);
+        $height = imagesy($srcIm);
+
+        // Turn alpha blending off
+        imagealphablending($srcIm, false);
+
+        // Find the most opaque pixel in the image (the one with the smallest alpha value)
+        $minalpha = 127;
+        for ($x = 0; $x < $width; $x++) {
+            for ($y = 0; $y < $height; $y++) {
+                $alpha = (imagecolorat($srcIm, $x, $y) >> 24) & 0xFF;
+                if ($alpha < $minalpha) {
+                    $minalpha = $alpha;
+                }
+            }
+        }
+
+        // Loop through image pixels and modify alpha for each
+        for ($x = 0; $x < $width; $x++) {
+            for ($y = 0; $y < $height; $y++) {
+
+                // Get current alpha value (represents the TANSPARENCY!)
+                $colorxy = imagecolorat($srcIm, $x, $y);
+                $alpha   = ($colorxy >> 24) & 0xFF;
+
+                // Calculate new alpha
+                if ($minalpha !== 127) {
+                    $alpha = 127 + 127 * $pct * ($alpha - 127) / (127 - $minalpha);
+                } else {
+                    $alpha += 127 * $pct;
+                }
+
+                // Get the color index with new alpha
+                $alphacolorxy = imagecolorallocatealpha(
+                    $srcIm,
+                    ($colorxy >> 16) & 0xFF,
+                    ($colorxy >> 8) & 0xFF,
+                    $colorxy & 0xFF,
+                    $alpha
+                );
+
+                // Set pixel with the new color + opacity
+                if (!imagesetpixel($srcIm, $x, $y, $alphacolorxy)) {
+                    return;
+                }
+            }
+        }
+
+        // Copy it
+        imagesavealpha($dstIm, true);
+        imagealphablending($dstIm, true);
+        imagesavealpha($srcIm, true);
+        imagealphablending($srcIm, true);
+        imagecopy($dstIm, $srcIm, $dstX, $dstY, $srcX, $srcY, $srcWidth, $srcHeight);
     }
 }
