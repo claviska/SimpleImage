@@ -119,12 +119,11 @@ class ImageTest extends PHPUnit
 
     public function testSave()
     {
-        $original = $this->_getOrig('butterfly.jpg');
-        $actual   = $this->_getActual(__FUNCTION__ . '.jpg');
         $excepted = $this->_getExpected(__FUNCTION__ . '.jpg');
+        $actual   = $this->_getActual(__FUNCTION__ . '.jpg');
+        $original = $this->_getOrig('butterfly.jpg');
 
         if (copy($original, $actual)) {
-
             $img  = new Image($actual);
             $info = $img->save(1)->getInfo();
 
@@ -243,31 +242,31 @@ class ImageTest extends PHPUnit
         $img      = new Image();
         $excepted = $this->_getExpected(__FUNCTION__ . '.png');
 
-        $actual = $this->_getActual(__FUNCTION__ . '-sharp-0088cc.png');
+        $actual = $this->_getActual(__FUNCTION__ . '_sharp_0088cc.png');
         $img->create(200, 100, '#0088cc')->saveAs($actual);
         $this->_isFileEq($actual, $excepted);
 
-        $actual = $this->_getActual(__FUNCTION__ . '-0088cc.png');
+        $actual = $this->_getActual(__FUNCTION__ . '_0088cc.png');
         $img->create(200, 100, '0088CC')->saveAs($actual);
         $this->_isFileEq($actual, $excepted);
 
-        $actual = $this->_getActual(__FUNCTION__ . '-sharp-08c.png');
+        $actual = $this->_getActual(__FUNCTION__ . '_sharp_08c.png');
         $img->create(200, 100, '#08c')->saveAs($actual);
         $this->_isFileEq($actual, $excepted);
 
-        $actual = $this->_getActual(__FUNCTION__ . '-08c.png');
+        $actual = $this->_getActual(__FUNCTION__ . '_08c.png');
         $img->create(200, 100, '08c')->saveAs($actual);
         $this->_isFileEq($actual, $excepted);
 
-        $actual = $this->_getActual(__FUNCTION__ . '-array-08c.png');
+        $actual = $this->_getActual(__FUNCTION__ . '_array_08c.png');
         $img->create(200, 100, array('r' => 0, 'g' => '136', 'b' => '204'))->saveAs($actual);
         $this->_isFileEq($actual, $excepted);
 
-        $actual = $this->_getActual(__FUNCTION__ . '-array-0-136-204.png');
+        $actual = $this->_getActual(__FUNCTION__ . '_array_0_136_204.png');
         $img->create(200, 100, array(0, 136, 204))->saveAs($actual);
         $this->_isFileEq($actual, $excepted);
 
-        $actual = $this->_getActual(__FUNCTION__ . '-array-no-format.png');
+        $actual = $this->_getActual(__FUNCTION__ . '_array_no_format.png');
         $img->create(200, 100, array(null, '   136  ', '   204   ', 0))->saveAs($actual);
         $this->_isFileEq($actual, $excepted);
     }
@@ -275,7 +274,7 @@ class ImageTest extends PHPUnit
     public function testResizeJpeg()
     {
         $excepted = $this->_getExpected(__FUNCTION__ . '.jpg');
-        $actual   = $this->_getActual(__FUNCTION__ . '-320-239.jpg');
+        $actual   = $this->_getActual(__FUNCTION__ . '_320_239.jpg');
         $original = $this->_getOrig('butterfly.png');
 
         $img = new Image($original);
@@ -287,7 +286,7 @@ class ImageTest extends PHPUnit
     public function testResizeGif()
     {
         $excepted = $this->_getExpected(__FUNCTION__ . '.gif');
-        $actual   = $this->_getActual(__FUNCTION__ . '-320-239.gif');
+        $actual   = $this->_getActual(__FUNCTION__ . '_320_239.gif');
         $original = $this->_getOrig('butterfly.gif');
 
         $img = new Image($original);
@@ -435,12 +434,69 @@ class ImageTest extends PHPUnit
         $this->_isFileEq($actual, $excepted);
     }
 
+    public function testFlipRorate90()
+    {
+        $excepted = $this->_getExpected(__FUNCTION__ . '.jpg');
+        $actual   = $this->_getActual(__FUNCTION__ . '.jpg');
+        $original = $this->_getOrig('butterfly.jpg');
+
+        $img = new Image();
+        $img->open($original)
+            ->rotate(90)
+            ->saveAs($actual);
+
+        $this->_isFileEq($actual, $excepted);
+    }
+
+    public function testFlipRorate45()
+    {
+        $excepted = $this->_getExpected(__FUNCTION__ . '.jpg');
+        $actual   = $this->_getActual(__FUNCTION__ . '.jpg');
+        $original = $this->_getOrig('butterfly.jpg');
+
+        $img = new Image();
+        $img->open($original)
+            ->rotate(45)
+            ->saveAs($actual);
+
+        $this->_isFileEq($actual, $excepted);
+    }
+
+    public function testFlipRorateRevert275White()
+    {
+        $excepted = $this->_getExpected(__FUNCTION__ . '.png');
+        $actual   = $this->_getActual(__FUNCTION__ . '.png');
+        $original = $this->_getOrig('butterfly.jpg');
+
+        $img = new Image();
+        $img->open($original)
+            ->rotate(-275, [255, 255, 255, 127])
+            ->saveAs($actual);
+
+        $this->_isFileEq($actual, $excepted);
+    }
+
+    public function testAutoOrient()
+    {
+        $excepted = $this->_getExpected(__FUNCTION__ . '.jpg');
+        $actual   = $this->_getActual(__FUNCTION__ . '.jpg');
+        $original = $this->_getOrig('butterfly.jpg');
+
+        $img = new Image();
+        $img->open($original)
+            ->autoOrient()
+            ->saveAs($actual);
+
+        $this->_isFileEq($actual, $excepted);
+    }
+
     /**
      * @param $filename
      * @return string
      */
     protected function _getActual($filename)
     {
+        $filename = $this->camelCase2Human($filename);
         return FS::clean(PROJECT_ROOT . '/build/' . $filename);
     }
 
@@ -450,6 +506,7 @@ class ImageTest extends PHPUnit
      */
     protected function _getExpected($filename)
     {
+        $filename = $this->camelCase2Human($filename);
         return FS::clean(PROJECT_TESTS . '/expected/' . $filename);
     }
 
@@ -478,4 +535,35 @@ class ImageTest extends PHPUnit
             is(0, $diff);
         }
     }
+
+    /**
+     * @param string $input
+     * @return mixed|string
+     */
+    protected function camelCase2Human($input)
+    {
+        $original = $input;
+
+        if (strpos($input, '\\') !== false) {
+            $input = explode('\\', $input);
+            reset($input);
+            $input = end($input);
+        }
+
+        $input = preg_replace('#^(test)#i', '', $input);
+        $input = preg_replace('#(test)$#i', '', $input);
+
+        $output = preg_replace(array('/(?<=[^A-Z])([A-Z])/', '/(?<=[^0-9])([0-9])/'), '_$0', $input);
+        $output = preg_replace('#_{1,}#', '_', $output);
+
+        $output = trim($output);
+        $output = strtolower($output);
+
+        if (strlen($output) == 0) {
+            return $original;
+        }
+
+        return $output;
+    }
+
 }
