@@ -15,8 +15,8 @@
 namespace JBZoo\Image;
 
 use JBZoo\Utils\Filter;
-use JBZoo\Utils\FS;
 use JBZoo\Utils\Vars;
+use JBZoo\Utils\FS;
 
 /**
  * Class Image
@@ -489,8 +489,7 @@ class Image
         imagecopyresampled($newImage, $this->_image, 0, 0, 0, 0, $width, $height, $this->_width, $this->_height);
 
         // Update meta data
-        $this->_destroyImage();
-        $this->_image  = $newImage;
+        $this->_replaceImage($newImage);
         $this->_width  = $width;
         $this->_height = $height;
 
@@ -619,8 +618,7 @@ class Image
         imagecopyresampled($newImage, $this->_image, 0, 0, $left, $top, $cropedW, $cropedH, $cropedW, $cropedH);
 
         // Update meta data
-        $this->_destroyImage();
-        $this->_image  = $newImage;
+        $this->_replaceImage($newImage);
         $this->_width  = $cropedW;
         $this->_height = $cropedH;
 
@@ -652,8 +650,81 @@ class Image
                 break;
         }
 
+        return $this;
+    }
+
+    /**
+     * @param $newImage
+     */
+    protected function _replaceImage($newImage)
+    {
         $this->_destroyImage();
         $this->_image = $newImage;
+    }
+
+    /**
+     * Rotate an image
+     *
+     * @param int          $angle   0-360
+     * @param string|array $bgColor Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
+     *                              Where red, green, blue - integers 0-255, alpha - integer 0-127
+     * @return $this
+     */
+    public function rotate($angle, $bgColor = '#000000')
+    {
+        // Perform the rotation
+        $rgba     = Helper::normalizeColor($bgColor);
+        $bgColor  = imagecolorallocatealpha($this->_image, $rgba['r'], $rgba['g'], $rgba['b'], $rgba['a']);
+        $newImage = imagerotate($this->_image, -(Helper::keepWithin($angle, -360, 360)), $bgColor);
+
+        imagesavealpha($newImage, true);
+        imagealphablending($newImage, true);
+
+        // Update meta data
+        $this->_width  = imagesx($newImage);
+        $this->_height = imagesy($newImage);
+        $this->_replaceImage($newImage);
+
+        return $this;
+    }
+
+    /**
+     * Rotates and/or flips an image automatically so the orientation will be correct (based on exif 'Orientation')
+     *
+     * @return $this
+     * @codeCoverageIgnore
+     */
+    public function autoOrient()
+    {
+        if (!isset($this->_exif['Orientation'])) {
+            return $this;
+        }
+
+        $orient = $this->_exif['Orientation'];
+
+        if ($orient == 2) { // Flip horizontal
+            $this->flip('x');
+
+        } elseif ($orient == 3) { // Rotate 180 counterclockwise
+            $this->rotate(-180);
+
+        } elseif ($orient == 4) { // Vertical flip
+            $this->flip('y');
+
+        } elseif ($orient == 5) { // Rotate 90 clockwise and flip vertically
+            $this->flip('y');
+            $this->rotate(90);
+
+        } elseif ($orient == 6) { // Rotate 90 clockwise
+            $this->rotate(90);
+
+        } elseif ($orient == 7) { // Rotate 90 clockwise and flip horizontally
+            $this->flip('x');
+            $this->rotate(90);
+
+        } elseif ($orient == 8) { // Rotate 90 counterclockwise
+            $this->rotate(-90);
+        }
 
         return $this;
     }
