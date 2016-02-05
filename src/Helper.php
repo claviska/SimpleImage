@@ -180,4 +180,98 @@ class Helper
 
         return Vars::limit($value, $min, $max);
     }
+
+    /**
+     * Same as PHP's imagecopymerge() function, except preserves alpha-transparency in 24-bit PNGs
+     * @link http://www.php.net/manual/en/function.imagecopymerge.php#88456
+     *
+     * @param mixed $dstIm     Image resource
+     * @param mixed $srcIm     Source resource
+     * @param int   $dstX      Left offset of dist
+     * @param int   $dstY      Top offset
+     * @param int   $srcX      Left offset of source
+     * @param int   $srcY      Top offset of source
+     * @param int   $srcWidth  Source width
+     * @param int   $srcHeight Source height
+     * @param int   $pct       Opacity
+     */
+    public static function imageCopyMergeAlpha($dstIm, $srcIm, $dstX, $dstY, $srcX, $srcY, $srcWidth, $srcHeight, $pct)
+    {
+        // Get image width and height and percentage
+        $pct /= 100;
+        $width  = imagesx($srcIm);
+        $height = imagesy($srcIm);
+
+        // Turn alpha blending off
+        imagealphablending($srcIm, false);
+
+        // Find the most opaque pixel in the image (the one with the smallest alpha value)
+        $minalpha = 127;
+        for ($x = 0; $x < $width; $x++) {
+            for ($y = 0; $y < $height; $y++) {
+                $alpha = (imagecolorat($srcIm, $x, $y) >> 24) & 0xFF;
+                if ($alpha < $minalpha) {
+                    $minalpha = $alpha;
+                }
+            }
+        }
+
+        // Loop through image pixels and modify alpha for each
+        for ($x = 0; $x < $width; $x++) {
+            for ($y = 0; $y < $height; $y++) {
+
+                // Get current alpha value (represents the TANSPARENCY!)
+                $colorxy = imagecolorat($srcIm, $x, $y);
+                $alpha   = ($colorxy >> 24) & 0xFF;
+
+                // Calculate new alpha
+                if ($minalpha !== 127) {
+                    $alpha = 127 + 127 * $pct * ($alpha - 127) / (127 - $minalpha);
+                } else {
+                    $alpha += 127 * $pct;
+                }
+
+                // Get the color index with new alpha
+                $alphacolorxy = imagecolorallocatealpha(
+                    $srcIm,
+                    ($colorxy >> 16) & 0xFF,
+                    ($colorxy >> 8) & 0xFF,
+                    $colorxy & 0xFF,
+                    $alpha
+                );
+
+                // Set pixel with the new color + opacity
+                if (!imagesetpixel($srcIm, $x, $y, $alphacolorxy)) {
+                    return;
+                }
+            }
+        }
+
+        // Copy it
+        imagesavealpha($dstIm, true);
+        imagealphablending($dstIm, true);
+        imagesavealpha($srcIm, true);
+        imagealphablending($srcIm, true);
+        imagecopy($dstIm, $srcIm, $dstX, $dstY, $srcX, $srcY, $srcWidth, $srcHeight);
+    }
+
+    /**
+     * Check opacity value
+     *
+     * @param $opacity
+     * @return int
+     */
+    public static function opacity($opacity)
+    {
+        $opacity = abs($opacity);
+
+        if ($opacity < 1) {
+            $opacity = $opacity * 100;
+        }
+
+        $opacity = Filter::int($opacity);
+        $opacity = Vars::limit($opacity, 0, 100);
+
+        return $opacity;
+    }
 }

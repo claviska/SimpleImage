@@ -655,6 +655,106 @@ class ImageTest extends PHPUnit
         $this->_isFileEq($actual, $excepted);
     }
 
+    public function testFilterSepia()
+    {
+        $excepted = $this->_getExpected(__FUNCTION__ . '.png');
+        $actual   = $this->_getActual(__FUNCTION__ . '.png');
+        $original = $this->_getOrig('butterfly.jpg');
+
+        $img = new Image();
+        $img->open($original)
+            ->addFilter('sepia')
+            ->saveAs($actual);
+
+        $this->_isFileEq($actual, $excepted);
+    }
+
+    public function testFilterPixelate()
+    {
+        $excepted = $this->_getExpected(__FUNCTION__ . '.png');
+        $actual   = $this->_getActual(__FUNCTION__ . '.png');
+        $original = $this->_getOrig('butterfly.jpg');
+
+        $img = new Image();
+        $img->open($original)
+            ->addFilter('pixelate', [25])
+            ->saveAs($actual);
+
+        $this->_isFileEq($actual, $excepted);
+    }
+
+    public function testFilterCustom()
+    {
+        $excepted = $this->_getExpected(__FUNCTION__ . '.png');
+        $actual   = $this->_getActual(__FUNCTION__ . '.png');
+        $original = $this->_getOrig('butterfly.jpg');
+
+        $img = new Image();
+        $img->open($original)
+            ->addFilter(function ($image, $blockSize) {
+                imagefilter($image, IMG_FILTER_PIXELATE, $blockSize, true);
+            }, [2])
+            ->saveAs($actual);
+
+        $this->_isFileEq($actual, $excepted);
+    }
+
+    public function testOpacity_05()
+    {
+        $excepted = $this->_getExpected(__FUNCTION__ . '.png');
+        $actual   = $this->_getActual(__FUNCTION__ . '.png');
+        $original = $this->_getOrig('butterfly.jpg');
+
+        $img = new Image();
+        $img->open($original)
+            ->opacity(.5)
+            ->saveAs($actual);
+
+        $this->_isFileEq($actual, $excepted);
+    }
+
+    public function testOpacity_50()
+    {
+        $excepted = $this->_getExpected(__FUNCTION__ . '.png');
+        $actual   = $this->_getActual(__FUNCTION__ . '.png');
+        $original = $this->_getOrig('butterfly.jpg');
+
+        $img = new Image();
+        $img->open($original)
+            ->opacity(50)
+            ->saveAs($actual);
+
+        $this->_isFileEq($actual, $excepted);
+    }
+
+    public function testOpacity_0()
+    {
+        $excepted = $this->_getExpected(__FUNCTION__ . '.png');
+        $actual   = $this->_getActual(__FUNCTION__ . '.png');
+        $original = $this->_getOrig('butterfly.jpg');
+
+        $img = new Image();
+        $img->open($original)
+            ->opacity(0)
+            ->saveAs($actual);
+
+        $this->_isFileEq($actual, $excepted);
+    }
+
+    public function testOpacity_100()
+    {
+        $excepted = $this->_getExpected(__FUNCTION__ . '.png');
+        $actual   = $this->_getActual(__FUNCTION__ . '.png');
+        $original = $this->_getOrig('butterfly.jpg');
+
+        $img = new Image();
+        $img->open($original)
+            ->opacity(150)
+            ->saveAs($actual);
+
+        $this->_isFileEq($actual, $excepted);
+    }
+
 
     /**** Tools *******************************************************************************************************/
 
@@ -690,18 +790,23 @@ class ImageTest extends PHPUnit
 
     /**
      * @param string $actual
-     * @param string $excepted
+     * @param string $expected
      */
-    protected function _isFileEq($actual, $excepted)
+    protected function _isFileEq($actual, $expected)
     {
-        isTrue(file_exists($actual));
-        isTrue(file_exists($excepted));
+        $isExistsAct = file_exists($actual);
+        $isExistsExp = file_exists($expected);
 
-        $diff = filesize($actual) - filesize($excepted);
-        if ($diff !== 0) {
-            cliMessage(FS::base($actual) . ' = ' . $diff);
-        } else {
-            is(0, $diff);
+        isTrue($isExistsExp, 'File not found: ' . $expected);
+
+        if ($isExistsAct && $isExistsExp) {
+            $diff = filesize($actual) - filesize($expected);
+
+            if ($diff !== 0) {
+                cliMessage(FS::base($actual) . ' = ' . $diff);
+            } else {
+                is(0, $diff);
+            }
         }
     }
 
