@@ -258,7 +258,7 @@ class FilterTest extends PHPUnit
 
         $img = new Image();
         $img->open($original)
-            ->opacity(.5)
+            ->addFilter('opacity', .5)
             ->saveAs($actual);
 
         Helper::isFileEq($actual, $excepted);
@@ -272,7 +272,7 @@ class FilterTest extends PHPUnit
 
         $img = new Image();
         $img->open($original)
-            ->opacity(50)
+            ->addFilter('opacity', 30)
             ->saveAs($actual);
 
         Helper::isFileEq($actual, $excepted);
@@ -286,7 +286,7 @@ class FilterTest extends PHPUnit
 
         $img = new Image();
         $img->open($original)
-            ->opacity(0)
+            ->addFilter('opacity', 0)
             ->saveAs($actual);
 
         Helper::isFileEq($actual, $excepted);
@@ -300,7 +300,7 @@ class FilterTest extends PHPUnit
 
         $img = new Image();
         $img->open($original)
-            ->opacity(150)
+            ->addFilter('opacity', 150)
             ->saveAs($actual);
 
         Helper::isFileEq($actual, $excepted);

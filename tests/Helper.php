@@ -63,10 +63,13 @@ class Helper
         isTrue($isExistsExp, 'File not found: ' . $expected);
 
         if ($isExistsAct && $isExistsExp) {
-            $diff = filesize($actual) - filesize($expected);
+            $actualSize   = filesize($actual);
+            $expectedSize = filesize($expected);
+
+            $diff = abs($actualSize - $expectedSize);
 
             if ($diff !== 0) {
-                $message = FS::filename($actual) . ' = ' . $diff;
+                $message = FS::filename($actual) . '; ' . $actualSize . ' <> ' . $expectedSize . ' (' . $diff . ')';
                 isTrue($diff <= 4096, $message);
                 cliMessage($message);
             } else {

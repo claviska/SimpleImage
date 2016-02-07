@@ -355,7 +355,7 @@ class Image
      */
     protected function _destroyImage()
     {
-        if (null !== $this->_image && get_resource_type($this->_image) === 'gd') {
+        if (is_resource($this->_image) && get_resource_type($this->_image) === 'gd') {
             imagedestroy($this->_image);
             $this->_image = null;
         }
@@ -730,7 +730,10 @@ class Image
     protected function _replaceImage($newImage)
     {
         $this->_destroyImage();
-        $this->_image = $newImage;
+
+        $this->_image  = $newImage;
+        $this->_width  = imagesx($this->_image);
+        $this->_height = imagesy($this->_image);
     }
 
     /**
@@ -881,33 +884,6 @@ class Image
             $overlay->getHeight(),
             $opacity
         );
-
-        return $this;
-    }
-
-    /**
-     * Changes the opacity level of the image
-     *
-     * @param float|int $opacity 0-1
-     * @return $this
-     */
-    public function opacity($opacity)
-    {
-        // Determine opacity
-        $opacity = Helper::opacity($opacity);
-
-        // Make a copy of the image
-        $imageCopy = imagecreatetruecolor($this->_width, $this->_height);
-        imagealphablending($imageCopy, false);
-        imagesavealpha($imageCopy, true);
-        imagecopy($imageCopy, $this->_image, 0, 0, 0, 0, $this->_width, $this->_height);
-
-        // Create transparent layer
-        $this->create($this->_width, $this->_height, array(0, 0, 0, 127));
-
-        // Merge with specified opacity
-        Helper::imageCopyMergeAlpha($this->_image, $imageCopy, 0, 0, 0, 0, $this->_width, $this->_height, $opacity);
-        imagedestroy($imageCopy);
 
         return $this;
     }

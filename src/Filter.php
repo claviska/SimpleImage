@@ -193,4 +193,32 @@ class Filter
             return $newImage;
         }
     }
+
+    /**
+     * Changes the opacity level of the image
+     *
+     * @param mixed     $image
+     * @param float|int $opacity 0-1 or 0-100
+     * @return $this
+     */
+    public static function opacity($image, $opacity)
+    {
+        // Determine opacity
+        $opacity = Helper::opacity($opacity);
+
+        $width  = imagesx($image);
+        $height = imagesy($image);
+
+        $newImage = imagecreatetruecolor($width, $height);
+
+        // Set a White & Transparent Background Color
+        $bg = imagecolorallocatealpha($newImage, 0, 0, 0, 127);
+        imagefill($newImage, 0, 0, $bg);
+
+        // Copy and merge
+        Helper::imageCopyMergeAlpha($newImage, $image, 0, 0, 0, 0, $width, $height, $opacity);
+        imagedestroy($image);
+
+        return $newImage;
+    }
 }
