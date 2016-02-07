@@ -28,7 +28,7 @@ class Helper
      * Require GD library
      * @throws Exception
      */
-    public static function checkSystem()
+    public static function checkGD()
     {
         // Require GD library
         if (!extension_loaded('gd')) {
@@ -81,10 +81,10 @@ class Helper
         $result = array();
 
         if (is_string($origColor)) {
-            $result = self::normalizeColorString($origColor);
+            $result = self::_normalizeColorString($origColor);
 
         } elseif (is_array($origColor) && (count($origColor) === 3 || count($origColor) === 4)) {
-            $result = self::normalizeColorArray($origColor);
+            $result = self::_normalizeColorArray($origColor);
         }
 
         if (count($result) !== 4) {
@@ -101,7 +101,7 @@ class Helper
      * @return integer[]
      * @throws Exception
      */
-    public static function normalizeColorString($origColor)
+    protected static function _normalizeColorString($origColor)
     {
         $color = trim($origColor, '#');
         $color = trim($color);
@@ -124,9 +124,9 @@ class Helper
             throw new Exception('Undefined color format (string): ' . $origColor); // @codeCoverageIgnore
         }
 
-        $red   = Filter::int(hexdec($red));
-        $green = Filter::int(hexdec($green));
-        $blue  = Filter::int(hexdec($blue));
+        $red   = hexdec($red);
+        $green = hexdec($green);
+        $blue  = hexdec($blue);
 
         return array($red, $green, $blue, 0);
     }
@@ -138,24 +138,24 @@ class Helper
      * @return integer[]
      * @throws Exception
      */
-    public static function normalizeColorArray(array $origColor)
+    protected static function _normalizeColorArray(array $origColor)
     {
         $result = array();
 
         if (Arr::key('r', $origColor) && Arr::key('g', $origColor) && Arr::key('b', $origColor)) {
             $result = array(
-                self::keepWithin($origColor['r'], 0, 255),
-                self::keepWithin($origColor['g'], 0, 255),
-                self::keepWithin($origColor['b'], 0, 255),
-                self::keepWithin(isset($origColor['a']) ? $origColor['a'] : 0, 0, 127),
+                self::color($origColor['r']),
+                self::color($origColor['g']),
+                self::color($origColor['b']),
+                self::alpha(isset($origColor['a']) ? $origColor['a'] : 0),
             );
 
         } elseif (Arr::key(0, $origColor) && Arr::key(1, $origColor) && Arr::key(2, $origColor)) {
             $result = array(
-                self::keepWithin($origColor[0], 0, 255),
-                self::keepWithin($origColor[1], 0, 255),
-                self::keepWithin($origColor[2], 0, 255),
-                self::keepWithin(isset($origColor[3]) ? $origColor[3] : 0, 0, 127),
+                self::color($origColor[0]),
+                self::color($origColor[1]),
+                self::color($origColor[2]),
+                self::alpha(isset($origColor[3]) ? $origColor[3] : 0),
             );
         }
 
@@ -172,7 +172,7 @@ class Helper
      *
      * @return int
      */
-    public static function keepWithin($value, $min, $max)
+    public static function range($value, $min, $max)
     {
         $value = Filter::int($value);
         $min   = Filter::int($min);
@@ -206,12 +206,12 @@ class Helper
         imagealphablending($srcIm, false);
 
         // Find the most opaque pixel in the image (the one with the smallest alpha value)
-        $minalpha = 127;
+        $minAlpha = 127;
         for ($x = 0; $x < $width; $x++) {
             for ($y = 0; $y < $height; $y++) {
                 $alpha = (imagecolorat($srcIm, $x, $y) >> 24) & 0xFF;
-                if ($alpha < $minalpha) {
-                    $minalpha = $alpha;
+                if ($alpha < $minAlpha) {
+                    $minAlpha = $alpha;
                 }
             }
         }
@@ -221,27 +221,27 @@ class Helper
             for ($y = 0; $y < $height; $y++) {
 
                 // Get current alpha value (represents the TANSPARENCY!)
-                $colorxy = imagecolorat($srcIm, $x, $y);
-                $alpha   = ($colorxy >> 24) & 0xFF;
+                $colorXY = imagecolorat($srcIm, $x, $y);
+                $alpha   = ($colorXY >> 24) & 0xFF;
 
                 // Calculate new alpha
-                if ($minalpha !== 127) {
-                    $alpha = 127 + 127 * $pct * ($alpha - 127) / (127 - $minalpha);
+                if ($minAlpha !== 127) {
+                    $alpha = 127 + 127 * $pct * ($alpha - 127) / (127 - $minAlpha);
                 } else {
                     $alpha += 127 * $pct;
                 }
 
                 // Get the color index with new alpha
-                $alphacolorxy = imagecolorallocatealpha(
+                $alphaColorXY = imagecolorallocatealpha(
                     $srcIm,
-                    ($colorxy >> 16) & 0xFF,
-                    ($colorxy >> 8) & 0xFF,
-                    $colorxy & 0xFF,
+                    ($colorXY >> 16) & 0xFF,
+                    ($colorXY >> 8) & 0xFF,
+                    $colorXY & 0xFF,
                     $alpha
                 );
 
                 // Set pixel with the new color + opacity
-                if (!imagesetpixel($srcIm, $x, $y, $alphacolorxy)) {
+                if (!imagesetpixel($srcIm, $x, $y, $alphaColorXY)) {
                     return;
                 }
             }
@@ -263,9 +263,7 @@ class Helper
      */
     public static function opacity($opacity)
     {
-        $opacity = abs($opacity);
-
-        if ($opacity < 1) {
+        if ($opacity <= 1) {
             $opacity = $opacity * 100;
         }
 
@@ -273,5 +271,117 @@ class Helper
         $opacity = Vars::limit($opacity, 0, 100);
 
         return $opacity;
+    }
+
+    /**
+     * Convert opacity value to alpha
+     * @param int $opacity
+     * @return int
+     */
+    public static function opacity2Alpha($opacity)
+    {
+        $opacity = self::opacity($opacity);
+        $opacity = $opacity / 100;
+
+        $aplha = 127 - (127 * $opacity);
+        $aplha = self::alpha($aplha);
+
+        return $aplha;
+    }
+
+    /**
+     * @param int $color
+     * @return int
+     */
+    public static function color($color)
+    {
+        return self::range($color, 0, 255);
+    }
+
+    /**
+     * @param int $color
+     * @return int
+     */
+    public static function alpha($color)
+    {
+        return self::range($color, 0, 127);
+    }
+
+    /**
+     * @param int $color
+     * @return int
+     */
+    public static function rotate($color)
+    {
+        return self::range($color, -360, 360);
+    }
+
+    /**
+     * @param int $brightness
+     * @return int
+     */
+    public static function brightness($brightness)
+    {
+        return self::range($brightness, -255, 255);
+    }
+
+    /**
+     * @param int $contrast
+     * @return int
+     */
+    public static function contrast($contrast)
+    {
+        return self::range($contrast, -100, 100);
+    }
+
+    /**
+     * @param int $colorize
+     * @return int
+     */
+    public static function colorize($colorize)
+    {
+        return self::range($colorize, -255, 255);
+    }
+
+    /**
+     * @param int $smooth
+     * @return int
+     */
+    public static function smooth($smooth)
+    {
+        return self::range($smooth, 1, 2048);
+    }
+
+    /**
+     * @param string $direction
+     * @return string
+     */
+    public static function direction($direction)
+    {
+        $direction = strtolower($direction);
+
+        if (in_array($direction, array('x', 'y', 'xy', 'yx'), true)) {
+            return $direction;
+        }
+
+        return 'x';
+    }
+
+    /**
+     * @param string $blur
+     * @return string
+     */
+    public static function blur($blur)
+    {
+        return self::range($blur, 1, 10);
+    }
+
+    /**
+     * @param string $percent
+     * @return string
+     */
+    public static function percent($percent)
+    {
+        return self::range($percent, 0, 100);
     }
 }

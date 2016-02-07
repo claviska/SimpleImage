@@ -1,0 +1,136 @@
+<?php
+/**
+ * JBZoo Image
+ *
+ * This file is part of the JBZoo CCK package.
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ *
+ * @package   Image
+ * @license   MIT
+ * @copyright Copyright (C) JBZoo.com,  All rights reserved.
+ * @link      https://github.com/JBZoo/Image
+ */
+
+namespace JBZoo\PHPUnit;
+
+use JBZoo\Image\Image;
+
+/**
+ * Class TransformsTest
+ * @package JBZoo\PHPUnit
+ */
+class TransformsTest extends PHPUnit
+{
+    public function testFlipX()
+    {
+        $excepted = Helper::getExpected(__FUNCTION__ . '.jpg');
+        $actual   = Helper::getActual(__FUNCTION__ . '.jpg');
+        $original = Helper::getOrig('butterfly.jpg');
+
+        $img = new Image();
+        $img->open($original)
+            ->flip('x')
+            ->saveAs($actual);
+
+        Helper::isFileEq($actual, $excepted);
+    }
+
+    public function testFlipY()
+    {
+        $excepted = Helper::getExpected(__FUNCTION__ . '.jpg');
+        $actual   = Helper::getActual(__FUNCTION__ . '.jpg');
+        $original = Helper::getOrig('butterfly.jpg');
+
+        $img = new Image();
+        $img->open($original)
+            ->flip('y')
+            ->saveAs($actual);
+
+        Helper::isFileEq($actual, $excepted);
+    }
+
+    public function testFlipXY()
+    {
+        $excepted = Helper::getExpected(__FUNCTION__ . '.jpg');
+        $actual   = Helper::getActual(__FUNCTION__ . '.jpg');
+        $original = Helper::getOrig('butterfly.jpg');
+
+        $img = new Image();
+        $img->open($original)
+            ->flip('xy')
+            ->saveAs($actual);
+
+        Helper::isFileEq($actual, $excepted);
+    }
+
+    public function testFlipYX()
+    {
+        $excepted = Helper::getExpected(__FUNCTION__ . '.jpg');
+        $actual   = Helper::getActual(__FUNCTION__ . '.jpg');
+        $original = Helper::getOrig('butterfly.jpg');
+
+        $img = new Image();
+        $img->open($original)
+            ->flip('yx')
+            ->saveAs($actual);
+
+        Helper::isFileEq($actual, $excepted);
+    }
+
+    public function testFlipRorate90()
+    {
+        $excepted = Helper::getExpected(__FUNCTION__ . '.jpg');
+        $actual   = Helper::getActual(__FUNCTION__ . '.jpg');
+        $original = Helper::getOrig('butterfly.jpg');
+
+        $img = new Image();
+        $img->open($original)
+            ->rotate(90)
+            ->saveAs($actual);
+
+        Helper::isFileEq($actual, $excepted);
+    }
+
+    public function testFlipRorate45()
+    {
+        $excepted = Helper::getExpected(__FUNCTION__ . '.jpg');
+        $actual   = Helper::getActual(__FUNCTION__ . '.jpg');
+        $original = Helper::getOrig('butterfly.jpg');
+
+        $img = new Image();
+        $img->open($original)
+            ->rotate(45)
+            ->saveAs($actual);
+
+        Helper::isFileEq($actual, $excepted);
+    }
+
+    public function testFlipRorateRevert275White()
+    {
+        $excepted = Helper::getExpected(__FUNCTION__ . '.png');
+        $actual   = Helper::getActual(__FUNCTION__ . '.png');
+        $original = Helper::getOrig('butterfly.jpg');
+
+        $img = new Image();
+        $img->open($original)
+            ->rotate(-275, array(255, 255, 255, 127))
+            ->saveAs($actual);
+
+        Helper::isFileEq($actual, $excepted);
+    }
+
+    public function testAutoOrient()
+    {
+        $excepted = Helper::getExpected(__FUNCTION__ . '.jpg');
+        $actual   = Helper::getActual(__FUNCTION__ . '.jpg');
+        $original = Helper::getOrig('butterfly.jpg');
+
+        $img = new Image();
+        $img->open($original)
+            ->autoOrient()
+            ->saveAs($actual);
+
+        Helper::isFileEq($actual, $excepted);
+    }
+}

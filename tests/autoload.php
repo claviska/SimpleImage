@@ -26,7 +26,6 @@ if ($autoload = realpath('./vendor/autoload.php')) {
 }
 
 
-// Just example
-if ($fixturesPath = realpath(PROJECT_TESTS . '/fixtures.php')) {
-    require_once PROJECT_TESTS . '/fixtures.php';
+if ($fixturesPath = realpath(PROJECT_TESTS . '/Helper.php')) {
+    require_once $fixturesPath;
 }

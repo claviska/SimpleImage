@@ -14,7 +14,7 @@
 
 namespace JBZoo\Image;
 
-use JBZoo\Utils\Filter;
+use JBZoo\Utils\Filter as VarFilter;
 use JBZoo\Utils\Vars;
 use JBZoo\Utils\FS;
 
@@ -76,7 +76,7 @@ class Image
      */
     public function __construct($filename = null)
     {
-        Helper::checkSystem();
+        Helper::checkGD();
 
         if (null !== $filename) {
             $this->open($filename);
@@ -140,7 +140,7 @@ class Image
      */
     public function setQuality($newQuality)
     {
-        $this->_quality = Filter::int($newQuality);
+        $this->_quality = VarFilter::int($newQuality);
         return $this;
     }
 
@@ -458,8 +458,8 @@ class Image
 
         $height = $height ? $height : $width;
 
-        $this->_width  = Filter::int($width);
-        $this->_height = Filter::int($height);
+        $this->_width  = VarFilter::int($width);
+        $this->_height = VarFilter::int($height);
         $this->_image  = imagecreatetruecolor($this->_width, $this->_height);
         $this->_mime   = 'image/png';
         $this->_exif   = array();
@@ -482,8 +482,8 @@ class Image
      */
     public function resize($width, $height)
     {
-        $width  = Filter::int($width);
-        $height = Filter::int($height);
+        $width  = VarFilter::int($width);
+        $height = VarFilter::int($height);
 
         // Generate new GD image
         $newImage = imagecreatetruecolor($width, $height);
@@ -496,9 +496,9 @@ class Image
             if ($transIndex >= 0 && $transIndex < $palletsize) {
                 $trColor = imagecolorsforindex($this->_image, $transIndex);
 
-                $red   = Filter::int($trColor['red']);
-                $green = Filter::int($trColor['green']);
-                $blue  = Filter::int($trColor['blue']);
+                $red   = VarFilter::int($trColor['red']);
+                $green = VarFilter::int($trColor['green']);
+                $blue  = VarFilter::int($trColor['blue']);
 
                 $transIndex = imagecolorallocate($newImage, $red, $green, $blue);
 
@@ -524,13 +524,49 @@ class Image
     }
 
     /**
+     * Best fit (proportionally resize to fit in specified width/height)
+     * Shrink the image proportionally to fit inside a $width x $height box
+     *
+     * @param int $maxWidth
+     * @param int $maxHeight
+     * @return $this
+     */
+    public function bestFit($maxWidth, $maxHeight)
+    {
+        // If it already fits, there's nothing to do
+        if ($this->_width <= $maxWidth && $this->_height <= $maxHeight) {
+            return $this;
+        }
+
+        // Determine aspect ratio
+        $aspectRatio = $this->_height / $this->_width;
+
+        // Make width fit into new dimensions
+        if ($this->_width > $maxWidth) {
+            $width  = $maxWidth;
+            $height = $width * $aspectRatio;
+        } else {
+            $width  = $this->_width;
+            $height = $this->_height;
+        }
+
+        // Make height fit into new dimensions
+        if ($height > $maxHeight) {
+            $height = $maxHeight;
+            $width  = $height / $aspectRatio;
+        }
+
+        return $this->resize($width, $height);
+    }
+
+    /**
      * Fill image with color
      *
      * @param string $color     Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
      *                          Where red, green, blue - integers 0-255, alpha - integer 0-127
      * @return $this
      */
-    public function fill($color = '#000')
+    public function fill($color = '#000000')
     {
         $rgba      = Helper::normalizeColor($color);
         $fillColor = imagecolorallocatealpha($this->_image, $rgba['r'], $rgba['g'], $rgba['b'], $rgba['a']);
@@ -554,8 +590,8 @@ class Image
      */
     public function thumbnail($width, $height = null)
     {
-        $width  = Filter::int($width);
-        $height = Filter::int($height);
+        $width  = VarFilter::int($width);
+        $height = VarFilter::int($height);
 
         // Determine height
         $height = $height ?: $width;
@@ -589,7 +625,7 @@ class Image
      */
     public function fitToHeight($height)
     {
-        $height = Filter::int($height);
+        $height = VarFilter::int($height);
         $width  = $height / ($this->_height / $this->_width);
 
         return $this->resize($width, $height);
@@ -603,7 +639,7 @@ class Image
      */
     public function fitToWidth($width)
     {
-        $width  = Filter::int($width);
+        $width  = VarFilter::int($width);
         $height = $width * ($this->_height / $this->_width);
 
         return $this->resize($width, $height);
@@ -621,10 +657,10 @@ class Image
      */
     public function crop($left, $top, $right, $bottom)
     {
-        $left   = Filter::int($left);
-        $top    = Filter::int($top);
-        $right  = Filter::int($right);
-        $bottom = Filter::int($bottom);
+        $left   = VarFilter::int($left);
+        $top    = VarFilter::int($top);
+        $right  = VarFilter::int($right);
+        $bottom = VarFilter::int($bottom);
 
         // Determine crop size
         if ($right < $left) {
@@ -655,7 +691,7 @@ class Image
     /**
      * Flip an image horizontally or vertically
      *
-     * @param string $direction x|y
+     * @param string $direction x|y|yx|xy
      * @return $this
      */
     public function flip($direction)
@@ -664,17 +700,25 @@ class Image
         imagealphablending($newImage, false);
         imagesavealpha($newImage, true);
 
-        switch (strtolower($direction)) {
-            case 'y':
-                for ($y = 0; $y < $this->_height; $y++) {
-                    imagecopy($newImage, $this->_image, 0, $y, 0, $this->_height - $y - 1, $this->_width, 1);
-                }
-                break;
-            default:
-                for ($x = 0; $x < $this->_width; $x++) {
-                    imagecopy($newImage, $this->_image, $x, 0, $this->_width - $x - 1, 0, 1, $this->_height);
-                }
-                break;
+        $direction = Helper::direction($direction);
+
+        if ($direction === 'y') {
+            for ($y = 0; $y < $this->_height; $y++) {
+                imagecopy($newImage, $this->_image, 0, $y, 0, $this->_height - $y - 1, $this->_width, 1);
+            }
+
+        } elseif ($direction === 'x') {
+            for ($x = 0; $x < $this->_width; $x++) {
+                imagecopy($newImage, $this->_image, $x, 0, $this->_width - $x - 1, 0, 1, $this->_height);
+            }
+
+        } elseif ($direction === 'xy') {
+            $this->flip('x');
+            $this->flip('y');
+
+        } elseif ($direction === 'yx') {
+            $this->flip('y');
+            $this->flip('x');
         }
 
         return $this;
@@ -692,7 +736,7 @@ class Image
     /**
      * Rotate an image
      *
-     * @param int          $angle   0-360
+     * @param int          $angle   -360 < x < 360
      * @param string|array $bgColor Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
      *                              Where red, green, blue - integers 0-255, alpha - integer 0-127
      * @return $this
@@ -702,7 +746,7 @@ class Image
         // Perform the rotation
         $rgba     = Helper::normalizeColor($bgColor);
         $bgColor  = imagecolorallocatealpha($this->_image, $rgba['r'], $rgba['g'], $rgba['b'], $rgba['a']);
-        $newImage = imagerotate($this->_image, -(Helper::keepWithin($angle, -360, 360)), $bgColor);
+        $newImage = imagerotate($this->_image, -(Helper::rotate($angle)), $bgColor);
 
         imagesavealpha($newImage, true);
         imagealphablending($newImage, true);
@@ -753,7 +797,6 @@ class Image
         return $this;
     }
 
-
     /**
      * Overlay an image on top of another, works with 24-bit PNG alpha-transparency
      *
@@ -774,8 +817,8 @@ class Image
 
         // Convert opacity
         $opacity     = Helper::opacity($opacity);
-        $globOffsetX = Filter::int($globOffsetX);
-        $globOffsetY = Filter::int($globOffsetY);
+        $globOffsetX = VarFilter::int($globOffsetX);
+        $globOffsetY = VarFilter::int($globOffsetY);
 
         // Determine position
         switch (strtolower($position)) {
@@ -872,32 +915,37 @@ class Image
     /**
      * Add filter to current image
      *
-     * @param string|callable $filter
-     * @param array           $args
+     * @param string|callable  $filter
+     * @param array|int|string $args
      * @return $this
      * @throws Exception
      */
     public function addFilter($filter, $args = array())
     {
+        $args     = (array)$args;
+        $newImage = null;
+
         if (is_string($filter)) {
 
             $filterClass = __NAMESPACE__ . '\Filter';
 
             if (method_exists($filterClass, $filter)) {
-
                 array_unshift($args, $this->_image);
-                call_user_func_array(array(__NAMESPACE__ . '\Filter', $filter), $args);
+                $newImage = call_user_func_array(array($filterClass, $filter), $args);
 
-                return $this;
+            } else {
+                throw new Exception('Undefined Image Filter: ' . $filter);
             }
 
         } elseif (is_callable($filter)) {
             array_unshift($args, $this->_image);
-            call_user_func_array($filter, $args);
-            return $this;
+            $newImage = call_user_func_array($filter, $args);
         }
 
-        $filterType = is_string($filter) ? $filter : gettype($filter);
-        throw new Exception('Undefined Image Filter: ' . $filterType);
+        if (is_resource($newImage) && get_resource_type($newImage) === 'gd') {
+            $this->_replaceImage($newImage);
+        }
+
+        return $this;
     }
 }
