@@ -24,6 +24,15 @@ use JBZoo\Image\Image;
 class FilterTest extends PHPUnit
 {
 
+    /**
+     * @expectedException \JBZoo\Image\Exception
+     */
+    public function testFilterUndefined()
+    {
+        $img = new Image();
+        $img->addFilter('undefined');
+    }
+
     public function testFilterSepia()
     {
         $excepted = Helper::getExpected(__FUNCTION__ . '.png');

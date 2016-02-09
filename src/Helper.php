@@ -384,4 +384,13 @@ class Helper
     {
         return self::range($percent, 0, 100);
     }
+
+    /**
+     * @param string $percent
+     * @return string
+     */
+    public static function quality($percent)
+    {
+        return self::range($percent, 0, 100);
+    }
 }

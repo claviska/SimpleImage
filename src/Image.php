@@ -15,7 +15,6 @@
 namespace JBZoo\Image;
 
 use JBZoo\Utils\Filter as VarFilter;
-use JBZoo\Utils\Vars;
 use JBZoo\Utils\FS;
 
 /**
@@ -71,14 +70,17 @@ class Image
     protected $_mime = null;
 
     /**
+     * Constructor
+     *
      * @param string|null $filename
+     *
      * @throws Exception
      */
     public function __construct($filename = null)
     {
         Helper::checkGD();
 
-        if (null !== $filename) {
+        if ($filename) {
             $this->open($filename);
         }
     }
@@ -140,7 +142,7 @@ class Image
      */
     public function setQuality($newQuality)
     {
-        $this->_quality = VarFilter::int($newQuality);
+        $this->_quality = Helper::quality($newQuality);
         return $this;
     }
 
@@ -150,8 +152,6 @@ class Image
      *
      * @param null|int $quality Output image quality in percents 0-100
      * @return Image
-     *
-     * @throws Exception
      */
     public function save($quality = null)
     {
@@ -175,7 +175,7 @@ class Image
     public function saveAs($filename, $quality = null)
     {
         if (strlen($filename) === 0) {
-            throw new Exception('Empty filename to save image'); // @codeCoverageIgnore
+            throw new Exception('Empty filename to save image');
         }
 
         $dir = FS::dirname($filename);
@@ -247,15 +247,17 @@ class Image
 
     /**
      * Save image to file
+     *
      * @param string $filename
      * @param int    $quality
      * @return bool
+     *
      * @throws Exception
      */
     protected function _save($filename, $quality)
     {
-        $quality = Vars::limit($quality, 0, 100);
         $quality = $quality ?: $this->_quality;
+        $quality = Helper::quality($quality);
 
         $format = FS::ext($filename) ?: $this->_mime;
         $format = strtolower($format);
@@ -263,19 +265,10 @@ class Image
         $filename = FS::clean($filename);
 
         // Create the image
-        $result = false;
-        if (Helper::isJpeg($format)) {
-            $result = $this->_saveJpeg($filename, $quality);
-
-        } elseif (Helper::isPng($format)) {
-            $result = $this->_savePng($filename, $quality);
-
-        } elseif (Helper::isGif($format)) {
-            $result = $this->_saveGif($filename);
-        }
+        $result = $this->_renderImageByFormat($format, $filename, $quality);
 
         if (!$result) {
-            throw new Exception('Unable to save image: ' . $filename);
+            throw new Exception('Unable to save image: ' . $filename); // @codeCoverageIgnore
         }
 
         $this->open($filename);
@@ -285,22 +278,61 @@ class Image
     }
 
     /**
+     * Render image resource as binary
+     *
+     * @param string $format
+     * @param string $filename
+     * @param int    $quality
+     * @return bool|string
+     *
+     * @throws Exception
+     */
+    protected function _renderImageByFormat($format, $filename, $quality)
+    {
+        if (!$this->_image) {
+            throw new Exception('Image resource not defined');
+        }
+
+        $result = false;
+        if (Helper::isJpeg($format)) {
+            if ($this->_saveJpeg($filename, $quality)) {
+                $result = 'image/jpeg';
+            }
+
+        } elseif (Helper::isPng($format)) {
+            if ($this->_savePng($filename, $quality)) {
+                $result = 'image/png';
+            }
+
+        } elseif (Helper::isGif($format)) {
+            if ($this->_saveGif($filename)) {
+                $result = 'image/gif';
+            }
+
+        } else {
+            throw new Exception('Undefined format: ' . $format);
+        }
+
+        return $result;
+    }
+
+    /**
      * Load an image
      *
      * @param string $filename Path to image file
-     *
      * @return Image
+     *
      * @throws Exception
      */
     public function open($filename)
     {
-        $this->cleanup();
-
-        $this->_filename = FS::clean($filename);
-        if (!file_exists($this->_filename)) {
-            throw new Exception('File not found: ' . $filename);
+        $cleanFilename = FS::clean($filename);
+        if (!file_exists($cleanFilename)) {
+            throw new Exception('Image file not forund: ' . $filename);
         }
 
+        $this->cleanup();
+        $this->_filename = $cleanFilename;
         $this->_loadMeta();
 
         return $this;
@@ -382,6 +414,7 @@ class Image
      *
      * @param string $format
      * @return resource
+     *
      * @throws Exception
      */
     protected function _imageCreate($format)
@@ -894,6 +927,7 @@ class Image
      * @param string|callable  $filter
      * @param array|int|string $args
      * @return $this
+     *
      * @throws Exception
      */
     public function addFilter($filter, $args = array())
@@ -923,5 +957,29 @@ class Image
         }
 
         return $this;
+    }
+
+    /**
+     * Outputs image as data base64 to use as img src
+     *
+     * @param null|string $format  If omitted or null - format of original file will be used, may be gif|jpg|png
+     * @param int|null    $quality Output image quality in percents 0-100
+     * @return string
+     *
+     * @throws Exception
+     */
+    public function getBase64($format = 'gif', $quality = null)
+    {
+        if (!$this->_image) {
+            throw new Exception('Image resource not defined');
+        }
+
+        // Output the image
+        ob_start();
+        $mimetype  = $this->_renderImageByFormat($format, null, $quality);
+        $imageData = ob_get_contents();
+        ob_end_clean();
+
+        return 'data:' . $mimetype . ';base64,' . base64_encode($imageData);
     }
 }

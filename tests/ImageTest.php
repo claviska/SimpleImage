@@ -44,7 +44,7 @@ class ImageTest extends PHPUnit
     public function testOpenUndefined()
     {
         $img = new Image();
-        $img->open(Helper::getOrig('undefined.jpg'));
+        $img->open('undefined.jpg');
     }
 
     public function testCleanup()
@@ -158,7 +158,9 @@ class ImageTest extends PHPUnit
         $actualJpeg = Helper::getActual(__FUNCTION__ . '.jpeg');
 
         $img = new Image();
-        $img->open($original)->saveAs($actualJpg);
+        $img->open($original)
+            ->saveAs($actualJpg);
+
         Helper::isFileEq($actualJpg, $excepted);
 
         $img = new Image();
@@ -173,7 +175,9 @@ class ImageTest extends PHPUnit
         $actual   = Helper::getActual(__FUNCTION__ . '.png');
 
         $img = new Image();
-        $img->open($original)->saveAs($actual);
+        $img->open($original)
+            ->saveAs($actual);
+
         Helper::isFileEq($actual, $excepted);
     }
 
@@ -233,7 +237,48 @@ class ImageTest extends PHPUnit
         $excepted = Helper::getExpected(__FUNCTION__ . '.png');
 
         $img = new Image();
-        $img->create(200, 100, '#08c')->saveAs($actual);
+        $img->create(200, 100, '#08c')
+            ->saveAs($actual);
+
         Helper::isFileEq($actual, $excepted);
+    }
+
+    public function testToBase64()
+    {
+        $original = Helper::getOrig('smile.gif');
+
+        $img = new Image($original);
+        isContain('data:image/gif;base64,R0lGODlhEAAQAMYAAHB', $img->getBase64());
+        isContain('data:image/gif;base64,R0lGODlhEAAQAMYAAHB', $img->getBase64('gif'));
+        isContain('data:image/png;base64,iVBORw0KGgoAAAANSUh', $img->getBase64('png'));
+        isContain('data:image/jpeg;base64,/9j/4AAQSkZJRgABAQ', $img->getBase64('jpeg'));
+        isContain('data:image/jpeg;base64,/9j/4AAQSkZJRgABAQ', $img->getBase64('jpg'));
+    }
+
+    /**
+     * @expectedException \JBZoo\Image\Exception
+     */
+    public function testSaveUndefined()
+    {
+        $img = new Image();
+        $img->save();
+    }
+
+    /**
+     * @expectedException \JBZoo\Image\Exception
+     */
+    public function testToBase64Undefined()
+    {
+        $img = new Image();
+        $img->getBase64();
+    }
+
+    /**
+     * @expectedException \JBZoo\Image\Exception
+     */
+    public function testSaveAsUndefined()
+    {
+        $img = new Image();
+        $img->saveAs('');
     }
 }
