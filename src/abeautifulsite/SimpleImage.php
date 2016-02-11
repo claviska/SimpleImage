@@ -1244,7 +1244,7 @@ class SimpleImage {
         $info = Array();
         $match_exif = Array();
 
-        getimagesize($this->filename, $info);
+        $format_info = getimagesize($this->filename, $info);
 
         $exif = null;
 
@@ -1253,7 +1253,7 @@ class SimpleImage {
         {
             preg_match("/^exif/i", $info['APP1'], $match_exif);
 
-            if(!empty($match_exif) && function_exists('exif_read_data') && $info['mime'] === 'image/jpeg' &&
+            if(!empty($match_exif) && function_exists('exif_read_data') && $format_info['mime'] === 'image/jpeg' &&
                 $this->imagestring === null)
             {
                 $exif = exif_read_data($this->filename);
