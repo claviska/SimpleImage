@@ -4,47 +4,43 @@
 
 [![License](https://poser.pugx.org/JBZoo/Image/license)](https://packagist.org/packages/JBZoo/Image) [![Latest Stable Version](https://poser.pugx.org/JBZoo/Image/v/stable)](https://packagist.org/packages/JBZoo/Image) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/JBZoo/Image/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/JBZoo/Image/?branch=master)
 
-*By Cory LaViska for A Beautiful Site, LLC
-(http://www.abeautifulsite.net/)*
 
-*Licensed under the MIT license: http://opensource.org/licenses/MIT*
+Fork (Global refactoring and test coverage!) - [Cory LaViska for A Beautiful Site, LLC](http://www.abeautifulsite.net/)
 
 Overview
 --------
 
-This class makes image manipulation in PHP as simple as possible. The
-examples are the best way to learn how to use it, but here it is in a
-nutshell:
+This class makes image manipulation in PHP as simple as possible. The examples are the best way to learn how to use it, but here it is in a nutshell:
 
 ```php
 <?php
 
-include('src/abeautifulsite/SimpleImage.php');
+require_once './vendor/autoload.php'; // composer autoload.php
 
-try {
-    $img = new abeautifulsite\SimpleImage('image.jpg');
-    $img->flip('x')->rotate(90)->best_fit(320, 200)->sepia()->save('example/result.gif');
-} catch(Exception $e) {
-    echo 'Error: ' . $e->getMessage();
-}
+// Get needed classes
+use JBZoo\Image\Image;
 
-?>
+$img = (new Image('./example/source-image.jpg'))
+    ->flip('x')
+    ->rotate(90)
+    ->resize(320, 240)
+    ->sepia()
+    ->saveAs('./example/dist-image.png');
 ```
 
-The two lines inside the _try_ block load **image.jpg**, flip it horizontally, rotate
-it 90 degrees clockwise, shrink it to fit within a 320x200 box, apply a sepia
-effect, convert it to a GIF, and save it to **result.gif**.
+That block loads **source-image.jpg**, flip it horizontally, rotate it 90 degrees clockwise,
+shrink it to fit within a 320x240 box, apply a sepia effect, convert it to a PNG, and save it to **dist-image.png**.
 
 With this class, you can effortlessly:
--   Resize images (free resize, resize to width, resize to height, resize to fit)
--   Crop images
--   Flip/rotate/adjust orientation
--   Adjust brightness & contrast
--   Desaturate, colorize, pixelate, blur, etc.
--   Overlay one image onto another (watermarking)
--   Add text using a font of your choice
--   Convert between GIF, JPEG, and PNG formats
--   Strip EXIF data
+ * Resize images (free resize, resize to width, resize to height, resize to fit)
+ * Crop images
+ * Flip/rotate/adjust orientation
+ * Adjust brightness & contrast
+ * Desaturate, colorize, pixelate, blur, etc.
+ * Overlay one image onto another (watermarking)
+ * Add text using a font of your choice (Coming soon!)
+ * Convert between GIF, JPEG, and PNG formats
+ * Strip EXIF data (Just save it!)
 
 Requirements
 ------------
@@ -54,214 +50,121 @@ This class requires PHP 5.3 and PHP GD library.
 Usage
 -----
 
-### Loading
-
-You can load an image when you instantiate a new SimpleImage object:
-
 ```php
-$img = new abeautifulsite\SimpleImage('image.jpg');
-```
 
-Or you can create empty image 200x100 with black background:
+use JBZoo\Image\Image;
+use JBZoo\Image\Filter;
+use JBZoo\Image\Exception;
 
-```php
-$img = new abeautifulsite\SimpleImage(null, 200, 100, '#000');
-```
+try { // Error handling
 
-### Saving
+    $img = (new Image('./some-path/image.jpg')) // You can load an image when you instantiate a new Image object
+        ->open('./some-path/another-path.jpg')  // Load another file (replace internal state)
 
-Images must be saved after you manipulate them. To save your changes to
-the original file, simply call:
+        // Saving
+        ->save()   // Images must be saved after you manipulate them. To save your changes to the original file.
+        ->save(90) // Specify quality (0-100)
 
-```php
-$img->save();
-```
+        // Save as new file
+        ->saveAs('./some-path/new-image.jpg')     // Alternatively, you can specify a new filename
+        ->saveAs('./some-path/new-image.jpg', 90) // You can specify quality as a second parameter in percents within range 0-100
+        ->saveAs('./some-path/new-image.png')     // Or convert it into another format by extention (gif|jpeg|png)
 
-Alternatively, you can specify a new filename:
+        // Flip
+        ->flip('x')  // Flip the image horizontally
+        ->flip('y')  // Flip the image vertically
+        ->flip('xy') // Flip the image horizontally and vertically
 
-```php
-$img->save('new-image.jpg');
-```
+        // Rotation
+        ->rotate(90)   // Rotate the image 90 degrees clockwise
+        ->autoOrient() // Adjust the orientation if needed (physically rotates/flips the image based on its EXIF 'Orientation' property)
 
-You can specify quality as a second parameter in percents within range 0-100
+        // Resizing
+        ->resize(320, 200)          // Resize the image to 320x200
+        ->thumbnail(100, 75)        // Trim the image and resize to exactly 100x75
+        ->fitToWidth(320)           // Shrink the image to the specified width while maintaining proportion (width)
+        ->fitToHeight(200)          // Shrink the image to the specified height while maintaining proportion (height)
+        ->bestFit(500, 500)         // Shrink the image proportionally to fit inside a 500x500 box
+        ->crop(100, 100, 400, 400)  // Crop a portion of the image from x1, y1 to x2, y2
 
-```php
-$img->save('new-image.jpg', 90);
-```
+        // Filters
+        ->addFilter('sepia')                        // Sepia effect (simulated)
+        ->addFilter('grayscale')                    // Grayscale
+        ->addFilter('desaturate', 50)               // Desaturate
+        ->addFilter('pixelate', 8)                  // Pixelate using 8px blocks
+        ->addFilter('edges')                        // Edges filter
+        ->addFilter('emboss')                       // Emboss filter
+        ->addFilter('invert')                       // Invert colors
+        ->addFilter('blur', Filter::BLUR_SEL)       // Selective blur (one pass)
+        ->addFilter('blur', [Filter::BLUR_GAUS, 2]) // Gaussian blur (two passes)
+        ->addFilter('brightness', 100)              // Adjust Brightness (-255 to 255)
+        ->addFilter('contrast', 50)                 // Adjust Contrast (-100 to 100)
+        ->addFilter('colorize', ['#FF0000', .5])    // Colorize red at 50% opacity
+        ->addFilter('meanRemove')                   // Mean removal filter
+        ->addFilter('smooth', 5)                    // Smooth filter (-10 to 10)
+        ->addFilter('opacity', .5)                  // Change opacity
 
-### Converting Between Formats
+        // Custom filter handler
+        ->addFilter(function ($image, $blockSize) {
+            imagefilter($image, IMG_FILTER_PIXELATE, $blockSize, true);
+        }, 2) // $blockSize = 2
 
-When saving, the resulting image format is determined by the file
-extension. For example, you can convert a JPEG to a GIF by doing this:
+        // Overlay watermark.png at 50% opacity at the bottom-right of the image with a 10 pixel horz and vert margin
+        ->overlay('./image/watermark.png', 'bottom right', .5, -10, -10)
 
-```php
-$img = new abeautifulsite\SimpleImage('image.jpg');
-$img->save('image.gif');
-```
+        // Other
+        ->create(200, 100, '#000') // Create empty image 200x100 with black background
+        ->fill('#fff')             // Fill image with white color
+        ->setQuality(95)           // Set new internal quality state
+    ;
 
-### Stripping EXIF data
+    // Other utility methods
+    $img->getBase64('gif'); // Get base64 code as string for gif image
+    $img->getHeight();      // Height in px
+    $img->getWidth();       // Width in px
+    $img->cleanup();        // Full cleanup of internal state of object
+    $img->getImage();       // Get GD Image resource
 
-There is no built-in method for stripping EXIF data, partly because
-there is currently no way to *prevent* EXIF data from being stripped
-using the GD library. However, you can easily strip EXIF data simply by
-loading and saving:
+    $img->isGif();          // Check format
+    $img->isJpeg();         // Check format
+    $img->isPng();          // Check format
 
-```php
-$img = new abeautifulsite\SimpleImage('image.jpg');
-$img->save();
-```
+    $img->isPortrait();     // Check orientation
+    $img->isLandscape();    // Check orientation
+    $img->isSquare();       // Check orientation
 
-### Method Chaining
+    $imgInfo = $img->getInfo(); // Get array of all properties
+    // Some thing like...
+    $imgInfo = [
+        "filename" => "/<full_path>/resources/butterfly.jpg",
+        "width"    => 640,
+        "height"   => 478,
+        "mime"     => "image/jpeg",
+        "quality"  => 95,
+        "exif"     => [
+            "FileName"      => "butterfly.jpg",
+            "FileDateTime"  => 1454653291,
+            "FileSize"      => 280448,
+            "FileType"      => 2,
+            "MimeType"      => "image/jpeg",
+            "SectionsFound" => "",
+            "COMPUTED"      => [
+                "html"    => 'width="640" height="478"',
+                "Height"  => 478,
+                "Width"   => 640,
+                "IsColor" => 1,
+            ],
+        ],
+        "orient"   => "landscape",
+    ];
 
-SimpleImage supports method chaining, so you can make multiple changes
-and save the resulting image with just one line of code:
-
-```php
-$img = new abeautifulsite\SimpleImage('image.jpg');
-$img->flip('x')->rotate(90)->best_fit(320, 200)->desaturate()->invert()->save('result.jpg')
-```
-
-You can chain all of the methods below as well methods above.
-
-### Error Handling
-
-SimpleImage throws exceptions when things don't work right. You should
-always load/manipulate/save images inside of a *try/catch* block to
-handle them properly:
-
-```php
-try {
-    $img = new abeautifulsite\SimpleImage('image.jpg');
-    $img->flip('x')->save('flipped.jpg');
 } catch(Exception $e) {
     echo 'Error: ' . $e->getMessage();
 }
+
 ```
 
-### Method Examples
 
-Most methods have intelligent defaults so you don't need to pass in
-every argument.  Check out **SimpleImage.class.php** for
-required/optional parameters and valid ranges for certain arguments.
+### License
 
-```php
-// Flip the image horizontally (use 'y' to flip vertically)
-$img->flip('x');
-
-// Rotate the image 90 degrees clockwise
-$img->rotate(90);
-
-// Adjust the orientation if needed (physically rotates/flips the image based on its EXIF 'Orientation' property)
-$img->auto_orient();
-
-// Resize the image to 320x200
-$img->resize(320, 200);
-
-// Trim the image and resize to exactly 100x75
-$img->thumbnail(100, 75);
-
-// Shrink the image to the specified width while maintaining proportion (width)
-$img->fit_to_width(320);
-
-// Shrink the image to the specified height while maintaining proportion (height)
-$img->fit_to_height(200);
-
-// Shrink the image proportionally to fit inside a 500x500 box
-$img->best_fit(500, 500);
-
-// Crop a portion of the image from x1, y1 to x2, y2
-$img->crop(100, 100, 400, 400);
-
-// Fill image with white color
-$img->fill('#fff');
-
-// Desaturate (grayscale)
-$img->desaturate();
-
-// Invert
-$img->invert();
-
-// Adjust Brightness (-255 to 255)
-$img->brightness(100);
-
-// Adjust Contrast (-100 to 100)
-$img->contrast(50);
-
-// Colorize red at 50% opacity
-$img->colorize('#FF0000', .5);
-
-// Edges filter
-$img->edges();
-
-// Emboss filter
-$img->emboss();
-
-// Mean removal filter
-$img->mean_remove();
-
-// Selective blur (one pass)
-$img->blur();
-
-// Gaussian blur (two passes)
-$img->blur('gaussian', 2);
-
-// Sketch filter
-$img->sketch();
-
-// Smooth filter (-10 to 10)
-$img->smooth(5);
-
-// Pixelate using 8px blocks
-$img->pixelate(8);
-
-// Sepia effect (simulated)
-$img->sepia();
-
-// Change opacity
-$img->opacity(.5);
-
-// Overlay watermark.png at 50% opacity at the bottom-right of the image with a 10 pixel horizontal and vertical margin
-$img->overlay('watermark.png', 'bottom right', .5, -10, -10);
-
-// Add 32-point white text top-centered (plus 20px) on the image*
-$img->text('Your Text', 'font.ttf', 32, '#FFFFFF', 'top', 0, 20);
-
-// Add multiple colored text
-$img->text('Your Text', 'font.ttf', 32, ['#FFFFFF' '#000000'], 'top', 0, 20);
-```
-
-* Valid positions are *center, top, right, bottom, left, top left, top
-right, bottom left, bottom right*
-
-### Utility Methods
-
-The following methods are not chainable, because they return information about
-the image you're working with or output the image directly to the browser:
-
-```php
-// Get info about the original image (before any changes were made)
-//
-// Returns:
-//
-//  array(
-//      width => 320,
-//      height => 200,
-//      orientation => ['portrait', 'landscape', 'square'],
-//      exif => array(...),
-//      mime => ['image/jpeg', 'image/gif', 'image/png'],
-//      format => ['jpeg', 'gif', 'png']
-//  )
-$info = $img->get_original_info();
-
-// Get the current width
-$width = $img->get_width();
-
-// Get the current height
-$height = $img->get_height();
-
-// Get the current orientation (returns 'portrait', 'landscape', or 'square')
-$orientation = $img->get_orientation();
-
-// Flip the image and output it directly to the browser (i.e. without saving to file)
-$img->flip('x')->output();
-```
+MIT
