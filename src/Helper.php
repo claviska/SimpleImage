@@ -73,7 +73,7 @@ class Helper
      *
      * @param string|array $origColor Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
      *                                Where red, green, blue - integers 0-255, alpha - integer 0-127
-     * @return array|bool
+     * @return array
      * @throws Exception
      */
     public static function normalizeColor($origColor)
@@ -147,7 +147,7 @@ class Helper
                 self::color($origColor['r']),
                 self::color($origColor['g']),
                 self::color($origColor['b']),
-                self::alpha(isset($origColor['a']) ? $origColor['a'] : 0),
+                self::alpha(Arr::key('a', $origColor) ? $origColor['a'] : 0),
             );
 
         } elseif (Arr::key(0, $origColor) && Arr::key(1, $origColor) && Arr::key(2, $origColor)) {
@@ -155,7 +155,7 @@ class Helper
                 self::color($origColor[0]),
                 self::color($origColor[1]),
                 self::color($origColor[2]),
-                self::alpha(isset($origColor[3]) ? $origColor[3] : 0),
+                self::alpha(Arr::key(3, $origColor) ? $origColor[3] : 0),
             );
         }
 
@@ -264,7 +264,7 @@ class Helper
     public static function opacity($opacity)
     {
         if ($opacity <= 1) {
-            $opacity = $opacity * 100;
+            $opacity *= 100;
         }
 
         $opacity = Filter::int($opacity);
@@ -281,7 +281,7 @@ class Helper
     public static function opacity2Alpha($opacity)
     {
         $opacity = self::opacity($opacity);
-        $opacity = $opacity / 100;
+        $opacity /= 100;
 
         $aplha = 127 - (127 * $opacity);
         $aplha = self::alpha($aplha);
@@ -369,7 +369,7 @@ class Helper
 
     /**
      * @param string $blur
-     * @return string
+     * @return int
      */
     public static function blur($blur)
     {
@@ -378,7 +378,7 @@ class Helper
 
     /**
      * @param string $percent
-     * @return string
+     * @return int
      */
     public static function percent($percent)
     {
@@ -387,7 +387,7 @@ class Helper
 
     /**
      * @param string $percent
-     * @return string
+     * @return int
      */
     public static function quality($percent)
     {

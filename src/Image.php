@@ -14,6 +14,7 @@
 
 namespace JBZoo\Image;
 
+use JBZoo\Utils\Arr;
 use JBZoo\Utils\Filter as VarFilter;
 use JBZoo\Utils\FS;
 
@@ -129,7 +130,7 @@ class Image
 
     /**
      * Get the current image resource
-     * @return int
+     * @return mixed
      */
     public function getImage()
     {
@@ -320,7 +321,7 @@ class Image
      * Load an image
      *
      * @param string $filename Path to image file
-     * @return Image
+     * @return $this
      *
      * @throws Exception
      */
@@ -803,30 +804,30 @@ class Image
      */
     public function autoOrient()
     {
-        if (!isset($this->_exif['Orientation'])) {
+        if (!Arr::key('Orientation', $this->_exif)) {
             return $this;
 
-        } elseif ($this->_exif['Orientation'] == 2) { // Flip horizontal
+        } elseif ((int)$this->_exif['Orientation'] === 2) { // Flip horizontal
             $this->flip('x');
 
-        } elseif ($this->_exif['Orientation'] == 3) { // Rotate 180 counterclockwise
+        } elseif ((int)$this->_exif['Orientation'] === 3) { // Rotate 180 counterclockwise
             $this->rotate(-180);
 
-        } elseif ($this->_exif['Orientation'] == 4) { // Vertical flip
+        } elseif ((int)$this->_exif['Orientation'] === 4) { // Vertical flip
             $this->flip('y');
 
-        } elseif ($this->_exif['Orientation'] == 5) { // Rotate 90 clockwise and flip vertically
+        } elseif ((int)$this->_exif['Orientation'] === 5) { // Rotate 90 clockwise and flip vertically
             $this->flip('y');
             $this->rotate(90);
 
-        } elseif ($this->_exif['Orientation'] == 6) { // Rotate 90 clockwise
+        } elseif ((int)$this->_exif['Orientation'] === 6) { // Rotate 90 clockwise
             $this->rotate(90);
 
-        } elseif ($this->_exif['Orientation'] == 7) { // Rotate 90 clockwise and flip horizontally
+        } elseif ((int)$this->_exif['Orientation'] === 7) { // Rotate 90 clockwise and flip horizontally
             $this->flip('x');
             $this->rotate(90);
 
-        } elseif ($this->_exif['Orientation'] == 8) { // Rotate 90 counterclockwise
+        } elseif ((int)$this->_exif['Orientation'] === 8) { // Rotate 90 counterclockwise
             $this->rotate(-90);
         }
 

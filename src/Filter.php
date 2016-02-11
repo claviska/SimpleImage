@@ -131,6 +131,8 @@ class Filter
      *                              Where red, green, blue - integers 0-255, alpha - integer 0-127
      * @param float|int $opacity    0-100
      * @return $this
+     *
+     * @throws Exception
      */
     public static function colorize($image, $color, $opacity)
     {
