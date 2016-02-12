@@ -663,11 +663,12 @@ class Image
      * remaining overflow (from the center) to get the image to be the size specified. Useful for generating thumbnails.
      *
      * @param int      $width
-     * @param int|null $height If omitted - assumed equal to $width
+     * @param int|null $height    If omitted - assumed equal to $width
+     * @param bool     $topIsZero Force top offset = 0
      *
      * @return $this
      */
-    public function thumbnail($width, $height = null)
+    public function thumbnail($width, $height = null, $topIsZero = false)
     {
         $width  = VarFilter::int($width);
         $height = VarFilter::int($height);
@@ -692,6 +693,11 @@ class Image
         // Return trimmed image
         $right  = $width + $left;
         $bottom = $height + $top;
+
+        if ($topIsZero) {
+            $bottom -= $top;
+            $top = 0;
+        }
 
         return $this->crop($left, $top, $right, $bottom);
     }

@@ -145,6 +145,20 @@ class ResizeTest extends PHPUnit
         Helper::isFileEq($actual, $excepted);
     }
 
+    public function testThumbnailCropTop()
+    {
+        $excepted = Helper::getExpected(__FUNCTION__ . '.jpg');
+        $actual   = Helper::getActual(__FUNCTION__ . '.jpg');
+        $original = Helper::getOrig('butterfly.png');
+
+        $img = new Image();
+        $img->open($original)
+            ->thumbnail(200, 50, true)
+            ->saveAs($actual);
+
+        Helper::isFileEq($actual, $excepted);
+    }
+
     public function testBestFitWidth()
     {
         $excepted = Helper::getExpected(__FUNCTION__ . '.png');
