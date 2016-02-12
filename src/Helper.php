@@ -393,4 +393,22 @@ class Helper
     {
         return self::range($percent, 0, 100);
     }
+
+    /**
+     * @param $imageString
+     * @return string
+     */
+    public static function strToBin($imageString)
+    {
+        $cleanedString = str_replace(' ', '+', preg_replace('#^data:image/[^;]+;base64,#', '', $imageString));
+        $result        = base64_decode($cleanedString, true);
+
+        if (!$result) {
+            $result = $imageString;
+        }
+
+        return $result;
+    }
 }
+
+

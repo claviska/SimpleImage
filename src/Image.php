@@ -15,10 +15,10 @@
 namespace JBZoo\Image;
 
 use JBZoo\Utils\Arr;
-use JBZoo\Utils\Filter as VarFilter;
 use JBZoo\Utils\FS;
 use JBZoo\Utils\Sys;
 use JBZoo\Utils\Url;
+use JBZoo\Utils\Filter as VarFilter;
 
 /**
  * Class Image
@@ -83,8 +83,11 @@ class Image
     {
         Helper::checkGD();
 
-        if ($filename) {
+        if (FS::isFile($filename)) {
             $this->open($filename);
+
+        } elseif ($filename && is_string($filename)) {
+            $this->openString($filename);
         }
     }
 
@@ -328,7 +331,7 @@ class Image
     public function open($filename)
     {
         $cleanFilename = FS::clean($filename);
-        if (!file_exists($cleanFilename)) {
+        if (!FS::isFile($cleanFilename)) {
             throw new Exception('Image file not forund: ' . $filename);
         }
 
@@ -340,23 +343,58 @@ class Image
     }
 
     /**
-     * Get meta data of image or base64 string
+     * Load an image
      *
-     * @return Image
+     * @param string $imageString Binary images
+     * @return $this
+     *
      * @throws Exception
      */
-    protected function _loadMeta()
+    public function openString($imageString)
     {
-        //gather meta data
-        $info = getimagesize($this->_filename);
+        if (!$imageString) {
+            throw new Exception('Image string is empty!');
+        }
 
+        $this->cleanup();
+        $this->_loadMeta($imageString);
+
+        return $this;
+    }
+
+    /**
+     * Get meta data of image or base64 string
+     *
+     * @param null|string $imageString
+     *
+     * @return $this
+     * @throws Exception
+     */
+    protected function _loadMeta($imageString = null)
+    {
+        // Gather meta data
+        if (null === $imageString && $this->_filename) {
+            $info         = getimagesize($this->_filename);
+            $this->_image = $this->_imageCreate($info['mime']);
+
+        } else {
+            if (!Sys::isFunc('getimagesizefromstring')) {
+                throw new Exception('PHP 5.4 is required to use method getimagesizefromstring');
+            }
+
+            $imageString  = Helper::strToBin($imageString);
+            $info         = getimagesizefromstring($imageString);
+            $this->_image = imagecreatefromstring($imageString);
+        }
+
+        // Set internal state
         $this->_mime   = $info['mime'];
         $this->_width  = $info[0];
         $this->_height = $info[1];
-        $this->_image  = $this->_imageCreate($info['mime']);
         $this->_exif   = $this->_getExif();
         $this->_orient = $this->_getOrientation();
 
+        // Prepare alpha chanel
         imagesavealpha($this->_image, true);
         imagealphablending($this->_image, true);
 
