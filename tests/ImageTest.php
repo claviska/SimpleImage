@@ -351,7 +351,7 @@ class ImageTest extends PHPUnit
     {
         $excepted = Helper::getExpected(__FUNCTION__ . '.png');
         $actual   = Helper::getActual(__FUNCTION__ . '.tmp');
-        $original = Helper::getOrig('butterfly.tmp');
+        $original = Helper::getOrig('1x1.tmp');
 
         if (copy($original, $actual)) {
             $img  = new Image($actual);
@@ -360,7 +360,7 @@ class ImageTest extends PHPUnit
                 ->save()
                 ->getInfo();
 
-            is('image/jpeg', $info['mime']);
+            is('image/gif', $info['mime']);
             is(100, $info['width']);
             is(200, $info['height']);
 
