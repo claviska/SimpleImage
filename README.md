@@ -13,8 +13,6 @@ Overview
 This class makes image manipulation in PHP as simple as possible. The examples are the best way to learn how to use it, but here it is in a nutshell:
 
 ```php
-<?php
-
 require_once './vendor/autoload.php'; // composer autoload.php
 
 // Get needed classes
@@ -56,7 +54,6 @@ Usage
 -----
 
 ```php
-<?php
 use JBZoo\Image\Image;
 use JBZoo\Image\Filter;
 use JBZoo\Image\Exception;

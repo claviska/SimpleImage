@@ -360,7 +360,7 @@ class ImageTest extends PHPUnit
                 ->save()
                 ->getInfo();
 
-            is('image/png', $info['mime']);
+            is('image/jpeg', $info['mime']);
             is(100, $info['width']);
             is(200, $info['height']);
 
