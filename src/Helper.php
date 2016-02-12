@@ -424,4 +424,15 @@ class Helper
 
         return false;
     }
+
+    /**
+     * Check is var image GD resource
+     *
+     * @param mixed $image
+     * @return bool
+     */
+    public static function isGdRes($image)
+    {
+        return is_resource($image) && strtolower(get_resource_type($image)) === 'gd';
+    }
 }

@@ -84,10 +84,13 @@ class Image
         Helper::checkGD();
 
         if (FS::isFile($filename)) {
-            $this->open($filename);
+            $this->loadFile($filename);
 
-        } elseif ($filename && is_string($filename)) {
-            $this->openString($filename);
+        } elseif (Helper::isGdRes($filename)) {
+            $this->loadResource($filename);
+
+        } elseif (is_string($filename) && $filename) {
+            $this->loadString($filename);
         }
     }
 
@@ -277,7 +280,7 @@ class Image
             throw new Exception('Unable to save image: ' . $filename); // @codeCoverageIgnore
         }
 
-        $this->open($filename);
+        $this->loadFile($filename);
         $this->_quality = $quality;
 
         return $result;
@@ -330,7 +333,7 @@ class Image
      *
      * @throws Exception
      */
-    public function open($filename)
+    public function loadFile($filename)
     {
         $cleanFilename = FS::clean($filename);
         if (!FS::isFile($cleanFilename)) {
@@ -352,7 +355,7 @@ class Image
      *
      * @throws Exception
      */
-    public function openString($imageString)
+    public function loadString($imageString)
     {
         if (!$imageString) {
             throw new Exception('Image string is empty!');
@@ -365,34 +368,62 @@ class Image
     }
 
     /**
+     * Load image resource
+     *
+     * @param mixed $imageRes Image GD Resource
+     * @return $this
+     *
+     * @throws Exception
+     */
+    public function loadResource($imageRes)
+    {
+        if (!Helper::isGdRes($imageRes)) {
+            throw new Exception('Image is not GD resource!');
+        }
+
+        $this->cleanup();
+        $this->_loadMeta($imageRes);
+
+        return $this;
+    }
+
+    /**
      * Get meta data of image or base64 string
      *
-     * @param null|string $imageString
+     * @param null|string $image
      *
      * @return $this
      * @throws Exception
      */
-    protected function _loadMeta($imageString = null)
+    protected function _loadMeta($image = null)
     {
         // Gather meta data
-        if (null === $imageString && $this->_filename) {
-            $info         = getimagesize($this->_filename);
-            $this->_image = $this->_imageCreate($info['mime']);
+        if (null === $image && $this->_filename) {
+            $imageInfo    = getimagesize($this->_filename);
+            $this->_image = $this->_imageCreate($imageInfo['mime']);
+
+        } elseif (Helper::isGdRes($image)) {
+            $this->_image = $image;
+            $imageInfo    = array(
+                '0'    => imagesx($this->_image),
+                '1'    => imagesy($this->_image),
+                'mime' => 'image/png',
+            );
 
         } else {
             if (!Sys::isFunc('getimagesizefromstring')) {
                 throw new Exception('PHP 5.4 is required to use method getimagesizefromstring');
             }
 
-            $imageString  = Helper::strToBin($imageString);
-            $info         = getimagesizefromstring($imageString);
-            $this->_image = imagecreatefromstring($imageString);
+            $image        = Helper::strToBin($image);
+            $imageInfo    = getimagesizefromstring($image);
+            $this->_image = imagecreatefromstring($image);
         }
 
         // Set internal state
-        $this->_mime   = $info['mime'];
-        $this->_width  = $info[0];
-        $this->_height = $info[1];
+        $this->_mime   = $imageInfo['mime'];
+        $this->_width  = $imageInfo['0'];
+        $this->_height = $imageInfo['1'];
         $this->_exif   = $this->_getExif();
         $this->_orient = $this->_getOrientation();
 
@@ -428,7 +459,7 @@ class Image
      */
     protected function _destroyImage()
     {
-        if (is_resource($this->_image) && get_resource_type($this->_image) === 'gd') {
+        if (Helper::isGdRes($this->_image)) {
             imagedestroy($this->_image);
             $this->_image = null;
         }
@@ -980,7 +1011,7 @@ class Image
             $newImage = call_user_func_array($filter, $args);
         }
 
-        if (is_resource($newImage) && get_resource_type($newImage) === 'gd') {
+        if (Helper::isGdRes($newImage)) {
             $this->_replaceImage($newImage);
         }
 

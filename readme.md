@@ -65,11 +65,11 @@ use JBZoo\Image\Exception;
 try { // Error handling
 
     $img = (new Image('./some-path/image.jpg')) // You can load an image when you instantiate a new Image object
-        ->open('./some-path/another-path.jpg')  // Load another file (replace internal state)
+        ->loadFile('./some-path/another-path.jpg')  // Load another file (replace internal state)
 
         // Saving
         ->save()   // Images must be saved after you manipulate them. To save your changes to the original file.
-        ->save(90) // Specify quality (0-100)
+        ->save(90) // Specify quality (0 to 100)
 
         // Save as new file
         ->saveAs('./some-path/new-image.jpg')     // Alternatively, you can specify a new filename
@@ -77,21 +77,19 @@ try { // Error handling
         ->saveAs('./some-path/new-image.png')     // Or convert it into another format by extention (gif|jpeg|png)
 
         // Flip
-        ->flip('x')  // Flip the image horizontally
-        ->flip('y')  // Flip the image vertically
-        ->flip('xy') // Flip the image horizontally and vertically
-
-        // Rotation
-        ->rotate(90)   // Rotate the image 90 degrees clockwise
+        ->flip('x')    // Flip the image horizontally
+        ->flip('y')    // Flip the image vertically
+        ->flip('xy')   // Flip the image horizontally and vertically
         ->autoOrient() // Adjust the orientation if needed (physically rotates/flips the image based on its EXIF 'Orientation' property)
 
         // Resizing
         ->resize(320, 200)          // Resize the image to 320x200
-        ->thumbnail(100, 75)        // Trim the image and resize to exactly 100x75
+        ->thumbnail(100, 75)        // Trim the image and resize to exactly 100x75 (crop center if needed)
+        ->thumbnail(100, 75, true)  // Trim the image and resize to exactly 100x75 and top offset is 0
         ->fitToWidth(320)           // Shrink the image to the specified width while maintaining proportion (width)
         ->fitToHeight(200)          // Shrink the image to the specified height while maintaining proportion (height)
         ->bestFit(500, 500)         // Shrink the image proportionally to fit inside a 500x500 box
-        ->crop(100, 100, 400, 400)  // Crop a portion of the image from x1, y1 to x2, y2
+        ->crop(100, 100, 400, 400)  // Crop a portion of the image from left, top, right, bottom
 
         // Filters
         ->addFilter('sepia')                        // Sepia effect (simulated)
@@ -109,6 +107,7 @@ try { // Error handling
         ->addFilter('meanRemove')                   // Mean removal filter
         ->addFilter('smooth', 5)                    // Smooth filter (-10 to 10)
         ->addFilter('opacity', .5)                  // Change opacity
+        ->addFilter('rotate', 90)                   // Rotate the image 90 degrees clockwise
 
         // Custom filter handler
         ->addFilter(function ($image, $blockSize) {
@@ -124,57 +123,83 @@ try { // Error handling
         ->setQuality(95)           // Set new internal quality state
     ;
 
-    // Other utility methods
-    $img->getBase64('gif'); // Get base64 code as string for gif image
-    $img->getHeight();      // Height in px
-    $img->getWidth();       // Width in px
-    $img->cleanup();        // Full cleanup of internal state of object
-    $img->getImage();       // Get GD Image resource
-
-    $img->isGif();          // Check format
-    $img->isJpeg();         // Check format
-    $img->isPng();          // Check format
-
-    $img->isPortrait();     // Check orientation
-    $img->isLandscape();    // Check orientation
-    $img->isSquare();       // Check orientation
-
-    $img->getUrl();         // Get full url to image     - http://site.com/example/image.png
-    $img->getPath();        // Get relative url to image - /example/image.png
-
-    $imgInfo = $img->getInfo(); // Get array of all properties
-    // Something like...
-    $imgInfo = [
-        "filename" => "/<full_path>/resources/butterfly.jpg",
-        "width"    => 640,
-        "height"   => 478,
-        "mime"     => "image/jpeg",
-        "quality"  => 95,
-        "exif"     => [
-            "FileName"      => "butterfly.jpg",
-            "FileDateTime"  => 1454653291,
-            "FileSize"      => 280448,
-            "FileType"      => 2,
-            "MimeType"      => "image/jpeg",
-            "SectionsFound" => "",
-            "COMPUTED"      => [
-                "html"    => 'width="640" height="478"',
-                "Height"  => 478,
-                "Width"   => 640,
-                "IsColor" => 1,
-            ],
-        ],
-        "orient"   => "landscape",
-    ];
-
 } catch(Exception $e) {
     echo 'Error: ' . $e->getMessage();
 }
 
 ```
 
+### Methods to create Image objects
 
-### Unit test and Code styles
+```php
+// Filename
+$img = new Image('./path/to/image.png');
+
+// Base64 format
+$img = new Image('data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==');
+
+// Image string
+$img = new Image('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==');
+
+// Some binary data
+$gifBin = base64_decode('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==');
+$img = new Image($gifBin);
+
+// Resource
+$imgRes = imagecreatefromjpeg('./some-image.jpeg');
+$img = new Image($imageResource);
+```
+
+### Other utility methods
+```php
+$img = new Image('./resources/butterfly.jpg');
+
+$img->getBase64('gif'); // Get base64 code as string for gif image
+$img->getHeight();      // Height in px
+$img->getWidth();       // Width in px
+$img->cleanup();        // Full cleanup of internal state of object
+$img->getImage();       // Get GD Image resource
+
+$img->isGif();          // Check format
+$img->isJpeg();         // Check format
+$img->isPng();          // Check format
+
+$img->isPortrait();     // Check orientation
+$img->isLandscape();    // Check orientation
+$img->isSquare();       // Check orientation
+
+$img->getUrl();         // Get full url to image     - http://site.com/example/image.png
+$img->getPath();        // Get relative url to image - /example/image.png
+
+$imgInfo = $img->getInfo(); // Get array of all properties
+
+// It will be something like that ...
+$imgInfo = [
+    "filename" => "/<full_path>/resources/butterfly.jpg",
+    "width"    => 640,
+    "height"   => 478,
+    "mime"     => "image/jpeg",
+    "quality"  => 95,
+    "exif"     => [
+        "FileName"      => "butterfly.jpg",
+        "FileDateTime"  => 1454653291,
+        "FileSize"      => 280448,
+        "FileType"      => 2,
+        "MimeType"      => "image/jpeg",
+        "SectionsFound" => "",
+        "COMPUTED"      => [
+            "html"    => 'width="640" height="478"',
+            "Height"  => 478,
+            "Width"   => 640,
+            "IsColor" => 1,
+        ],
+    ],
+    "orient"   => "landscape",
+];
+```
+
+
+### Unit testing and Code quality
 
 ```sh
 composer update-all
