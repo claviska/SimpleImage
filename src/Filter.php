@@ -248,4 +248,67 @@ class Filter
 
         return $newImage;
     }
+
+    /**
+     * Flip an image horizontally or vertically
+     *
+     * @param mixed  $image
+     * @param string $dir x|y|yx|xy
+     * @return $this
+     */
+    public static function flip($image, $dir)
+    {
+        $dir    = Helper::direction($dir);
+        $width  = imagesx($image);
+        $height = imagesy($image);
+
+        $newImage = imagecreatetruecolor($width, $height);
+        imagealphablending($newImage, false);
+        imagesavealpha($newImage, true);
+
+        if ($dir === 'y') {
+            for ($y = 0; $y < $height; $y++) {
+                imagecopy($newImage, $image, 0, $y, 0, $height - $y - 1, $width, 1);
+            }
+
+        } elseif ($dir === 'x') {
+            for ($x = 0; $x < $width; $x++) {
+                imagecopy($newImage, $image, $x, 0, $width - $x - 1, 0, 1, $height);
+            }
+
+        } elseif ($dir === 'xy' || $dir === 'yx') {
+            $newImage = self::flip($image, 'x');
+            $newImage = self::flip($newImage, 'y');
+        }
+
+        return $newImage;
+    }
+
+    /**
+     * Fill image with color
+     *
+     * @param mixed  $image
+     * @param string $color     Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
+     *                          Where red, green, blue - integers 0-255, alpha - integer 0-127
+     * @return $this
+     * @throws Exception
+     */
+    public static function fill($image, $color = '#000000')
+    {
+        $width  = imagesx($image);
+        $height = imagesy($image);
+
+        $rgba      = Helper::normalizeColor($color);
+        $fillColor = imagecolorallocatealpha(
+            $image,
+            (int)$rgba['r'],
+            (int)$rgba['g'],
+            (int)$rgba['b'],
+            (int)$rgba['a']
+        );
+
+        imagealphablending($image, false);
+        imagesavealpha($image, true);
+        imagefilledrectangle($image, 0, 0, $width, $height, $fillColor);
+    }
 }

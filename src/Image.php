@@ -570,7 +570,7 @@ class Image
         $this->_orient = $this->_getOrientation();
 
         if (null !== $color) {
-            return $this->fill($color);
+            return $this->addFilter('fill', $color);
         }
 
         return $this;
@@ -660,32 +660,6 @@ class Image
         }
 
         return $this->resize($width, $height);
-    }
-
-    /**
-     * Fill image with color
-     *
-     * @param string $color     Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
-     *                          Where red, green, blue - integers 0-255, alpha - integer 0-127
-     * @return $this
-     * @throws Exception
-     */
-    public function fill($color = '#000000')
-    {
-        $rgba      = Helper::normalizeColor($color);
-        $fillColor = imagecolorallocatealpha(
-            $this->_image,
-            (int)$rgba['r'],
-            (int)$rgba['g'],
-            (int)$rgba['b'],
-            (int)$rgba['a']
-        );
-
-        imagealphablending($this->_image, false);
-        imagesavealpha($this->_image, true);
-        imagefilledrectangle($this->_image, 0, 0, $this->_width, $this->_height, $fillColor);
-
-        return $this;
     }
 
     /**
@@ -800,41 +774,6 @@ class Image
         $this->_replaceImage($newImage);
         $this->_width  = $cropedW;
         $this->_height = $cropedH;
-
-        return $this;
-    }
-
-    /**
-     * Flip an image horizontally or vertically
-     *
-     * @param string $dir x|y|yx|xy
-     * @return $this
-     */
-    public function flip($dir)
-    {
-        $newImage = imagecreatetruecolor($this->_width, $this->_height);
-        imagealphablending($newImage, false);
-        imagesavealpha($newImage, true);
-
-        $dir = Helper::direction($dir);
-
-        if ($dir === 'y') {
-            for ($y = 0; $y < $this->_height; $y++) {
-                imagecopy($newImage, $this->_image, 0, $y, 0, $this->_height - $y - 1, $this->_width, 1);
-            }
-
-        } elseif ($dir === 'x') {
-            for ($x = 0; $x < $this->_width; $x++) {
-                imagecopy($newImage, $this->_image, $x, 0, $this->_width - $x - 1, 0, 1, $this->_height);
-            }
-
-        } elseif ($dir === 'xy' || $dir === 'yx') {
-            $this->flip('x');
-            $this->flip('y');
-            return $this;
-        }
-
-        $this->_replaceImage($newImage);
 
         return $this;
     }

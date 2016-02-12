@@ -30,7 +30,7 @@ class TransformsTest extends PHPUnit
 
         $img = new Image();
         $img->loadFile($original)
-            ->flip('x')
+            ->addFilter('flip', 'x')
             ->saveAs($actual);
 
         Helper::isFileEq($actual, $excepted);
@@ -44,7 +44,7 @@ class TransformsTest extends PHPUnit
 
         $img = new Image();
         $img->loadFile($original)
-            ->flip('y')
+            ->addFilter('flip', 'y')
             ->saveAs($actual);
 
         Helper::isFileEq($actual, $excepted);
@@ -58,7 +58,7 @@ class TransformsTest extends PHPUnit
 
         $img = new Image();
         $img->loadFile($original)
-            ->flip('xy')
+            ->addFilter('flip', 'xy')
             ->saveAs($actual);
 
         Helper::isFileEq($actual, $excepted);
@@ -72,7 +72,7 @@ class TransformsTest extends PHPUnit
 
         $img = new Image();
         $img->loadFile($original)
-            ->flip('yx')
+            ->addFilter('flip', 'yx')
             ->saveAs($actual);
 
         Helper::isFileEq($actual, $excepted);

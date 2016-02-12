@@ -72,12 +72,6 @@ try { // Error handling
         ->saveAs('./some-path/new-image.jpg', 90) // You can specify quality as a second parameter in percents within range 0-100
         ->saveAs('./some-path/new-image.png')     // Or convert it into another format by extention (gif|jpeg|png)
 
-        // Flip
-        ->flip('x')    // Flip the image horizontally
-        ->flip('y')    // Flip the image vertically
-        ->flip('xy')   // Flip the image horizontally and vertically
-        ->autoOrient() // Adjust the orientation if needed (physically rotates/flips the image based on its EXIF 'Orientation' property)
-
         // Resizing
         ->resize(320, 200)          // Resize the image to 320x200
         ->thumbnail(100, 75)        // Trim the image and resize to exactly 100x75 (crop center if needed)
@@ -104,19 +98,24 @@ try { // Error handling
         ->addFilter('smooth', 5)                    // Smooth filter (-10 to 10)
         ->addFilter('opacity', .5)                  // Change opacity
         ->addFilter('rotate', 90)                   // Rotate the image 90 degrees clockwise
+        ->addFilter('flip', 'x')                    // Flip the image horizontally
+        ->addFilter('flip', 'y')                    // Flip the image vertically
+        ->addFilter('flip', 'xy')                   // Flip the image horizontally and vertically
+        ->addFilter('fill', '#fff')                 // Fill image with white color
 
         // Custom filter handler
         ->addFilter(function ($image, $blockSize) {
             imagefilter($image, IMG_FILTER_PIXELATE, $blockSize, true);
         }, 2) // $blockSize = 2
 
+
         // Overlay watermark.png at 50% opacity at the bottom-right of the image with a 10 pixel horz and vert margin
         ->overlay('./image/watermark.png', 'bottom right', .5, -10, -10)
 
         // Other
         ->create(200, 100, '#000') // Create empty image 200x100 with black background
-        ->fill('#fff')             // Fill image with white color
         ->setQuality(95)           // Set new internal quality state
+        ->autoOrient()             // Adjust the orientation if needed (physically rotates/flips the image based on its EXIF 'Orientation' property)
     ;
 
 } catch(Exception $e) {
