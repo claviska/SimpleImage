@@ -29,7 +29,7 @@ class Helper
     public static function getActual($filename)
     {
         $filename = self::camelCase2Human($filename);
-        return FS::clean(PROJECT_ROOT . '/build/' . $filename);
+        return FS::clean(PROJECT_ROOT . '/build/images/' . $filename);
     }
 
     /**
