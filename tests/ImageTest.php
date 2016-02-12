@@ -281,4 +281,36 @@ class ImageTest extends PHPUnit
         $img = new Image();
         $img->saveAs('');
     }
+
+    public function testGetPath()
+    {
+        $_SERVER['DOCUMENT_ROOT'] = __DIR__;
+        $_SERVER['HTTP_HOST']     = 'test.dev';
+        $_SERVER['SERVER_PORT']   = 80;
+        $_SERVER['REQUEST_URI']   = '/test.php?foo=bar';
+        $_SERVER['QUERY_STRING']  = 'foo=bar';
+        $_SERVER['PHP_SELF']      = '/test.php';
+
+        $original = Helper::getOrig('butterfly.jpg');
+
+        $img = new Image($original);
+        isSame('resources/butterfly.jpg', $img->getPath());
+        isSame('http://test.dev/resources/butterfly.jpg', $img->getUrl());
+    }
+
+    /**
+     * @expectedException \JBZoo\Image\Exception
+     */
+    public function testGetPathUndefined()
+    {
+        $_SERVER['DOCUMENT_ROOT'] = __DIR__;
+        $_SERVER['HTTP_HOST']     = 'test.dev';
+        $_SERVER['SERVER_PORT']   = 80;
+        $_SERVER['REQUEST_URI']   = '/test.php?foo=bar';
+        $_SERVER['QUERY_STRING']  = 'foo=bar';
+        $_SERVER['PHP_SELF']      = '/test.php';
+
+        $img = new Image();
+        isSame('', $img->getUrl());
+    }
 }

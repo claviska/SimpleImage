@@ -17,6 +17,7 @@ namespace JBZoo\Image;
 use JBZoo\Utils\Arr;
 use JBZoo\Utils\Filter as VarFilter;
 use JBZoo\Utils\FS;
+use JBZoo\Utils\Url;
 
 /**
  * Class Image
@@ -982,5 +983,26 @@ class Image
         ob_end_clean();
 
         return 'data:' . $mimetype . ';base64,' . base64_encode($imageData);
+    }
+
+    /**
+     * @return string
+     * @throws Exception
+     */
+    public function getPath()
+    {
+        if (!$this->_filename) {
+            throw new Exception('File not find!');
+        }
+
+        return Url::pathToRel($this->_filename);
+    }
+
+    /**
+     * @return string
+     */
+    public function getUrl()
+    {
+        return Url::root() . '/' . $this->getPath();
     }
 }
