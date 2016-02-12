@@ -29,7 +29,7 @@ class TransformsTest extends PHPUnit
         $original = Helper::getOrig('butterfly.jpg');
 
         $img = new Image();
-        $img->open($original)
+        $img->loadFile($original)
             ->flip('x')
             ->saveAs($actual);
 
@@ -43,7 +43,7 @@ class TransformsTest extends PHPUnit
         $original = Helper::getOrig('butterfly.jpg');
 
         $img = new Image();
-        $img->open($original)
+        $img->loadFile($original)
             ->flip('y')
             ->saveAs($actual);
 
@@ -57,7 +57,7 @@ class TransformsTest extends PHPUnit
         $original = Helper::getOrig('butterfly.jpg');
 
         $img = new Image();
-        $img->open($original)
+        $img->loadFile($original)
             ->flip('xy')
             ->saveAs($actual);
 
@@ -71,7 +71,7 @@ class TransformsTest extends PHPUnit
         $original = Helper::getOrig('butterfly.jpg');
 
         $img = new Image();
-        $img->open($original)
+        $img->loadFile($original)
             ->flip('yx')
             ->saveAs($actual);
 
@@ -85,7 +85,7 @@ class TransformsTest extends PHPUnit
         $original = Helper::getOrig('butterfly.jpg');
 
         $img = new Image();
-        $img->open($original)
+        $img->loadFile($original)
             ->autoOrient()
             ->saveAs($actual);
 

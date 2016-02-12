@@ -35,7 +35,7 @@ class ImageTest extends PHPUnit
         $original = Helper::getOrig('butterfly.jpg');
 
         $img = new Image($original);
-        isClass($this->_class, $img->open($original));
+        isClass($this->_class, $img->loadFile($original));
     }
 
     /**
@@ -44,7 +44,7 @@ class ImageTest extends PHPUnit
     public function testOpenUndefined()
     {
         $img = new Image();
-        $img->open('undefined.jpg');
+        $img->loadFile('undefined.jpg');
     }
 
     public function testCleanup()
@@ -52,7 +52,7 @@ class ImageTest extends PHPUnit
         $original = Helper::getOrig('butterfly.jpg');
 
         $img = new Image($original);
-        isClass($this->_class, $img->open($original));
+        isClass($this->_class, $img->loadFile($original));
 
         $img->cleanup();
         isCount(1, array_filter($img->getInfo()));
@@ -144,7 +144,7 @@ class ImageTest extends PHPUnit
         $excepted = Helper::getExpected(__FUNCTION__ . '.gif');
 
         $img = new Image();
-        $img->open($original)
+        $img->loadFile($original)
             ->saveAs($actual);
 
         Helper::isFileEq($actual, $excepted);
@@ -158,13 +158,13 @@ class ImageTest extends PHPUnit
         $actualJpeg = Helper::getActual(__FUNCTION__ . '.jpeg');
 
         $img = new Image();
-        $img->open($original)
+        $img->loadFile($original)
             ->saveAs($actualJpg);
 
         Helper::isFileEq($actualJpg, $excepted);
 
         $img = new Image();
-        $img->open($original)->saveAs($actualJpeg)->setQuality(100);
+        $img->loadFile($original)->saveAs($actualJpeg)->setQuality(100);
         Helper::isFileEq($actualJpeg, $excepted);
     }
 
@@ -175,7 +175,7 @@ class ImageTest extends PHPUnit
         $actual   = Helper::getActual(__FUNCTION__ . '.png');
 
         $img = new Image();
-        $img->open($original)
+        $img->loadFile($original)
             ->saveAs($actual);
 
         Helper::isFileEq($actual, $excepted);
@@ -187,7 +187,7 @@ class ImageTest extends PHPUnit
         $actual   = Helper::getActual(__FUNCTION__ . '.qwerty');
 
         $img = new Image();
-        $img->open($original)
+        $img->loadFile($original)
             ->saveAs($actual);
     }
 
@@ -200,7 +200,7 @@ class ImageTest extends PHPUnit
         $actual   = Helper::getActual('qwerty/' . __FUNCTION__ . '.png');
 
         $img = new Image();
-        $img->open($original)
+        $img->loadFile($original)
             ->saveAs($actual);
     }
 
@@ -363,5 +363,19 @@ class ImageTest extends PHPUnit
         } else {
             fail('Can\'t copy original file!');
         }
+    }
+
+    public function testOpenImageResource()
+    {
+        $original = Helper::getOrig('butterfly.jpg');
+        $actual   = Helper::getActual(__FUNCTION__ . '.jpg');
+        $excepted = Helper::getExpected(__FUNCTION__ . '.jpg');
+
+        $imgRes = imagecreatefromjpeg($original);
+
+        $img = new Image($imgRes);
+        $img->saveAs($actual);
+
+        Helper::isFileEq($actual, $excepted);
     }
 }

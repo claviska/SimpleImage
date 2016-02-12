@@ -40,7 +40,7 @@ class FilterTest extends PHPUnit
         $original = Helper::getOrig('butterfly.jpg');
 
         $img = new Image();
-        $img->open($original)
+        $img->loadFile($original)
             ->addFilter('sepia')
             ->saveAs($actual);
 
@@ -54,7 +54,7 @@ class FilterTest extends PHPUnit
         $original = Helper::getOrig('butterfly.jpg');
 
         $img = new Image();
-        $img->open($original)
+        $img->loadFile($original)
             ->addFilter('pixelate', array(25))
             ->saveAs($actual);
 
@@ -68,7 +68,7 @@ class FilterTest extends PHPUnit
         $original = Helper::getOrig('butterfly.jpg');
 
         $img = new Image();
-        $img->open($original)
+        $img->loadFile($original)
             ->addFilter(function ($image, $blockSize) {
                 imagefilter($image, IMG_FILTER_PIXELATE, $blockSize, true);
             }, array(2))
@@ -84,7 +84,7 @@ class FilterTest extends PHPUnit
         $original = Helper::getOrig('butterfly.jpg');
 
         $img = new Image();
-        $img->open($original)
+        $img->loadFile($original)
             ->addFilter('edges')
             ->saveAs($actual);
 
@@ -98,7 +98,7 @@ class FilterTest extends PHPUnit
         $original = Helper::getOrig('butterfly.jpg');
 
         $img = new Image();
-        $img->open($original)
+        $img->loadFile($original)
             ->addFilter('emboss')
             ->saveAs($actual);
 
@@ -112,7 +112,7 @@ class FilterTest extends PHPUnit
         $original = Helper::getOrig('butterfly.jpg');
 
         $img = new Image();
-        $img->open($original)
+        $img->loadFile($original)
             ->addFilter('invert')
             ->saveAs($actual);
 
@@ -126,7 +126,7 @@ class FilterTest extends PHPUnit
         $original = Helper::getOrig('butterfly.jpg');
 
         $img = new Image();
-        $img->open($original)
+        $img->loadFile($original)
             ->addFilter('blur', array(10, Filter::BLUR_GAUS))
             ->saveAs($actual);
 
@@ -140,7 +140,7 @@ class FilterTest extends PHPUnit
         $original = Helper::getOrig('butterfly.jpg');
 
         $img = new Image();
-        $img->open($original)
+        $img->loadFile($original)
             ->addFilter('blur', array(10, Filter::BLUR_SEL))
             ->saveAs($actual);
 
@@ -154,7 +154,7 @@ class FilterTest extends PHPUnit
         $original = Helper::getOrig('butterfly.jpg');
 
         $img = new Image();
-        $img->open($original)
+        $img->loadFile($original)
             ->addFilter('brightness', 100)
             ->saveAs($actual);
 
@@ -168,7 +168,7 @@ class FilterTest extends PHPUnit
         $original = Helper::getOrig('butterfly.jpg');
 
         $img = new Image();
-        $img->open($original)
+        $img->loadFile($original)
             ->addFilter('brightness', -100)
             ->saveAs($actual);
 
@@ -182,7 +182,7 @@ class FilterTest extends PHPUnit
         $original = Helper::getOrig('butterfly.jpg');
 
         $img = new Image();
-        $img->open($original)
+        $img->loadFile($original)
             ->addFilter('contrast', -50)
             ->saveAs($actual);
 
@@ -196,7 +196,7 @@ class FilterTest extends PHPUnit
         $original = Helper::getOrig('butterfly.jpg');
 
         $img = new Image();
-        $img->open($original)
+        $img->loadFile($original)
             ->addFilter('colorize', array('#08c', .75))
             ->saveAs($actual);
 
@@ -210,7 +210,7 @@ class FilterTest extends PHPUnit
         $original = Helper::getOrig('butterfly.jpg');
 
         $img = new Image();
-        $img->open($original)
+        $img->loadFile($original)
             ->addFilter('meanRemove')
             ->saveAs($actual);
 
@@ -224,7 +224,7 @@ class FilterTest extends PHPUnit
         $original = Helper::getOrig('butterfly.jpg');
 
         $img = new Image();
-        $img->open($original)
+        $img->loadFile($original)
             ->addFilter('smooth', 6)
             ->saveAs($actual);
 
@@ -238,7 +238,7 @@ class FilterTest extends PHPUnit
         $original = Helper::getOrig('butterfly.jpg');
 
         $img = new Image();
-        $img->open($original)
+        $img->loadFile($original)
             ->addFilter('desaturate', 100)
             ->saveAs($actual);
 
@@ -252,7 +252,7 @@ class FilterTest extends PHPUnit
         $original = Helper::getOrig('butterfly.jpg');
 
         $img = new Image();
-        $img->open($original)
+        $img->loadFile($original)
             ->addFilter('desaturate', 50)
             ->saveAs($actual);
 
@@ -266,7 +266,7 @@ class FilterTest extends PHPUnit
         $original = Helper::getOrig('butterfly.jpg');
 
         $img = new Image();
-        $img->open($original)
+        $img->loadFile($original)
             ->addFilter('opacity', .5)
             ->saveAs($actual);
 
@@ -280,7 +280,7 @@ class FilterTest extends PHPUnit
         $original = Helper::getOrig('butterfly.jpg');
 
         $img = new Image();
-        $img->open($original)
+        $img->loadFile($original)
             ->addFilter('opacity', 30)
             ->saveAs($actual);
 
@@ -294,7 +294,7 @@ class FilterTest extends PHPUnit
         $original = Helper::getOrig('butterfly.jpg');
 
         $img = new Image();
-        $img->open($original)
+        $img->loadFile($original)
             ->addFilter('opacity', 0)
             ->saveAs($actual);
 
@@ -308,7 +308,7 @@ class FilterTest extends PHPUnit
         $original = Helper::getOrig('butterfly.jpg');
 
         $img = new Image();
-        $img->open($original)
+        $img->loadFile($original)
             ->addFilter('opacity', 150)
             ->saveAs($actual);
 
@@ -322,7 +322,7 @@ class FilterTest extends PHPUnit
         $original = Helper::getOrig('butterfly.jpg');
 
         $img = new Image();
-        $img->open($original)
+        $img->loadFile($original)
             ->addFilter('rotate', 90)
             ->saveAs($actual);
 
@@ -336,7 +336,7 @@ class FilterTest extends PHPUnit
         $original = Helper::getOrig('butterfly.jpg');
 
         $img = new Image();
-        $img->open($original)
+        $img->loadFile($original)
             ->addFilter('rotate', 45)
             ->saveAs($actual);
 
@@ -350,7 +350,7 @@ class FilterTest extends PHPUnit
         $original = Helper::getOrig('butterfly.jpg');
 
         $img = new Image();
-        $img->open($original)
+        $img->loadFile($original)
             ->addFilter('rotate', array(-275, array(255, 255, 255, 127)))
             ->saveAs($actual);
 

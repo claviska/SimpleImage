@@ -30,7 +30,7 @@ class WatermarkTest extends PHPUnit
         $overlay  = Helper::getOrig('overlay.png');
 
         $img = new Image();
-        $img->open($original)
+        $img->loadFile($original)
             ->overlay($overlay, 'top left')
             ->saveAs($actual);
 
@@ -45,7 +45,7 @@ class WatermarkTest extends PHPUnit
         $overlay  = Helper::getOrig('overlay.png');
 
         $img = new Image();
-        $img->open($original)
+        $img->loadFile($original)
             ->overlay($overlay, 'top right')
             ->saveAs($actual);
 
@@ -60,7 +60,7 @@ class WatermarkTest extends PHPUnit
         $overlay  = Helper::getOrig('overlay.png');
 
         $img = new Image();
-        $img->open($original)
+        $img->loadFile($original)
             ->overlay($overlay, 'top')
             ->saveAs($actual);
 
@@ -75,7 +75,7 @@ class WatermarkTest extends PHPUnit
         $overlay  = Helper::getOrig('overlay.png');
 
         $img = new Image();
-        $img->open($original)
+        $img->loadFile($original)
             ->overlay($overlay, 'bottom left')
             ->saveAs($actual);
 
@@ -90,7 +90,7 @@ class WatermarkTest extends PHPUnit
         $overlay  = Helper::getOrig('overlay.png');
 
         $img = new Image();
-        $img->open($original)
+        $img->loadFile($original)
             ->overlay($overlay, 'bottom right')
             ->saveAs($actual);
 
@@ -105,7 +105,7 @@ class WatermarkTest extends PHPUnit
         $overlay  = Helper::getOrig('overlay.png');
 
         $img = new Image();
-        $img->open($original)
+        $img->loadFile($original)
             ->overlay($overlay, 'bottom')
             ->saveAs($actual);
 
@@ -120,7 +120,7 @@ class WatermarkTest extends PHPUnit
         $overlay  = Helper::getOrig('overlay.png');
 
         $img = new Image();
-        $img->open($original)
+        $img->loadFile($original)
             ->overlay($overlay, 'left')
             ->saveAs($actual);
 
@@ -135,7 +135,7 @@ class WatermarkTest extends PHPUnit
         $overlay  = Helper::getOrig('overlay.png');
 
         $img = new Image();
-        $img->open($original)
+        $img->loadFile($original)
             ->overlay($overlay, 'right')
             ->saveAs($actual);
 
@@ -150,7 +150,7 @@ class WatermarkTest extends PHPUnit
         $overlay  = Helper::getOrig('overlay.png');
 
         $img = new Image();
-        $img->open($original)
+        $img->loadFile($original)
             ->overlay($overlay, 'center')
             ->saveAs($actual);
 
@@ -165,7 +165,7 @@ class WatermarkTest extends PHPUnit
         $overlay  = Helper::getOrig('overlay.png');
 
         $img = new Image();
-        $img->open($original)
+        $img->loadFile($original)
             ->overlay($overlay, 'bottom', 200, 25, 25)
             ->saveAs($actual);
 
@@ -180,7 +180,7 @@ class WatermarkTest extends PHPUnit
         $overlay  = Helper::getOrig('overlay.png');
 
         $img = new Image();
-        $img->open($original)
+        $img->loadFile($original)
             ->overlay($overlay)
             ->saveAs($actual);
 

@@ -68,7 +68,7 @@ class ResizeTest extends PHPUnit
         $original = Helper::getOrig('butterfly.jpg');
 
         $img = new Image();
-        $img->open($original)
+        $img->loadFile($original)
             ->crop(160, 110, 460, 360)
             ->saveAs($actual);
 
@@ -82,7 +82,7 @@ class ResizeTest extends PHPUnit
         $original = Helper::getOrig('butterfly.jpg');
 
         $img = new Image();
-        $img->open($original)
+        $img->loadFile($original)
             ->crop(460, 360, 160, 110)
             ->saveAs($actual);
 
@@ -96,7 +96,7 @@ class ResizeTest extends PHPUnit
         $original = Helper::getOrig('butterfly.jpg');
 
         $img = new Image();
-        $img->open($original)
+        $img->loadFile($original)
             ->fitToWidth(100)
             ->saveAs($actual);
 
@@ -110,7 +110,7 @@ class ResizeTest extends PHPUnit
         $original = Helper::getOrig('butterfly.jpg');
 
         $img = new Image();
-        $img->open($original)
+        $img->loadFile($original)
             ->fitToHeight(100)
             ->saveAs($actual);
 
@@ -124,7 +124,7 @@ class ResizeTest extends PHPUnit
         $original = Helper::getOrig('butterfly.jpg');
 
         $img = new Image();
-        $img->open($original)
+        $img->loadFile($original)
             ->thumbnail(100, 75)
             ->saveAs($actual);
 
@@ -138,7 +138,7 @@ class ResizeTest extends PHPUnit
         $original = Helper::getOrig('butterfly.gif');
 
         $img = new Image();
-        $img->open($original)
+        $img->loadFile($original)
             ->thumbnail(75)
             ->saveAs($actual);
 
@@ -152,7 +152,7 @@ class ResizeTest extends PHPUnit
         $original = Helper::getOrig('butterfly.png');
 
         $img = new Image();
-        $img->open($original)
+        $img->loadFile($original)
             ->thumbnail(200, 50, true)
             ->saveAs($actual);
 
@@ -166,7 +166,7 @@ class ResizeTest extends PHPUnit
         $original = Helper::getOrig('butterfly.jpg');
 
         $img = new Image();
-        $img->open($original)
+        $img->loadFile($original)
             ->bestFit(100, 400)
             ->saveAs($actual);
 
@@ -180,7 +180,7 @@ class ResizeTest extends PHPUnit
         $original = Helper::getOrig('butterfly.jpg');
 
         $img = new Image();
-        $img->open($original)
+        $img->loadFile($original)
             ->bestFit(100, 40)
             ->saveAs($actual);
 
@@ -194,7 +194,7 @@ class ResizeTest extends PHPUnit
         $original = Helper::getOrig('butterfly.jpg');
 
         $img = new Image();
-        $img->open($original)
+        $img->loadFile($original)
             ->bestFit(10000, 10000)
             ->saveAs($actual);
 
