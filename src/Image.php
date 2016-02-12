@@ -17,6 +17,7 @@ namespace JBZoo\Image;
 use JBZoo\Utils\Arr;
 use JBZoo\Utils\Filter as VarFilter;
 use JBZoo\Utils\FS;
+use JBZoo\Utils\Sys;
 use JBZoo\Utils\Url;
 
 /**
@@ -34,7 +35,7 @@ class Image
      * GD Resource
      * @var mixed
      */
-    protected $_image = null;
+    protected $_image;
 
     /**
      * @var int
@@ -44,7 +45,7 @@ class Image
     /**
      * @var string|null
      */
-    protected $_filename = null;
+    protected $_filename;
 
     /**
      * @var array
@@ -54,22 +55,22 @@ class Image
     /**
      * @var int
      */
-    protected $_width = null;
+    protected $_width;
 
     /**
      * @var int
      */
-    protected $_height = null;
+    protected $_height;
 
     /**
      * @var string
      */
-    protected $_orient = null;
+    protected $_orient;
 
     /**
      * @var string
      */
-    protected $_mime = null;
+    protected $_mime;
 
     /**
      * Constructor
@@ -153,7 +154,8 @@ class Image
      * The resulting format will be determined by the file extension.
      *
      * @param null|int $quality Output image quality in percents 0-100
-     * @return Image
+     * @return $this
+     * @throws Exception
      */
     public function save($quality = null)
     {
@@ -170,13 +172,13 @@ class Image
      *
      * @param string   $filename If omitted - original file will be overwritten
      * @param null|int $quality  Output image quality in percents 0-100
-     * @return Image
+     * @return $this
      *
      * @throws Exception
      */
     public function saveAs($filename, $quality = null)
     {
-        if (strlen($filename) === 0) {
+        if (!$filename) {
             throw new Exception('Empty filename to save image');
         }
 
@@ -221,8 +223,7 @@ class Image
      */
     protected function _savePng($filename, $quality)
     {
-        $result = imagepng($this->_image, $filename, round(9 * $quality / 100));
-        return $result;
+        return imagepng($this->_image, $filename, round(9 * $quality / 100));
     }
 
     /**
@@ -233,8 +234,7 @@ class Image
     protected function _saveJpeg($filename, $quality)
     {
         imageinterlace($this->_image, true);
-        $result = imagejpeg($this->_image, $filename, round($quality));
-        return $result;
+        return imagejpeg($this->_image, $filename, round($quality));
     }
 
     /**
@@ -243,8 +243,7 @@ class Image
      */
     protected function _saveGif($filename)
     {
-        $result = imagegif($this->_image, $filename);
-        return $result;
+        return imagegif($this->_image, $filename);
     }
 
     /**
@@ -402,10 +401,8 @@ class Image
     {
         $result = array();
 
-        if (function_exists('exif_read_data')) {
-            if (Helper::isJpeg($this->_mime)) {
-                $result = exif_read_data($this->_filename);
-            }
+        if (Sys::isFunc('exif_read_data') && Helper::isJpeg($this->_mime)) {
+            $result = exif_read_data($this->_filename);
         }
 
         return $result;
@@ -491,7 +488,7 @@ class Image
     {
         $this->cleanup();
 
-        $height = $height ? $height : $width;
+        $height = $height ?: $width;
 
         $this->_width  = VarFilter::int($width);
         $this->_height = VarFilter::int($height);
@@ -600,11 +597,18 @@ class Image
      * @param string $color     Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
      *                          Where red, green, blue - integers 0-255, alpha - integer 0-127
      * @return $this
+     * @throws Exception
      */
     public function fill($color = '#000000')
     {
         $rgba      = Helper::normalizeColor($color);
-        $fillColor = imagecolorallocatealpha($this->_image, $rgba['r'], $rgba['g'], $rgba['b'], $rgba['a']);
+        $fillColor = imagecolorallocatealpha(
+            $this->_image,
+            (int)$rgba['r'],
+            (int)$rgba['g'],
+            (int)$rgba['b'],
+            (int)$rgba['a']
+        );
 
         imagealphablending($this->_image, false);
         imagesavealpha($this->_image, true);
@@ -778,13 +782,15 @@ class Image
      * @param string|array $bgColor Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
      *                              Where red, green, blue - integers 0-255, alpha - integer 0-127
      * @return $this
+     * @throws Exception
      */
     public function rotate($angle, $bgColor = '#000000')
     {
         // Perform the rotation
+        $angle    = Helper::rotate($angle);
         $rgba     = Helper::normalizeColor($bgColor);
         $bgColor  = imagecolorallocatealpha($this->_image, $rgba['r'], $rgba['g'], $rgba['b'], $rgba['a']);
-        $newImage = imagerotate($this->_image, -(Helper::rotate($angle)), $bgColor);
+        $newImage = imagerotate($this->_image, -($angle), $bgColor);
 
         imagesavealpha($newImage, true);
         imagealphablending($newImage, true);
@@ -802,6 +808,7 @@ class Image
      *
      * @return $this
      * @codeCoverageIgnore
+     * @throws Exception
      */
     public function autoOrient()
     {
@@ -845,6 +852,7 @@ class Image
      * @param int       $globOffsetY Vertical offset in pixels
      *
      * @return $this
+     * @throws Exception
      */
     public function overlay($overlay, $position = 'bottom right', $opacity = .4, $globOffsetX = 0, $globOffsetY = 0)
     {
@@ -986,6 +994,8 @@ class Image
     }
 
     /**
+     * Get relative path to image
+     *
      * @return string
      * @throws Exception
      */
@@ -999,7 +1009,10 @@ class Image
     }
 
     /**
+     * Get full URL to image (if not CLI mode)
+     *
      * @return string
+     * @throws Exception
      */
     public function getUrl()
     {
