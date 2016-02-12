@@ -314,4 +314,46 @@ class FilterTest extends PHPUnit
 
         Helper::isFileEq($actual, $excepted);
     }
+
+    public function testFlipRorate90()
+    {
+        $excepted = Helper::getExpected(__FUNCTION__ . '.jpg');
+        $actual   = Helper::getActual(__FUNCTION__ . '.jpg');
+        $original = Helper::getOrig('butterfly.jpg');
+
+        $img = new Image();
+        $img->open($original)
+            ->addFilter('rotate', 90)
+            ->saveAs($actual);
+
+        Helper::isFileEq($actual, $excepted);
+    }
+
+    public function testFlipRorate45()
+    {
+        $excepted = Helper::getExpected(__FUNCTION__ . '.jpg');
+        $actual   = Helper::getActual(__FUNCTION__ . '.jpg');
+        $original = Helper::getOrig('butterfly.jpg');
+
+        $img = new Image();
+        $img->open($original)
+            ->addFilter('rotate', 45)
+            ->saveAs($actual);
+
+        Helper::isFileEq($actual, $excepted);
+    }
+
+    public function testFlipRorateRevert275White()
+    {
+        $excepted = Helper::getExpected(__FUNCTION__ . '.png');
+        $actual   = Helper::getActual(__FUNCTION__ . '.png');
+        $original = Helper::getOrig('butterfly.jpg');
+
+        $img = new Image();
+        $img->open($original)
+            ->addFilter('rotate', array(-275, array(255, 255, 255, 127)))
+            ->saveAs($actual);
+
+        Helper::isFileEq($actual, $excepted);
+    }
 }

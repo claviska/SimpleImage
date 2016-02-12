@@ -263,8 +263,10 @@ class Image
         $quality = $quality ?: $this->_quality;
         $quality = Helper::quality($quality);
 
-        $format = FS::ext($filename) ?: $this->_mime;
-        $format = strtolower($format);
+        $format = strtolower(FS::ext($filename));
+        if (!Helper::isSupportedFormat($format)) {
+            $format = $this->_mime;
+        }
 
         $filename = FS::clean($filename);
 
@@ -814,34 +816,6 @@ class Image
     }
 
     /**
-     * Rotate an image
-     *
-     * @param int          $angle   -360 < x < 360
-     * @param string|array $bgColor Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
-     *                              Where red, green, blue - integers 0-255, alpha - integer 0-127
-     * @return $this
-     * @throws Exception
-     */
-    public function rotate($angle, $bgColor = '#000000')
-    {
-        // Perform the rotation
-        $angle    = Helper::rotate($angle);
-        $rgba     = Helper::normalizeColor($bgColor);
-        $bgColor  = imagecolorallocatealpha($this->_image, $rgba['r'], $rgba['g'], $rgba['b'], $rgba['a']);
-        $newImage = imagerotate($this->_image, -($angle), $bgColor);
-
-        imagesavealpha($newImage, true);
-        imagealphablending($newImage, true);
-
-        // Update meta data
-        $this->_width  = imagesx($newImage);
-        $this->_height = imagesy($newImage);
-        $this->_replaceImage($newImage);
-
-        return $this;
-    }
-
-    /**
      * Rotates and/or flips an image automatically so the orientation will be correct (based on exif 'Orientation')
      *
      * @return $this
@@ -857,24 +831,24 @@ class Image
             $this->flip('x');
 
         } elseif ((int)$this->_exif['Orientation'] === 3) { // Rotate 180 counterclockwise
-            $this->rotate(-180);
+            $this->addFilter('rotate', -180);
 
         } elseif ((int)$this->_exif['Orientation'] === 4) { // Vertical flip
             $this->flip('y');
 
         } elseif ((int)$this->_exif['Orientation'] === 5) { // Rotate 90 clockwise and flip vertically
             $this->flip('y');
-            $this->rotate(90);
+            $this->addFilter('rotate', 90);
 
         } elseif ((int)$this->_exif['Orientation'] === 6) { // Rotate 90 clockwise
-            $this->rotate(90);
+            $this->addFilter('rotate', 90);
 
         } elseif ((int)$this->_exif['Orientation'] === 7) { // Rotate 90 clockwise and flip horizontally
             $this->flip('x');
-            $this->rotate(90);
+            $this->addFilter('rotate', 90);
 
         } elseif ((int)$this->_exif['Orientation'] === 8) { // Rotate 90 counterclockwise
-            $this->rotate(-90);
+            $this->addFilter('rotate', -90);
         }
 
         return $this;

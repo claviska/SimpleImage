@@ -73,7 +73,7 @@ class Helper
      *
      * @param string|array $origColor Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
      *                                Where red, green, blue - integers 0-255, alpha - integer 0-127
-     * @return array
+     * @return integer[]
      * @throws Exception
      */
     public static function normalizeColor($origColor)
@@ -409,6 +409,19 @@ class Helper
 
         return $result;
     }
+
+    /**
+     * Check is format supported by lib
+     *
+     * @param string $format
+     * @return bool
+     */
+    public static function isSupportedFormat($format)
+    {
+        if ($format) {
+            return self::isJpeg($format) || self::isPng($format) || self::isGif($format);
+        }
+
+        return false;
+    }
 }
-
-

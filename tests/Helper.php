@@ -57,24 +57,24 @@ class Helper
      */
     public static function isFileEq($actual, $expected)
     {
-        $isExistsAct = file_exists($actual);
-        $isExistsExp = file_exists($expected);
+        // Because realpath cache is!
+        clearstatcache(false, $actual);
+        clearstatcache(false, $expected);
 
-        isTrue($isExistsExp, 'File not found: ' . $expected);
+        isTrue(file_exists($actual), 'File not found: ' . $actual);
+        isTrue(file_exists($expected), 'File not found: ' . $expected);
 
-        if ($isExistsAct && $isExistsExp) {
-            $actualSize   = filesize($actual);
-            $expectedSize = filesize($expected);
+        $actualSize   = filesize($actual);
+        $expectedSize = filesize($expected);
 
-            $diff = abs($actualSize - $expectedSize);
+        $diff = abs($actualSize - $expectedSize);
 
-            if ($diff !== 0) {
-                $message = FS::filename($actual) . '; ' . $actualSize . ' <> ' . $expectedSize . ' (' . $diff . ')';
-                //isTrue($diff <= 4096, $message);
-                cliMessage($message);
-            } else {
-                is(0, $diff);
-            }
+        if ($diff !== 0) {
+            $message = FS::filename($actual) . '; ' . $actualSize . ' <> ' . $expectedSize . ' (' . $diff . ')';
+            //isTrue($diff <= 4096, $message);
+            cliMessage($message);
+        } else {
+            is(0, $diff);
         }
     }
 

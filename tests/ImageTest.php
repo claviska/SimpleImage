@@ -181,9 +181,6 @@ class ImageTest extends PHPUnit
         Helper::isFileEq($actual, $excepted);
     }
 
-    /**
-     * @expectedException \JBZoo\Image\Exception
-     */
     public function testConvertToUndefindFormat()
     {
         $original = Helper::getOrig('butterfly.jpg');
@@ -342,5 +339,29 @@ class ImageTest extends PHPUnit
         $img = new Image($base64);
         $img->saveAs($actualBase64);
         Helper::isFileEq($actualBase64, $excepted);
+    }
+
+    public function testUnsupportedFormat()
+    {
+        $excepted = Helper::getExpected(__FUNCTION__ . '.png');
+        $actual   = Helper::getActual(__FUNCTION__ . '.tmp');
+        $original = Helper::getOrig('butterfly.tmp');
+
+        if (copy($original, $actual)) {
+            $img  = new Image($actual);
+            $info = $img
+                ->thumbnail(100, 200)
+                ->save()
+                ->getInfo();
+
+            is('image/png', $info['mime']);
+            is(100, $info['width']);
+            is(200, $info['height']);
+
+            Helper::isFileEq($actual, $excepted);
+
+        } else {
+            fail('Can\'t copy original file!');
+        }
     }
 }

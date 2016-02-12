@@ -223,4 +223,29 @@ class Filter
 
         return $newImage;
     }
+
+    /**
+     * Rotate an image
+     *
+     * @param mixed        $image
+     * @param int          $angle   -360 < x < 360
+     * @param string|array $bgColor Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
+     *                              Where red, green, blue - integers 0-255, alpha - integer 0-127
+     * @return $this
+     * @throws Exception
+     */
+    public static function rotate($image, $angle, $bgColor = '#000000')
+    {
+        // Perform the rotation
+        $angle = Helper::rotate($angle);
+        $rgba  = Helper::normalizeColor($bgColor);
+
+        $bgColor  = imagecolorallocatealpha($image, $rgba['r'], $rgba['g'], $rgba['b'], $rgba['a']);
+        $newImage = imagerotate($image, -($angle), $bgColor);
+
+        imagesavealpha($newImage, true);
+        imagealphablending($newImage, true);
+
+        return $newImage;
+    }
 }
