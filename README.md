@@ -22,8 +22,7 @@ use JBZoo\Image\Image;
 
 $img = (new Image('./example/source-image.jpg'))
     ->flip('x')
-    ->rotate(90)
-    ->resize(320, 240)
+    ->thumbnail(320, 240)
     ->saveAs('./example/dist-image.png');
 ```
 
@@ -57,7 +56,7 @@ Usage
 -----
 
 ```php
-
+<?php
 use JBZoo\Image\Image;
 use JBZoo\Image\Filter;
 use JBZoo\Image\Exception;

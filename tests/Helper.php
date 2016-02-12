@@ -70,7 +70,7 @@ class Helper
         $diff = abs($actualSize - $expectedSize);
 
         if ($diff !== 0) {
-            $message = FS::filename($actual) . '; ' . $actualSize . ' <> ' . $expectedSize . ' (' . $diff . ')';
+            $message = $actual . '; ' . $actualSize . ' <> ' . $expectedSize . "\t\t(" . $diff . ')';
             //isTrue($diff <= 4096, $message);
             cliMessage($message);
         } else {
