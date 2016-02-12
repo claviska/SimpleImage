@@ -5,7 +5,7 @@
 [![License](https://poser.pugx.org/JBZoo/Image/license)](https://packagist.org/packages/JBZoo/Image) [![Latest Stable Version](https://poser.pugx.org/JBZoo/Image/v/stable)](https://packagist.org/packages/JBZoo/Image) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/JBZoo/Image/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/JBZoo/Image/?branch=master)
 
 
-Fork (Global refactoring and test coverage!) - [Cory LaViska for A Beautiful Site, LLC](http://www.abeautifulsite.net/)
+Fork (Really huge global refactoring and test coverage!) - [Cory LaViska for A Beautiful Site, LLC](http://www.abeautifulsite.net/)
 
 Overview
 --------
@@ -24,12 +24,11 @@ $img = (new Image('./example/source-image.jpg'))
     ->flip('x')
     ->rotate(90)
     ->resize(320, 240)
-    ->sepia()
     ->saveAs('./example/dist-image.png');
 ```
 
 That block loads **source-image.jpg**, flip it horizontally, rotate it 90 degrees clockwise,
-shrink it to fit within a 320x240 box, apply a sepia effect, convert it to a PNG, and save it to **dist-image.png**.
+shrink it to fit within a 320x240 box, apply a sepia effect, convert it to a PNG, and save it to **dist-image.png** with other format!
 
 With this class, you can effortlessly:
  * Resize images (free resize, resize to width, resize to height, resize to fit)
@@ -46,6 +45,13 @@ Requirements
 ------------
 
 This class requires PHP 5.3 and PHP GD library.
+
+Install
+--------
+Just use the composer
+```sh
+composer require jbzoo/image:"3.x-dev"
+```
 
 Usage
 -----
@@ -133,8 +139,11 @@ try { // Error handling
     $img->isLandscape();    // Check orientation
     $img->isSquare();       // Check orientation
 
+    $img->getUrl();         // Get full url to image     - http://site.com/example/image.png
+    $img->getPath();        // Get relative url to image - /example/image.png
+
     $imgInfo = $img->getInfo(); // Get array of all properties
-    // Some thing like...
+    // Something like...
     $imgInfo = [
         "filename" => "/<full_path>/resources/butterfly.jpg",
         "width"    => 640,
@@ -162,6 +171,14 @@ try { // Error handling
     echo 'Error: ' . $e->getMessage();
 }
 
+```
+
+
+### Unit test and Code styles
+
+```sh
+composer update-all
+composer test
 ```
 
 
