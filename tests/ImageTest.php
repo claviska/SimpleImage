@@ -327,9 +327,11 @@ class ImageTest extends PHPUnit
             . 'MCcBRQwqCCNilcqATw4mEIhwtdBFCQ0QXCBS5GQAwCgISJgQgLFiQw4ECHi0yDAtRY8sHGAyglJPjA2WgAhgZXUmABIKRRIAA7';
 
         $base64 = 'data:image/gif;base64,' . $imgStr;
+        $bin    = base64_decode($imgStr, true);
 
         $actualClean  = Helper::getActual(__FUNCTION__ . '_clean.gif');
         $actualBase64 = Helper::getActual(__FUNCTION__ . '_base64.gif');
+        $actualBin    = Helper::getActual(__FUNCTION__ . '_bin.gif');
         $excepted     = Helper::getExpected(__FUNCTION__ . '.gif');
 
         $img = new Image($imgStr);
@@ -339,6 +341,10 @@ class ImageTest extends PHPUnit
         $img = new Image($base64);
         $img->saveAs($actualBase64);
         Helper::isFileEq($actualBase64, $excepted);
+
+        $img = new Image($bin);
+        $img->saveAs($actualBin);
+        Helper::isFileEq($actualBin, $excepted);
     }
 
     public function testUnsupportedFormat()

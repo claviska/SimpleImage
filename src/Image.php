@@ -83,7 +83,7 @@ class Image
     {
         Helper::checkGD();
 
-        if (FS::isFile($filename)) {
+        if (ctype_print($filename) && FS::isFile($filename)) {
             $this->loadFile($filename);
 
         } elseif (Helper::isGdRes($filename)) {
@@ -807,35 +807,34 @@ class Image
     /**
      * Flip an image horizontally or vertically
      *
-     * @param string $direction x|y|yx|xy
+     * @param string $dir x|y|yx|xy
      * @return $this
      */
-    public function flip($direction)
+    public function flip($dir)
     {
         $newImage = imagecreatetruecolor($this->_width, $this->_height);
         imagealphablending($newImage, false);
         imagesavealpha($newImage, true);
 
-        $direction = Helper::direction($direction);
+        $dir = Helper::direction($dir);
 
-        if ($direction === 'y') {
+        if ($dir === 'y') {
             for ($y = 0; $y < $this->_height; $y++) {
                 imagecopy($newImage, $this->_image, 0, $y, 0, $this->_height - $y - 1, $this->_width, 1);
             }
 
-        } elseif ($direction === 'x') {
+        } elseif ($dir === 'x') {
             for ($x = 0; $x < $this->_width; $x++) {
                 imagecopy($newImage, $this->_image, $x, 0, $this->_width - $x - 1, 0, 1, $this->_height);
             }
 
-        } elseif ($direction === 'xy') {
+        } elseif ($dir === 'xy' || $dir === 'yx') {
             $this->flip('x');
             $this->flip('y');
-
-        } elseif ($direction === 'yx') {
-            $this->flip('y');
-            $this->flip('x');
+            return $this;
         }
+
+        $this->_replaceImage($newImage);
 
         return $this;
     }
