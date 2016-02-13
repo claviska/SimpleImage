@@ -17,7 +17,8 @@ require_once './vendor/autoload.php'; // composer autoload.php
 use JBZoo\Image\Image;
 
 $img = (new Image('./example/source-image.jpg'))
-    ->flip('x')
+    ->addFilter('flip', 'x')
+    ->addFilter('text', 'Some text', './res/font.ttf')
     ->thumbnail(320, 240)
     ->saveAs('./example/dist-image.png');
 ```
@@ -133,8 +134,8 @@ $img = new Image('data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAA
 $img = new Image('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==');
 
 // Some binary data
-$gifBin = base64_decode('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==');
-$img = new Image($gifBin);
+$imgBin = base64_decode('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==');
+$img = new Image($imgBin);
 
 // Resource
 $imgRes = imagecreatefromjpeg('./some-image.jpeg');
