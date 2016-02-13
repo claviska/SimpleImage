@@ -14,6 +14,7 @@
 
 namespace JBZoo\PHPUnit;
 
+use JBZoo\Image\Exception;
 use JBZoo\Image\Image;
 
 /**
@@ -383,5 +384,33 @@ class ImageTest extends PHPUnit
         $img->saveAs($actual);
 
         Helper::isFileEq($actual, $excepted);
+    }
+
+    /**
+     * @expectedException \JBZoo\Image\Exception
+     */
+    public function testLoadStringUndefined()
+    {
+        $img = new Image();
+        $img->loadString('');
+    }
+
+    /**
+     * @expectedException \JBZoo\Image\Exception
+     */
+    public function testLoadResourceUndefined()
+    {
+        $img = new Image();
+        $img->loadResource('');
+    }
+
+    public function testPHP53_getimagesizefromstring()
+    {
+        try {
+            $img = new Image();
+            $img->loadString('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==');
+        } catch (Exception $e) {
+            isTrue(strpos(PHP_VERSION, '5.3') === 0);
+        }
     }
 }
