@@ -549,6 +549,7 @@ class Image
      * @param null|string $color  Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
      *                            Where red, green, blue - integers 0-255, alpha - integer 0-127
      * @return $this
+     * @throws Exception
      */
     public function create($width, $height = null, $color = null)
     {
@@ -825,11 +826,11 @@ class Image
     /**
      * Overlay an image on top of another, works with 24-bit PNG alpha-transparency
      *
-     * @param string    $overlay     An image filename or a Image object
-     * @param string    $position    center|top|left|bottom|right|top left|top right|bottom left|bottom right
-     * @param float|int $opacity     Overlay opacity 0-1 or 0-100
-     * @param int       $globOffsetX Horizontal offset in pixels
-     * @param int       $globOffsetY Vertical offset in pixels
+     * @param string|Image $overlay     An image filename or a Image object
+     * @param string       $position    center|top|left|bottom|right|top left|top right|bottom left|bottom right
+     * @param float|int    $opacity     Overlay opacity 0-1 or 0-100
+     * @param int          $globOffsetX Horizontal offset in pixels
+     * @param int          $globOffsetY Vertical offset in pixels
      *
      * @return $this
      * @throws Exception

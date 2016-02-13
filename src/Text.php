@@ -108,7 +108,7 @@ class Text
 
             } else {
                 $rgba        = Helper::normalizeColor($strokeColor);
-                $strokeColor = imagecolorallocatealpha($image, $rgba['r'], $rgba['g'], $rgba['b'], $rgba['a']);
+                $strokeColor = imagecolorallocatealpha($image, $rgba[0], $rgba[1], $rgba[2], $rgba[3]);
                 self::_renderStroke(
                     $image,
                     $text,
@@ -161,7 +161,7 @@ class Text
         $result = array();
         foreach ($colors as $color) {
             $rgba     = Helper::normalizeColor($color);
-            $result[] = imagecolorallocatealpha($image, $rgba['r'], $rgba['g'], $rgba['b'], $rgba['a']);
+            $result[] = imagecolorallocatealpha($image, $rgba[0], $rgba[1], $rgba[2], $rgba[3]);
         }
 
         return $result;

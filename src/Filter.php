@@ -147,9 +147,9 @@ class Filter
         $rgba  = Helper::normalizeColor($color);
         $alpha = Helper::opacity2Alpha($opacity);
 
-        $red   = Helper::color($rgba['r']);
-        $green = Helper::color($rgba['g']);
-        $blue  = Helper::color($rgba['b']);
+        $red   = Helper::color($rgba[0]);
+        $green = Helper::color($rgba[1]);
+        $blue  = Helper::color($rgba[2]);
 
         imagefilter($image, IMG_FILTER_COLORIZE, $red, $green, $blue, $alpha);
     }
@@ -180,7 +180,7 @@ class Filter
      *
      * @param mixed $image   GD resource
      * @param int   $percent Level of desaturization.
-     * @return mixed
+     * @return resource|null
      */
     public static function desaturate($image, $percent = 100)
     {
@@ -211,6 +211,8 @@ class Filter
 
             return $newImage;
         }
+
+        return null;
     }
 
     /**
@@ -266,7 +268,7 @@ class Filter
         $angle = Helper::rotate($angle);
         $rgba  = Helper::normalizeColor($bgColor);
 
-        $bgColor  = imagecolorallocatealpha($image, $rgba['r'], $rgba['g'], $rgba['b'], $rgba['a']);
+        $bgColor  = imagecolorallocatealpha($image, $rgba[0], $rgba[1], $rgba[2], $rgba[3]);
         $newImage = imagerotate($image, -($angle), $bgColor);
 
         Helper::addAlpha($newImage);
@@ -325,10 +327,10 @@ class Filter
         $rgba      = Helper::normalizeColor($color);
         $fillColor = imagecolorallocatealpha(
             $image,
-            (int)$rgba['r'],
-            (int)$rgba['g'],
-            (int)$rgba['b'],
-            (int)$rgba['a']
+            (int)$rgba[0],
+            (int)$rgba[1],
+            (int)$rgba[2],
+            (int)$rgba[3]
         );
 
         Helper::addAlpha($image, false);
@@ -347,6 +349,6 @@ class Filter
      */
     public static function text($image, $text, $fontFile, $params = array())
     {
-        return Text::render($image, $text, $fontFile, $params);
+        Text::render($image, $text, $fontFile, $params);
     }
 }

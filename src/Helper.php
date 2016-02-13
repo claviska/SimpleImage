@@ -101,7 +101,7 @@ class Helper
             throw new Exception('Undefined color format (string): ' . $origColor); // @codeCoverageIgnore
         }
 
-        return array('r' => $result[0], 'g' => $result[1], 'b' => $result[2], 'a' => $result[3]);
+        return $result;
     }
 
     /**

@@ -61,55 +61,61 @@ class HelperTest extends PHPUnit
     public function testNormalizeColor()
     {
         isSame(
-            array('r' => 0, 'g' => 136, 'b' => 204, 'a' => 0),
+            array(0, 136, 204, 0),
             ImageHelper::normalizeColor('#0088cc')
         );
 
         isSame(
-            array('r' => 0, 'g' => 136, 'b' => 204, 'a' => 0),
+            array(0, 136, 204, 0),
             ImageHelper::normalizeColor('0088cc')
         );
 
         isSame(
-            array('r' => 0, 'g' => 136, 'b' => 204, 'a' => 0),
+            array(0, 136, 204, 0),
             ImageHelper::normalizeColor('08c')
         );
 
         isSame(
-            array('r' => 0, 'g' => 136, 'b' => 204, 'a' => 0),
+            array(0, 136, 204, 0),
             ImageHelper::normalizeColor('#08c')
         );
 
 
         isSame(
-            array('r' => 0, 'g' => 136, 'b' => 204, 'a' => 0),
+            array(0, 136, 204, 0),
             ImageHelper::normalizeColor(array('r' => 0, 'g' => '136', 'b' => '204'))
         );
 
         isSame(
-            array('r' => 0, 'g' => 136, 'b' => 204, 'a' => 0),
+            array(0, 136, 204, 0),
             ImageHelper::normalizeColor(array('r' => '0', 'g' => '   136   ', 'b' => ' 204 '))
         );
 
         isSame(
-            array('r' => 0, 'g' => 136, 'b' => 204, 'a' => 0),
+            array(0, 136, 204, 0),
             ImageHelper::normalizeColor(array('r' => '0', 'g' => '   136   ', 'b' => ' 204 ', 'a' => '0'))
         );
 
         isSame(
-            array('r' => 0, 'g' => 136, 'b' => 204, 'a' => 0),
+            array(0, 136, 204, 0),
             ImageHelper::normalizeColor(array('r' => '0', 'g' => '   136   ', 'b' => ' 204 ', 'a' => '0'))
         );
 
         isSame(
-            array('r' => 0, 'g' => 136, 'b' => 204, 'a' => 1),
+            array(0, 136, 204, 1),
             ImageHelper::normalizeColor(array('0', '   136   ', ' 204 ', '1'))
         );
 
         isSame(
-            array('r' => 255, 'g' => 255, 'b' => 255, 'a' => 127),
+            array(255, 255, 255, 127),
             ImageHelper::normalizeColor(array('1000', '   1036   ', ' 2004 ', '1000'))
         );
+
+        isSame(
+            array(0, 136, 204, 0),
+            ImageHelper::normalizeColor(array(0, 136, 204, 0))
+        );
+
     }
 
     public function testOpacity()
