@@ -3,10 +3,12 @@
 #### PHP Library for Image-based development
 
 [![License](https://poser.pugx.org/JBZoo/Image/license)](https://packagist.org/packages/JBZoo/Image) [![Latest Stable Version](https://poser.pugx.org/JBZoo/Image/v/stable)](https://packagist.org/packages/JBZoo/Image) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/JBZoo/Image/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/JBZoo/Image/?branch=master)
+
 Fork (Really huge global refactoring and test coverage!) - [Cory LaViska for A Beautiful Site, LLC](http://www.abeautifulsite.net/)
 
 ### Overview
-This class makes image manipulation in PHP as simple as possible. The examples are the best way to learn how to use it, but here it is in a nutshell:
+This class makes image manipulation in PHP as simple as possible.
+The examples are the best way to learn how to use it, but here it is in a nutshell:
 
 ```php
 require_once './vendor/autoload.php'; // composer autoload.php
@@ -20,8 +22,9 @@ $img = (new Image('./example/source-image.jpg'))
     ->saveAs('./example/dist-image.png');
 ```
 
-That block loads **source-image.jpg**, flip it horizontally, rotate it 90 degrees clockwise,
-shrink it to fit within a 320x240 box, apply a sepia effect, convert it to a PNG, and save it to **dist-image.png** with other format!
+That block loads `source-image.jpg`, flip it horizontally, rotate it 90 degrees clockwise,
+shrink it to fit within a 320x240 box, apply a sepia effect, convert it to a PNG, and save it to `dist-image.png` with other format!
+
 
 With this class, you can effortlessly:
  * Resize images (free resize, resize to width, resize to height, resize to fit)
@@ -30,22 +33,23 @@ With this class, you can effortlessly:
  * Adjust brightness & contrast
  * Desaturate, colorize, pixelate, blur, etc.
  * Overlay one image onto another (watermarking)
- * Add text using a font of your choice (Coming soon!)
+ * Add text using a font of your choice
  * Convert between GIF, JPEG, and PNG formats
  * Strip EXIF data (Just save it!)
 
 
 ### Requirements
-This class requires PHP 5.3 and PHP GD library. Recommended 5.4+
+This class requires PHP 5.3 and PHP GD library. Recommended PHP 5.4 and above
 
 
 ### Install
 Just use the composer
 ```sh
-composer require jbzoo/image:"3.x-dev"
+composer require jbzoo/image:"3.x-dev"  # Last dev
+composer require jbzoo/image            # Last stable
 ```
 
-### Usage
+### How to use
 ```php
 use JBZoo\Image\Image;
 use JBZoo\Image\Filter;
@@ -53,7 +57,7 @@ use JBZoo\Image\Exception;
 
 try { // Error handling
 
-    $img = (new Image('./some-path/image.jpg')) // You can load an image when you instantiate a new Image object
+    $img = (new Image('./some-path/image.jpg'))     // You can load an image when you instantiate a new Image object
         ->loadFile('./some-path/another-path.jpg')  // Load another file (replace internal state)
 
         // Saving
@@ -100,7 +104,6 @@ try { // Error handling
         ->addFilter(function ($image, $blockSize) {
             imagefilter($image, IMG_FILTER_PIXELATE, $blockSize, true);
         }, 2) // $blockSize = 2
-
 
         // Overlay watermark.png at 50% opacity at the bottom-right of the image with a 10 pixel horz and vert margin
         ->overlay('./image/watermark.png', 'bottom right', .5, -10, -10)
