@@ -279,7 +279,7 @@ class Filter
      *
      * @param mixed  $image GD resource
      * @param string $dir   Direction of fliping - x|y|yx|xy
-     * @return $this
+     * @return resource
      */
     public static function flip($image, $dir)
     {
