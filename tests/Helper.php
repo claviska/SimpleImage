@@ -71,7 +71,7 @@ class Helper
 
         if ($diff !== 0) {
             $message = $actual . '; ' . $actualSize . ' <> ' . $expectedSize . "\t\t(" . $diff . ')';
-            //isTrue($diff <= 4096, $message);
+            //is(0, $diff, $message);
             cliMessage($message);
         } else {
             is(0, $diff);

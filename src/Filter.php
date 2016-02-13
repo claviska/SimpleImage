@@ -26,8 +26,9 @@ class Filter
     const BLUR_GAUS = 1;
 
     /**
-     * Add sepia effect
-     * @param $image
+     * Add sepia effect (emulation)
+     *
+     * @param mixed $image GD resource
      */
     public static function sepia($image)
     {
@@ -36,8 +37,9 @@ class Filter
     }
 
     /**
-     * Add sepia effect
-     * @param $image
+     * Add grayscale effect
+     *
+     * @param mixed $image GD resource
      */
     public static function grayscale($image)
     {
@@ -45,8 +47,9 @@ class Filter
     }
 
     /**
-     * Pixelate
-     * @param mixed $image
+     * Pixelate effect
+     *
+     * @param mixed $image     GD resource
      * @param int   $blockSize Size in pixels of each resulting block
      */
     public static function pixelate($image, $blockSize = 10)
@@ -57,7 +60,8 @@ class Filter
 
     /**
      * Edge Detect
-     * @param $image
+     *
+     * @param mixed $image GD resource
      */
     public static function edges($image)
     {
@@ -66,7 +70,8 @@ class Filter
 
     /**
      * Emboss
-     * @param $image
+     *
+     * @param mixed $image GD resource
      */
     public static function emboss($image)
     {
@@ -75,7 +80,8 @@ class Filter
 
     /**
      * Negative
-     * @param mixed $image
+     *
+     * @param mixed $image GD resource
      */
     public static function invert($image)
     {
@@ -83,8 +89,9 @@ class Filter
     }
 
     /**
-     * Blur
-     * @param mixed $image
+     * Blur effect
+     *
+     * @param mixed $image  GD resource
      * @param int   $type   BLUR_SEL|BLUR_GAUS
      * @param int   $passes Number of times to apply the filter
      */
@@ -92,10 +99,9 @@ class Filter
     {
         $passes = Helper::blur($passes);
 
+        $filterType = IMG_FILTER_SELECTIVE_BLUR;
         if (self::BLUR_GAUS === $type) {
             $filterType = IMG_FILTER_GAUSSIAN_BLUR;
-        } else {
-            $filterType = IMG_FILTER_SELECTIVE_BLUR;
         }
 
         for ($i = 0; $i < $passes; $i++) {
@@ -104,8 +110,9 @@ class Filter
     }
 
     /**
-     * Brightness
-     * @param mixed $image
+     * Change brightness
+     *
+     * @param mixed $image GD resource
      * @param int   $level Darkest = -255, lightest = 255
      */
     public static function brightness($image, $level)
@@ -114,8 +121,9 @@ class Filter
     }
 
     /**
-     * Contrast
-     * @param mixed $image
+     * Change contrast
+     *
+     * @param mixed $image GD resource
      * @param int   $level Min = -100, max = 100
      */
     public static function contrast($image, $level)
@@ -124,9 +132,9 @@ class Filter
     }
 
     /**
-     * Colorize
+     * Set colorize
      *
-     * @param mixed     $image
+     * @param mixed     $image      GD resource
      * @param string    $color      Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
      *                              Where red, green, blue - integers 0-255, alpha - integer 0-127
      * @param float|int $opacity    0-100
@@ -148,7 +156,8 @@ class Filter
 
     /**
      * Mean Remove
-     * @param mixed $image
+     *
+     * @param mixed $image GD resource
      */
     public static function meanRemove($image)
     {
@@ -156,19 +165,20 @@ class Filter
     }
 
     /**
-     * Smooth
-     * @param mixed $image
-     * @param int   $level
+     * Smooth effect
+     *
+     * @param mixed $image  GD resource
+     * @param int   $passes Number of times to apply the filter (1 - 2048)
      */
-    public static function smooth($image, $level)
+    public static function smooth($image, $passes = 1)
     {
-        imagefilter($image, IMG_FILTER_SMOOTH, Helper::smooth($level));
+        imagefilter($image, IMG_FILTER_SMOOTH, Helper::smooth($passes));
     }
 
     /**
      * Desaturate
      *
-     * @param mixed $image
+     * @param mixed $image   GD resource
      * @param int   $percent Level of desaturization.
      * @return mixed
      */
@@ -186,12 +196,19 @@ class Filter
             // Make a desaturated copy of the image
             $newImage = imagecreatetruecolor($width, $height);
             imagealphablending($newImage, false);
-            imagesavealpha($newImage, true);
             imagecopy($newImage, $image, 0, 0, 0, 0, $width, $height);
             imagefilter($newImage, IMG_FILTER_GRAYSCALE);
 
             // Merge with specified percentage
-            Helper::imageCopyMergeAlpha($image, $newImage, 0, 0, 0, 0, $width, $height, $percent);
+            Helper::imageCopyMergeAlpha(
+                $image,
+                $newImage,
+                array(0, 0),
+                array(0, 0),
+                array($width, $height),
+                $percent
+            );
+
             return $newImage;
         }
     }
@@ -199,9 +216,10 @@ class Filter
     /**
      * Changes the opacity level of the image
      *
-     * @param mixed     $image
+     * @param mixed     $image   GD resource
      * @param float|int $opacity 0-1 or 0-100
-     * @return $this
+     *
+     * @return mixed
      */
     public static function opacity($image, $opacity)
     {
@@ -218,7 +236,15 @@ class Filter
         imagefill($newImage, 0, 0, $bg);
 
         // Copy and merge
-        Helper::imageCopyMergeAlpha($newImage, $image, 0, 0, 0, 0, $width, $height, $opacity);
+        Helper::imageCopyMergeAlpha(
+            $newImage,
+            $image,
+            array(0, 0),
+            array(0, 0),
+            array($width, $height),
+            $opacity
+        );
+
         imagedestroy($image);
 
         return $newImage;
@@ -227,7 +253,7 @@ class Filter
     /**
      * Rotate an image
      *
-     * @param mixed        $image
+     * @param mixed        $image   GD resource
      * @param int          $angle   -360 < x < 360
      * @param string|array $bgColor Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
      *                              Where red, green, blue - integers 0-255, alpha - integer 0-127
@@ -243,8 +269,7 @@ class Filter
         $bgColor  = imagecolorallocatealpha($image, $rgba['r'], $rgba['g'], $rgba['b'], $rgba['a']);
         $newImage = imagerotate($image, -($angle), $bgColor);
 
-        imagesavealpha($newImage, true);
-        imagealphablending($newImage, true);
+        Helper::addAlpha($newImage);
 
         return $newImage;
     }
@@ -252,8 +277,8 @@ class Filter
     /**
      * Flip an image horizontally or vertically
      *
-     * @param mixed  $image
-     * @param string $dir x|y|yx|xy
+     * @param mixed  $image GD resource
+     * @param string $dir   Direction of fliping - x|y|yx|xy
      * @return $this
      */
     public static function flip($image, $dir)
@@ -263,8 +288,7 @@ class Filter
         $height = imagesy($image);
 
         $newImage = imagecreatetruecolor($width, $height);
-        imagealphablending($newImage, false);
-        imagesavealpha($newImage, true);
+        Helper::addAlpha($newImage);
 
         if ($dir === 'y') {
             for ($y = 0; $y < $height; $y++) {
@@ -287,7 +311,7 @@ class Filter
     /**
      * Fill image with color
      *
-     * @param mixed  $image
+     * @param mixed  $image     GD resource
      * @param string $color     Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
      *                          Where red, green, blue - integers 0-255, alpha - integer 0-127
      * @return $this
@@ -307,8 +331,22 @@ class Filter
             (int)$rgba['a']
         );
 
-        imagealphablending($image, false);
-        imagesavealpha($image, true);
+        Helper::addAlpha($image, false);
         imagefilledrectangle($image, 0, 0, $width, $height, $fillColor);
+    }
+
+    /**
+     * Add text to an image
+     *
+     * @param mixed  $image    GD resource
+     * @param string $text     Some text to output on image as watermark
+     * @param string $fontFile TTF font file path
+     * @param array  $params
+     * @return mixed
+     * @throws Exception
+     */
+    public static function text($image, $text, $fontFile, $params = array())
+    {
+        return Text::text($image, $text, $fontFile, $params);
     }
 }

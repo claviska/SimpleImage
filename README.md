@@ -90,10 +90,10 @@ try { // Error handling
         ->addFilter('emboss')                       // Emboss filter
         ->addFilter('invert')                       // Invert colors
         ->addFilter('blur', Filter::BLUR_SEL)       // Selective blur (one pass)
-        ->addFilter('blur', [Filter::BLUR_GAUS, 2]) // Gaussian blur (two passes)
+        ->addFilter('blur', Filter::BLUR_GAUS, 2)   // Gaussian blur (two passes)
         ->addFilter('brightness', 100)              // Adjust Brightness (-255 to 255)
         ->addFilter('contrast', 50)                 // Adjust Contrast (-100 to 100)
-        ->addFilter('colorize', ['#FF0000', .5])    // Colorize red at 50% opacity
+        ->addFilter('colorize', '#FF0000', .5)      // Colorize red at 50% opacity
         ->addFilter('meanRemove')                   // Mean removal filter
         ->addFilter('smooth', 5)                    // Smooth filter (-10 to 10)
         ->addFilter('opacity', .5)                  // Change opacity
@@ -142,7 +142,7 @@ $img = new Image($gifBin);
 
 // Resource
 $imgRes = imagecreatefromjpeg('./some-image.jpeg');
-$img = new Image($imageResource);
+$img = new Image($imgRes);
 ```
 
 ### Other utility methods

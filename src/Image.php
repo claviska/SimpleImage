@@ -428,8 +428,7 @@ class Image
         $this->_orient = $this->_getOrientation();
 
         // Prepare alpha chanel
-        imagesavealpha($this->_image, true);
-        imagealphablending($this->_image, true);
+        Helper::addAlpha($this->_image);
 
         return $this;
     }
@@ -610,9 +609,8 @@ class Image
             }
 
         } else {
-            // Preserve transparency in PNGs (benign for JPEGs)
-            imagealphablending($newImage, false);
-            imagesavealpha($newImage, true);
+            // Preserve transparency in PNG
+            Helper::addAlpha($newImage);
         }
 
         // Resize
@@ -766,8 +764,8 @@ class Image
 
         // Perform crop
         $newImage = imagecreatetruecolor($cropedW, $cropedH);
-        imagealphablending($newImage, false);
-        imagesavealpha($newImage, true);
+        //imagealphablending($newImage, false);
+        Helper::addAlpha($newImage);
         imagecopyresampled($newImage, $this->_image, 0, 0, $left, $top, $cropedW, $cropedH, $cropedW, $cropedH);
 
         // Update meta data
@@ -854,64 +852,20 @@ class Image
         $globOffsetY = VarFilter::int($globOffsetY);
 
         // Determine position
-        switch (strtolower($position)) {
-            case 'top left':
-                $xOffset = 0 + $globOffsetX;
-                $yOffset = 0 + $globOffsetY;
-                break;
-
-            case 'top right':
-                $xOffset = $this->_width - $overlay->getWidth() + $globOffsetX;
-                $yOffset = 0 + $globOffsetY;
-                break;
-
-            case 'top':
-                $xOffset = ($this->_width / 2) - ($overlay->getWidth() / 2) + $globOffsetX;
-                $yOffset = 0 + $globOffsetY;
-                break;
-
-            case 'bottom left':
-                $xOffset = 0 + $globOffsetX;
-                $yOffset = $this->_height - $overlay->getHeight() + $globOffsetY;
-                break;
-
-            case 'bottom right':
-                $xOffset = $this->_width - $overlay->getWidth() + $globOffsetX;
-                $yOffset = $this->_height - $overlay->getHeight() + $globOffsetY;
-                break;
-
-            case 'bottom':
-                $xOffset = ($this->_width / 2) - ($overlay->getWidth() / 2) + $globOffsetX;
-                $yOffset = $this->_height - $overlay->getHeight() + $globOffsetY;
-                break;
-
-            case 'left':
-                $xOffset = 0 + $globOffsetX;
-                $yOffset = ($this->_height / 2) - ($overlay->getHeight() / 2) + $globOffsetY;
-                break;
-
-            case 'right':
-                $xOffset = $this->_width - $overlay->getWidth() + $globOffsetX;
-                $yOffset = ($this->_height / 2) - ($overlay->getHeight() / 2) + $globOffsetY;
-                break;
-
-            case 'center':
-            default:
-                $xOffset = ($this->_width / 2) - ($overlay->getWidth() / 2) + $globOffsetX;
-                $yOffset = ($this->_height / 2) - ($overlay->getHeight() / 2) + $globOffsetY;
-                break;
-        }
+        list($xOffset, $yOffset) = Helper::getPositionCoords(
+            $position,
+            array($this->_width, $this->_height),
+            array($overlay->getWidth(), $overlay->getHeight()),
+            array($globOffsetX, $globOffsetY)
+        );
 
         // Perform the overlay
         Helper::imageCopyMergeAlpha(
             $this->_image,
             $overlay->getImage(),
-            $xOffset,
-            $yOffset,
-            0,
-            0,
-            $overlay->getWidth(),
-            $overlay->getHeight(),
+            array($xOffset, $yOffset),
+            array(0, 0),
+            array($overlay->getWidth(), $overlay->getHeight()),
             $opacity
         );
 
@@ -927,9 +881,11 @@ class Image
      *
      * @throws Exception
      */
-    public function addFilter($filter, $args = array())
+    public function addFilter($filter)
     {
-        $args     = (array)$args;
+        $args    = func_get_args();
+        $args[0] = $this->_image;
+
         $newImage = null;
 
         if (is_string($filter)) {
@@ -937,15 +893,12 @@ class Image
             $filterClass = __NAMESPACE__ . '\Filter';
 
             if (method_exists($filterClass, $filter)) {
-                array_unshift($args, $this->_image);
                 $newImage = call_user_func_array(array($filterClass, $filter), $args);
-
             } else {
                 throw new Exception('Undefined Image Filter: ' . $filter);
             }
 
         } elseif (is_callable($filter)) {
-            array_unshift($args, $this->_image);
             $newImage = call_user_func_array($filter, $args);
         }
 

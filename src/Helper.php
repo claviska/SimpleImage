@@ -24,6 +24,16 @@ use JBZoo\Utils\Arr;
  */
 class Helper
 {
+    const TOP_LEFT     = 'tl';
+    const LEFT         = 'l';
+    const BOTTOM_LEFT  = 'bl';
+    const TOP          = 't';
+    const CENTER       = 'c';
+    const BOTTOM       = 'b';
+    const TOP_RIGHT    = 'tr';
+    const RIGHT        = 'r';
+    const BOTTOM_RIGHT = 'bt';
+
     /**
      * Require GD library
      * @throws Exception
@@ -185,31 +195,39 @@ class Helper
      * Same as PHP's imagecopymerge() function, except preserves alpha-transparency in 24-bit PNGs
      * @link http://www.php.net/manual/en/function.imagecopymerge.php#88456
      *
-     * @param mixed $dstIm     Image resource
-     * @param mixed $srcIm     Source resource
-     * @param int   $dstX      Left offset of dist
-     * @param int   $dstY      Top offset
-     * @param int   $srcX      Left offset of source
-     * @param int   $srcY      Top offset of source
-     * @param int   $srcWidth  Source width
-     * @param int   $srcHeight Source height
-     * @param int   $pct       Opacity
+     * @param mixed $dstImage   Dist image resource
+     * @param mixed $srcImage   Source image resource
+     * @param array $distOffset Left and Top offset of dist
+     * @param array $srcOffset  Left and Top offset of source
+     * @param array $srcSizes   Width and Height  of source
+     * @param int   $opacity
      */
-    public static function imageCopyMergeAlpha($dstIm, $srcIm, $dstX, $dstY, $srcX, $srcY, $srcWidth, $srcHeight, $pct)
+    public static function imageCopyMergeAlpha(
+        $dstImage,
+        $srcImage,
+        array $distOffset,
+        array $srcOffset,
+        array $srcSizes,
+        $opacity
+    )
     {
+        list($dstX, $dstY) = $distOffset;
+        list($srcX, $srcY) = $srcOffset;
+        list($srcWidth, $srcHeight) = $srcSizes;
+
         // Get image width and height and percentage
-        $pct /= 100;
-        $width  = imagesx($srcIm);
-        $height = imagesy($srcIm);
+        $opacity /= 100;
+        $width  = imagesx($srcImage);
+        $height = imagesy($srcImage);
 
         // Turn alpha blending off
-        imagealphablending($srcIm, false);
+        imagealphablending($srcImage, false);
 
         // Find the most opaque pixel in the image (the one with the smallest alpha value)
         $minAlpha = 127;
         for ($x = 0; $x < $width; $x++) {
             for ($y = 0; $y < $height; $y++) {
-                $alpha = (imagecolorat($srcIm, $x, $y) >> 24) & 0xFF;
+                $alpha = (imagecolorat($srcImage, $x, $y) >> 24) & 0xFF;
                 if ($alpha < $minAlpha) {
                     $minAlpha = $alpha;
                 }
@@ -221,19 +239,19 @@ class Helper
             for ($y = 0; $y < $height; $y++) {
 
                 // Get current alpha value (represents the TANSPARENCY!)
-                $colorXY = imagecolorat($srcIm, $x, $y);
+                $colorXY = imagecolorat($srcImage, $x, $y);
                 $alpha   = ($colorXY >> 24) & 0xFF;
 
                 // Calculate new alpha
                 if ($minAlpha !== 127) {
-                    $alpha = 127 + 127 * $pct * ($alpha - 127) / (127 - $minAlpha);
+                    $alpha = 127 + 127 * $opacity * ($alpha - 127) / (127 - $minAlpha);
                 } else {
-                    $alpha += 127 * $pct;
+                    $alpha += 127 * $opacity;
                 }
 
                 // Get the color index with new alpha
                 $alphaColorXY = imagecolorallocatealpha(
-                    $srcIm,
+                    $srcImage,
                     ($colorXY >> 16) & 0xFF,
                     ($colorXY >> 8) & 0xFF,
                     $colorXY & 0xFF,
@@ -241,18 +259,16 @@ class Helper
                 );
 
                 // Set pixel with the new color + opacity
-                if (!imagesetpixel($srcIm, $x, $y, $alphaColorXY)) {
+                if (!imagesetpixel($srcImage, $x, $y, $alphaColorXY)) {
                     return;
                 }
             }
         }
 
         // Copy it
-        imagesavealpha($dstIm, true);
-        imagealphablending($dstIm, true);
-        imagesavealpha($srcIm, true);
-        imagealphablending($srcIm, true);
-        imagecopy($dstIm, $srcIm, $dstX, $dstY, $srcX, $srcY, $srcWidth, $srcHeight);
+        self::addAlpha($srcImage);
+        self::addAlpha($dstImage);
+        imagecopy($dstImage, $srcImage, $dstX, $dstY, $srcX, $srcY, $srcWidth, $srcHeight);
     }
 
     /**
@@ -349,7 +365,7 @@ class Helper
      */
     public static function smooth($smooth)
     {
-        return self::range($smooth, 1, 2048);
+        return self::range($smooth, 1, 10);
     }
 
     /**
@@ -358,7 +374,7 @@ class Helper
      */
     public static function direction($direction)
     {
-        $direction = strtolower($direction);
+        $direction = trim(strtolower($direction));
 
         if (in_array($direction, array('x', 'y', 'xy', 'yx'), true)) {
             return $direction;
@@ -395,6 +411,8 @@ class Helper
     }
 
     /**
+     * Convert string to binary data
+     *
      * @param $imageString
      * @return string
      */
@@ -434,5 +452,122 @@ class Helper
     public static function isGdRes($image)
     {
         return is_resource($image) && strtolower(get_resource_type($image)) === 'gd';
+    }
+
+    /**
+     * Check position name
+     *
+     * @param string $position
+     * @return string
+     */
+    public static function position($position)
+    {
+        $position = trim(strtolower($position));
+        $position = str_replace(array('-', '_'), ' ', $position);
+
+        if (in_array($position, array(self::TOP, 'top', 't'), true)) {
+            return self::TOP;
+
+        } elseif (in_array($position, array(self::TOP_RIGHT, 'top right', 'right top', 'tr', 'rt'), true)) {
+            return self::TOP_RIGHT;
+
+        } elseif (in_array($position, array(self::RIGHT, 'right', 'r'), true)) {
+            return self::RIGHT;
+
+        } elseif (in_array($position, array(self::BOTTOM_RIGHT, 'bottom right', 'right bottom', 'br', 'rb'), true)) {
+            return self::BOTTOM_RIGHT;
+
+        } elseif (in_array($position, array(self::BOTTOM, 'bottom', 'b'), true)) {
+            return self::BOTTOM;
+
+        } elseif (in_array($position, array(self::BOTTOM_LEFT, 'bottom left', 'left bottom', 'bl', 'lb'), true)) {
+            return self::BOTTOM_LEFT;
+
+        } elseif (in_array($position, array(self::LEFT, 'left', 'l'), true)) {
+            return self::LEFT;
+
+        } elseif (in_array($position, array(self::TOP_LEFT, 'top left', 'left top', 'tl', 'lt'), true)) {
+            return self::TOP_LEFT;
+
+        } elseif (in_array($position, array(self::CENTER, 'center', 'c'), true)) {
+            return self::CENTER;
+        }
+
+        return self::CENTER;
+    }
+
+    /**
+     * Determine position
+     *
+     * @param string $position Position name or code
+     * @param array  $canvas   Width and Height of canvas
+     * @param array  $box      Width and Height of box that will be located on canvas
+     * @param array  $offset   Forced offset X, Y
+     * @return array
+     */
+    public static function getPositionCoords($position, array $canvas, array $box, array $offset)
+    {
+        $positionCode = self::position($position);
+        list($canvasW, $canvasH) = $canvas;
+        list($boxW, $boxH) = $box;
+        list($offsetX, $offsetY) = $offset;
+
+        // Coords map:
+        // 00  10  20  =>  tl  t   tr
+        // 01  11  21  =>  l   c   r
+        // 02  12  22  =>  bl  b   br
+
+        // X coord
+        $x0 = $offsetX + 0;                             //  bottom-left     left        top-left
+        $x1 = $offsetX + ($canvasW / 2) - ($boxW / 2);  //  bottom          center      top
+        $x2 = $offsetX + $canvasW - $boxW;              //  bottom-right    right       top-right
+
+        // Y coord
+        $y0 = $offsetY + 0;                             //  top-left        top         top-right
+        $y1 = $offsetY + ($canvasH / 2) - ($boxH / 2);  //  left            center      right
+        $y2 = $offsetY + $canvasH - $boxH;              //  bottom-left     bottom      bottom-right
+
+        if ($positionCode === self::TOP_LEFT) {
+            return array($x0, $y0);
+
+        } elseif ($positionCode === self::LEFT) {
+            return array($x0, $y1);
+
+        } elseif ($positionCode === self::BOTTOM_LEFT) {
+            return array($x0, $y2);
+
+        } elseif ($positionCode === self::TOP) {
+            return array($x1, $y0);
+
+        } elseif ($positionCode === self::CENTER) {
+            return array($x1, $y1);
+
+        } elseif ($positionCode === self::BOTTOM) {
+            return array($x1, $y2);
+
+        } elseif ($positionCode === self::TOP_RIGHT) {
+            return array($x2, $y0);
+
+        } elseif ($positionCode === self::RIGHT) {
+            return array($x2, $y1);
+
+        } elseif ($positionCode === self::BOTTOM_RIGHT) {
+            return array($x2, $y2);
+
+        } else {
+            return array($x1, $y1);
+        }
+    }
+
+    /**
+     * Add alpha chanel to image resource
+     *
+     * @param mixed $image   Image GD resource
+     * @param bool  $isBlend Add alpha blending
+     */
+    public static function addAlpha($image, $isBlend = true)
+    {
+        imagesavealpha($image, true);
+        imagealphablending($image, $isBlend);
     }
 }

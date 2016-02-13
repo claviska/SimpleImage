@@ -234,7 +234,7 @@ class ImageTest extends PHPUnit
         $excepted = Helper::getExpected(__FUNCTION__ . '.png');
 
         $img = new Image();
-        $img->create(200, 100, '#08c')
+        $img->create(200, 100, array(0, 136, 204, 64))
             ->saveAs($actual);
 
         Helper::isFileEq($actual, $excepted);

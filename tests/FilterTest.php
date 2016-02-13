@@ -55,7 +55,7 @@ class FilterTest extends PHPUnit
 
         $img = new Image();
         $img->loadFile($original)
-            ->addFilter('pixelate', array(25))
+            ->addFilter('pixelate', 25)
             ->saveAs($actual);
 
         Helper::isFileEq($actual, $excepted);
@@ -71,7 +71,7 @@ class FilterTest extends PHPUnit
         $img->loadFile($original)
             ->addFilter(function ($image, $blockSize) {
                 imagefilter($image, IMG_FILTER_PIXELATE, $blockSize, true);
-            }, array(2))
+            }, 2)
             ->saveAs($actual);
 
         Helper::isFileEq($actual, $excepted);
@@ -127,7 +127,7 @@ class FilterTest extends PHPUnit
 
         $img = new Image();
         $img->loadFile($original)
-            ->addFilter('blur', array(10, Filter::BLUR_GAUS))
+            ->addFilter('blur', 10, Filter::BLUR_GAUS)
             ->saveAs($actual);
 
         Helper::isFileEq($actual, $excepted);
@@ -141,7 +141,7 @@ class FilterTest extends PHPUnit
 
         $img = new Image();
         $img->loadFile($original)
-            ->addFilter('blur', array(10, Filter::BLUR_SEL))
+            ->addFilter('blur', 10, Filter::BLUR_SEL)
             ->saveAs($actual);
 
         Helper::isFileEq($actual, $excepted);
@@ -197,7 +197,7 @@ class FilterTest extends PHPUnit
 
         $img = new Image();
         $img->loadFile($original)
-            ->addFilter('colorize', array('#08c', .75))
+            ->addFilter('colorize', '#08c', .75)
             ->saveAs($actual);
 
         Helper::isFileEq($actual, $excepted);
@@ -351,7 +351,7 @@ class FilterTest extends PHPUnit
 
         $img = new Image();
         $img->loadFile($original)
-            ->addFilter('rotate', array(-275, array(255, 255, 255, 127)))
+            ->addFilter('rotate', -275, array(255, 255, 255, 127))
             ->saveAs($actual);
 
         Helper::isFileEq($actual, $excepted);

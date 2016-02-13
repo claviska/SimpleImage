@@ -184,7 +184,7 @@ class HelperTest extends PHPUnit
     public function testSmooth()
     {
         isSame(1, ImageHelper::smooth(0));
-        isSame(700, ImageHelper::smooth(700));
+        isSame(10, ImageHelper::smooth(700));
     }
 
     public function testBlur()
