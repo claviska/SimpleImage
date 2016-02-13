@@ -347,6 +347,6 @@ class Filter
      */
     public static function text($image, $text, $fontFile, $params = array())
     {
-        return Text::text($image, $text, $fontFile, $params);
+        return Text::render($image, $text, $fontFile, $params);
     }
 }
