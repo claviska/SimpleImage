@@ -764,7 +764,6 @@ class Image
 
         // Perform crop
         $newImage = imagecreatetruecolor($cropedW, $cropedH);
-        //imagealphablending($newImage, false);
         Helper::addAlpha($newImage);
         imagecopyresampled($newImage, $this->_image, 0, 0, $left, $top, $cropedW, $cropedH, $cropedW, $cropedH);
 
@@ -801,23 +800,23 @@ class Image
             return $this;
 
         } elseif ((int)$this->_exif['Orientation'] === 2) { // Flip horizontal
-            $this->flip('x');
+            $this->addFilter('flip', 'x');
 
         } elseif ((int)$this->_exif['Orientation'] === 3) { // Rotate 180 counterclockwise
             $this->addFilter('rotate', -180);
 
         } elseif ((int)$this->_exif['Orientation'] === 4) { // Vertical flip
-            $this->flip('y');
+            $this->addFilter('flip', 'y');
 
         } elseif ((int)$this->_exif['Orientation'] === 5) { // Rotate 90 clockwise and flip vertically
-            $this->flip('y');
+            $this->addFilter('flip', 'y');
             $this->addFilter('rotate', 90);
 
         } elseif ((int)$this->_exif['Orientation'] === 6) { // Rotate 90 clockwise
             $this->addFilter('rotate', 90);
 
         } elseif ((int)$this->_exif['Orientation'] === 7) { // Rotate 90 clockwise and flip horizontally
-            $this->flip('x');
+            $this->addFilter('flip', 'x');
             $this->addFilter('rotate', 90);
 
         } elseif ((int)$this->_exif['Orientation'] === 8) { // Rotate 90 counterclockwise
@@ -875,8 +874,7 @@ class Image
     /**
      * Add filter to current image
      *
-     * @param string|callable  $filter
-     * @param array|int|string $args
+     * @param string|callable $filter
      * @return $this
      *
      * @throws Exception
