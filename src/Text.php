@@ -88,16 +88,12 @@ class Text
                         continue;
                     }
 
-                    self::_imageTTFStrokeText(
+                    self::_renderStroke(
                         $image,
-                        $fontSize,
-                        $angle,
+                        $char,
+                        array($fontFile, $fontSize, current($colorArr), $angle),
                         array($textX, $textY),
-                        current($colorArr),
-                        current($strokeColor),
-                        $strokeSize,
-                        $fontFile,
-                        $char
+                        array($strokeSize, current($strokeColor))
                     );
 
                     // #000 is 0, black will reset the array so we write it this way
@@ -114,16 +110,12 @@ class Text
             } else {
                 $rgba        = Helper::normalizeColor($strokeColor);
                 $strokeColor = imagecolorallocatealpha($image, $rgba['r'], $rgba['g'], $rgba['b'], $rgba['a']);
-                self::_imageTTFStrokeText(
+                self::_renderStroke(
                     $image,
-                    $fontSize,
-                    $angle,
+                    $text,
+                    array($fontFile, $fontSize, current($colorArr), $angle),
                     array($textX, $textY),
-                    $colorArr[0],
-                    $strokeColor,
-                    $strokeSize,
-                    $fontFile,
-                    $text
+                    array($strokeSize, $strokeColor)
                 );
             }
 
@@ -141,7 +133,8 @@ class Text
                         continue;
                     }
 
-                    imagettftext($image, $fontSize, $angle, $textX, $textY, current($colorArr), $fontFile, $char);
+                    $fontInfo = array($fontFile, $fontSize, current($colorArr), $angle);
+                    self::_render($image, $char, $fontInfo, array($textX, $textY));
 
                     // #000 is 0, black will reset the array so we write it this way
                     if (next($colorArr) === false) {
@@ -150,7 +143,7 @@ class Text
                 }
 
             } else {
-                imagettftext($image, $fontSize, $angle, $textX, $textY, $colorArr[0], $fontFile, $text);
+                self::_render($image, $text, array($fontFile, $fontSize, $colorArr[0], $angle), array($textX, $textY));
             }
         }
     }
@@ -205,40 +198,46 @@ class Text
     }
 
     /**
-     *  Same as imagettftext(), but allows for a stroke color and size
+     * Compact args for imagettftext()
      *
-     * @param  mixed  $image       A GD image object
-     * @param  float  $size        The font size
-     * @param  float  $angle       The angle in degrees
-     * @param  int    $coords      X,Y-coordinate of the starting position
-     * @param  int    $textColor   The color index of the text
-     * @param  int    $strokeColor The color index of the stroke
-     * @param  int    $strokeSize  The stroke size in pixels
-     * @param  string $fontfile    The path to the font to use
-     * @param  string $text        The text to output
+     * @param  mixed  $image  A GD image object
+     * @param  string $text   The text to output
+     * @param  array  $font   [$fontfile, $fontsize, $color, $angle]
+     * @param  array  $coords [X,Y] Coordinate of the starting position
      *
-     * @return array                This method has the same return values as imagettftext()
+     * @return array
      */
-    protected static function _imageTTFStrokeText(
-        $image,
-        $size,
-        $angle,
-        array $coords,
-        $textColor,
-        $strokeColor,
-        $strokeSize,
-        $fontfile,
-        $text
-    )
+    protected static function _render($image, $text, array $font, array $coords)
     {
         list($coordX, $coordY) = $coords;
+        list($file, $size, $color, $angle) = $font;
+
+        return imagettftext($image, $size, $angle, $coordX, $coordY, $color, $file, $text);
+    }
+
+    /**
+     *  Same as imagettftext(), but allows for a stroke color and size
+     *
+     * @param  mixed  $image  A GD image object
+     * @param  string $text   The text to output
+     * @param  array  $font   [$fontfile, $fontsize, $color, $angle]
+     * @param  array  $coords [X,Y] Coordinate of the starting position
+     * @param  array  $stroke [$strokeSize, $strokeColor]
+     *
+     * @return array
+     */
+    protected static function _renderStroke($image, $text, array $font, array $coords, array $stroke)
+    {
+        list($coordX, $coordY) = $coords;
+        list($file, $size, $color, $angle) = $font;
+        list($strokeSize, $strokeColor) = $stroke;
 
         for ($x = ($coordX - abs($strokeSize)); $x <= ($coordX + abs($strokeSize)); $x++) {
             for ($y = ($coordY - abs($strokeSize)); $y <= ($coordY + abs($strokeSize)); $y++) {
-                imagettftext($image, $size, $angle, $x, $y, $strokeColor, $fontfile, $text);
+                imagettftext($image, $size, $angle, $x, $y, $strokeColor, $file, $text);
             }
         }
 
-        return imagettftext($image, $size, $angle, $coordX, $coordY, $textColor, $fontfile, $text);
+        return imagettftext($image, $size, $angle, $coordX, $coordY, $color, $file, $text);
     }
 }

@@ -195,39 +195,32 @@ class Helper
      * Same as PHP's imagecopymerge() function, except preserves alpha-transparency in 24-bit PNGs
      * @link http://www.php.net/manual/en/function.imagecopymerge.php#88456
      *
-     * @param mixed $dstImage   Dist image resource
-     * @param mixed $srcImage   Source image resource
-     * @param array $distOffset Left and Top offset of dist
-     * @param array $srcOffset  Left and Top offset of source
-     * @param array $srcSizes   Width and Height  of source
+     * @param mixed $dstImg   Dist image resource
+     * @param mixed $srcImg   Source image resource
+     * @param array $dist     Left and Top offset of dist
+     * @param array $src      Left and Top offset of source
+     * @param array $srcSizes Width and Height  of source
      * @param int   $opacity
      */
-    public static function imageCopyMergeAlpha(
-        $dstImage,
-        $srcImage,
-        array $distOffset,
-        array $srcOffset,
-        array $srcSizes,
-        $opacity
-    )
+    public static function imageCopyMergeAlpha($dstImg, $srcImg, array $dist, array $src, array $srcSizes, $opacity)
     {
-        list($dstX, $dstY) = $distOffset;
-        list($srcX, $srcY) = $srcOffset;
+        list($dstX, $dstY) = $dist;
+        list($srcX, $srcY) = $src;
         list($srcWidth, $srcHeight) = $srcSizes;
 
         // Get image width and height and percentage
         $opacity /= 100;
-        $width  = imagesx($srcImage);
-        $height = imagesy($srcImage);
+        $width  = imagesx($srcImg);
+        $height = imagesy($srcImg);
 
         // Turn alpha blending off
-        Helper::addAlpha($srcImage, false);
+        Helper::addAlpha($srcImg, false);
 
         // Find the most opaque pixel in the image (the one with the smallest alpha value)
         $minAlpha = 127;
         for ($x = 0; $x < $width; $x++) {
             for ($y = 0; $y < $height; $y++) {
-                $alpha = (imagecolorat($srcImage, $x, $y) >> 24) & 0xFF;
+                $alpha = (imagecolorat($srcImg, $x, $y) >> 24) & 0xFF;
                 if ($alpha < $minAlpha) {
                     $minAlpha = $alpha;
                 }
@@ -239,7 +232,7 @@ class Helper
             for ($y = 0; $y < $height; $y++) {
 
                 // Get current alpha value (represents the TANSPARENCY!)
-                $colorXY = imagecolorat($srcImage, $x, $y);
+                $colorXY = imagecolorat($srcImg, $x, $y);
                 $alpha   = ($colorXY >> 24) & 0xFF;
 
                 // Calculate new alpha
@@ -251,7 +244,7 @@ class Helper
 
                 // Get the color index with new alpha
                 $alphaColorXY = imagecolorallocatealpha(
-                    $srcImage,
+                    $srcImg,
                     ($colorXY >> 16) & 0xFF,
                     ($colorXY >> 8) & 0xFF,
                     $colorXY & 0xFF,
@@ -259,16 +252,16 @@ class Helper
                 );
 
                 // Set pixel with the new color + opacity
-                if (!imagesetpixel($srcImage, $x, $y, $alphaColorXY)) {
+                if (!imagesetpixel($srcImg, $x, $y, $alphaColorXY)) {
                     return;
                 }
             }
         }
 
         // Copy it
-        self::addAlpha($srcImage);
-        self::addAlpha($dstImage);
-        imagecopy($dstImage, $srcImage, $dstX, $dstY, $srcX, $srcY, $srcWidth, $srcHeight);
+        self::addAlpha($srcImg);
+        self::addAlpha($dstImg);
+        imagecopy($dstImg, $srcImg, $dstX, $dstY, $srcX, $srcY, $srcWidth, $srcHeight);
     }
 
     /**
