@@ -15,6 +15,7 @@
 namespace JBZoo\Image;
 
 use JBZoo\Utils\FS;
+use JBZoo\Utils\Image as Helper;
 
 /**
  * Class Text
@@ -62,7 +63,7 @@ class Text
 
         $colorArr = self::_getColor($image, $color);
         list($textWidth, $textHeight) = self::_getTextboxSize($fSize, $angle, $fFile, $text);
-        list($textX, $textY) = Helper::getPositionCoords(
+        list($textX, $textY) = Helper::getInnerCoords(
             $position,
             array($imageWidth, $imageHeight),
             array($textWidth, $textHeight),

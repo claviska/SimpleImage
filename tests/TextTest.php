@@ -14,7 +14,7 @@
 
 namespace JBZoo\PHPUnit;
 
-use JBZoo\Image\Helper as ImageHelper;
+use JBZoo\Utils\Image as ImageHelper;
 use JBZoo\Image\Image;
 
 /**

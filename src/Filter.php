@@ -15,6 +15,7 @@
 namespace JBZoo\Image;
 
 use JBZoo\Utils\Filter as VarFilter;
+use JBZoo\Utils\Image as Helper;
 
 /**
  * Class Helper

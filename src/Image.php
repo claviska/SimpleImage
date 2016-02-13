@@ -19,6 +19,7 @@ use JBZoo\Utils\FS;
 use JBZoo\Utils\Sys;
 use JBZoo\Utils\Url;
 use JBZoo\Utils\Filter as VarFilter;
+use JBZoo\Utils\Image as Helper;
 
 /**
  * Class Image
@@ -78,6 +79,7 @@ class Image
      * @param string|null $filename
      *
      * @throws Exception
+     * @throws \JBZoo\Utils\Exception
      */
     public function __construct($filename = null)
     {
@@ -851,7 +853,7 @@ class Image
         $globOffsetY = VarFilter::int($globOffsetY);
 
         // Determine position
-        list($xOffset, $yOffset) = Helper::getPositionCoords(
+        list($xOffset, $yOffset) = Helper::getInnerCoords(
             $position,
             array($this->_width, $this->_height),
             array($overlay->getWidth(), $overlay->getHeight()),

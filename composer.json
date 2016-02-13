@@ -18,15 +18,16 @@
             "role"     : "Developer"
         },
         {
-            "name"  : "SmetDenis",
-            "email" : "denis@jbzoo.com",
-            "role"  : "Developer"
+            "name"     : "SmetDenis",
+            "email"    : "denis@jbzoo.com",
+            "homepage" : "http://jbzoo.com/",
+            "role"     : "Developer"
         }
     ],
     "require"           : {
         "php"         : ">=5.3.10",
         "ext-gd"      : "*",
-        "jbzoo/utils" : "^1.2"
+        "jbzoo/utils" : "^1.4"
     },
     "require-dev"       : {
         "jbzoo/phpunit" : "^1.0"
