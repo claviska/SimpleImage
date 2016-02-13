@@ -3,13 +3,9 @@
 #### PHP Library for Image-based development
 
 [![License](https://poser.pugx.org/JBZoo/Image/license)](https://packagist.org/packages/JBZoo/Image) [![Latest Stable Version](https://poser.pugx.org/JBZoo/Image/v/stable)](https://packagist.org/packages/JBZoo/Image) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/JBZoo/Image/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/JBZoo/Image/?branch=master)
-
-
 Fork (Really huge global refactoring and test coverage!) - [Cory LaViska for A Beautiful Site, LLC](http://www.abeautifulsite.net/)
 
-Overview
---------
-
+### Overview
 This class makes image manipulation in PHP as simple as possible. The examples are the best way to learn how to use it, but here it is in a nutshell:
 
 ```php
@@ -38,21 +34,18 @@ With this class, you can effortlessly:
  * Convert between GIF, JPEG, and PNG formats
  * Strip EXIF data (Just save it!)
 
-Requirements
-------------
 
-This class requires PHP 5.3 and PHP GD library.
+### Requirements
+This class requires PHP 5.3 and PHP GD library. Recommended 5.4+
 
-Install
---------
+
+### Install
 Just use the composer
 ```sh
 composer require jbzoo/image:"3.x-dev"
 ```
 
-Usage
------
-
+### Usage
 ```php
 use JBZoo\Image\Image;
 use JBZoo\Image\Filter;
@@ -74,8 +67,8 @@ try { // Error handling
 
         // Resizing
         ->resize(320, 200)          // Resize the image to 320x200
-        ->thumbnail(100, 75)        // Trim the image and resize to exactly 100x75 (crop center if needed)
-        ->thumbnail(100, 75, true)  // Trim the image and resize to exactly 100x75 and top offset is 0
+        ->thumbnail(100, 75)        // Trim the image and resize to exactly 100x75 (crop CENTER if needed)
+        ->thumbnail(100, 75, true)  // Trim the image and resize to exactly 100x75 (crop TOP if needed)
         ->fitToWidth(320)           // Shrink the image to the specified width while maintaining proportion (width)
         ->fitToHeight(200)          // Shrink the image to the specified height while maintaining proportion (height)
         ->bestFit(500, 500)         // Shrink the image proportionally to fit inside a 500x500 box
@@ -124,8 +117,8 @@ try { // Error handling
 
 ```
 
-### Methods to create Image objects
 
+### Methods to create Image objects
 ```php
 // Filename
 $img = new Image('./path/to/image.png');
@@ -144,6 +137,7 @@ $img = new Image($gifBin);
 $imgRes = imagecreatefromjpeg('./some-image.jpeg');
 $img = new Image($imgRes);
 ```
+
 
 ### Other utility methods
 ```php
@@ -194,8 +188,35 @@ $imgInfo = [
 ```
 
 
-### Unit testing and Code quality
+### Add text to image (filter)
+```php
+$img = new Image('./resources/butterfly.jpg');
+$img->addFilter(
+    'text',                             // Filter name
+    'Some image description',           // Text to render on image
+    './resources/font.ttf'              // TTF font file
+    [                                   // Additionals params
+        'font-size'      => 48,                       // Font size in px
+        'color'          => array('#ff7f00', '#f00'), // Or one color as string
 
+        // Stroke
+        'stroke-color'   => array('#f00', '#ff7f00'), // Or one color as string
+        'stroke-size'    => 3,                        // Stroke size in px
+        'stroke-spacing' => 5,                        // Letter spacing in px (only for stroke mode)
+
+        // Position of text
+        'offset-x'       => -140,       // X offset in px
+        'offset-y'       => 100,        // Y offset in px
+        'position'       => 't',        // top|t|Helper::TOP| ... More details in the method Helper::position()
+
+        // Experimental
+        'angle'          => 0,          // Angle for each letter
+    ])
+    ->saveAs('./dist/new-file.png');    // Save it to new file
+```
+
+
+### Unit testing and Code Quality
 ```sh
 composer update-all
 composer test
@@ -203,5 +224,4 @@ composer test
 
 
 ### License
-
 MIT
