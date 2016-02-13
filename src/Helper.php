@@ -481,9 +481,6 @@ class Helper
 
         } elseif (in_array($position, array(self::TOP_LEFT, 'top left', 'left top', 'tl', 'lt'), true)) {
             return self::TOP_LEFT;
-
-        } elseif (in_array($position, array(self::CENTER, 'center', 'c'), true)) {
-            return self::CENTER;
         }
 
         return self::CENTER;
@@ -531,9 +528,6 @@ class Helper
 
         } elseif ($positionCode === self::TOP) {
             return array($x1, $y0);
-
-        } elseif ($positionCode === self::CENTER) {
-            return array($x1, $y1);
 
         } elseif ($positionCode === self::BOTTOM) {
             return array($x1, $y2);

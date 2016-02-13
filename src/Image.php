@@ -646,9 +646,6 @@ class Image
         if ($this->_width > $maxWidth) {
             $width  = $maxWidth;
             $height = $width * $aspectRatio;
-        } else {
-            $width  = $this->_width;
-            $height = $this->_height;
         }
 
         // Make height fit into new dimensions
