@@ -221,7 +221,7 @@ class Helper
         $height = imagesy($srcImage);
 
         // Turn alpha blending off
-        imagealphablending($srcImage, false);
+        Helper::addAlpha($srcImage, false);
 
         // Find the most opaque pixel in the image (the one with the smallest alpha value)
         $minAlpha = 127;

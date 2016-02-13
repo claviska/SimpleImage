@@ -46,9 +46,8 @@ class Text
      */
     public static function text($image, $text, $fontFile, $params = array())
     {
-        $params = array_merge(self::$_default, $params);
-
         // Set vars
+        $params        = array_merge(self::$_default, $params);
         $angle         = Helper::rotate($params['angle']);
         $position      = Helper::position($params['position']);
         $fontSize      = $params['font-size'];
@@ -63,7 +62,7 @@ class Text
 
         $colorArr = self::_getColor($image, $color);
         list($textWidth, $textHeight) = self::_getTextboxSize($fontSize, $angle, $fontFile, $text);
-        list($textOffsetX, $textOffsetY) = Helper::getPositionCoords(
+        list($textX, $textY) = Helper::getPositionCoords(
             $position,
             array($imageWidth, $imageHeight),
             array($textWidth, $textHeight),
@@ -81,7 +80,7 @@ class Text
 
                     if ($charKey > 0) {
                         $charSize = imagettfbbox($fontSize, $angle, $fontFile, $letters[$charKey - 1]);
-                        $textOffsetX += abs($charSize[4] - $charSize[0]) + $strokeSpacing;
+                        $textX += abs($charSize[4] - $charSize[0]) + $strokeSpacing;
                     }
 
                     // If the next letter is empty, we just move forward to the next letter
@@ -93,7 +92,7 @@ class Text
                         $image,
                         $fontSize,
                         $angle,
-                        array($textOffsetX, $textOffsetY),
+                        array($textX, $textY),
                         current($colorArr),
                         current($strokeColor),
                         $strokeSize,
@@ -119,7 +118,7 @@ class Text
                     $image,
                     $fontSize,
                     $angle,
-                    array($textOffsetX, $textOffsetY),
+                    array($textX, $textY),
                     $colorArr[0],
                     $strokeColor,
                     $strokeSize,
@@ -129,16 +128,12 @@ class Text
             }
 
         } else {
-
-            // Text without stroke
-            if (is_array($color)) {
-                // Multi colored text
+            if (is_array($color)) { // Multi colored text
                 $letters = str_split($text, 1);
                 foreach ($letters as $charKey => $char) {
-
                     if ($charKey > 0) {
                         $charSize = imagettfbbox($fontSize, $angle, $fontFile, $letters[$charKey - 1]);
-                        $textOffsetX += abs($charSize[4] - $charSize[0]) + $strokeSpacing;
+                        $textX += abs($charSize[4] - $charSize[0]) + $strokeSpacing;
                     }
 
                     // If the next letter is empty, we just move forward to the next letter
@@ -146,16 +141,7 @@ class Text
                         continue;
                     }
 
-                    imagettftext(
-                        $image,
-                        $fontSize,
-                        $angle,
-                        $textOffsetX,
-                        $textOffsetY,
-                        current($colorArr),
-                        $fontFile,
-                        $char
-                    );
+                    imagettftext($image, $fontSize, $angle, $textX, $textY, current($colorArr), $fontFile, $char);
 
                     // #000 is 0, black will reset the array so we write it this way
                     if (next($colorArr) === false) {
@@ -164,7 +150,7 @@ class Text
                 }
 
             } else {
-                imagettftext($image, $fontSize, $angle, $textOffsetX, $textOffsetY, $colorArr[0], $fontFile, $text);
+                imagettftext($image, $fontSize, $angle, $textX, $textY, $colorArr[0], $fontFile, $text);
             }
         }
     }
