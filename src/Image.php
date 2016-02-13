@@ -795,28 +795,31 @@ class Image
     {
         if (!Arr::key('Orientation', $this->_exif)) {
             return $this;
+        }
 
-        } elseif ((int)$this->_exif['Orientation'] === 2) { // Flip horizontal
+        $orient = (int)$this->_exif['Orientation'];
+
+        if ($orient === 2) { // Flip horizontal
             $this->addFilter('flip', 'x');
 
-        } elseif ((int)$this->_exif['Orientation'] === 3) { // Rotate 180 counterclockwise
+        } elseif ($orient === 3) { // Rotate 180 counterclockwise
             $this->addFilter('rotate', -180);
 
-        } elseif ((int)$this->_exif['Orientation'] === 4) { // Vertical flip
+        } elseif ($orient === 4) { // Vertical flip
             $this->addFilter('flip', 'y');
 
-        } elseif ((int)$this->_exif['Orientation'] === 5) { // Rotate 90 clockwise and flip vertically
+        } elseif ($orient === 5) { // Rotate 90 clockwise and flip vertically
             $this->addFilter('flip', 'y');
             $this->addFilter('rotate', 90);
 
-        } elseif ((int)$this->_exif['Orientation'] === 6) { // Rotate 90 clockwise
+        } elseif ($orient === 6) { // Rotate 90 clockwise
             $this->addFilter('rotate', 90);
 
-        } elseif ((int)$this->_exif['Orientation'] === 7) { // Rotate 90 clockwise and flip horizontally
+        } elseif ($orient === 7) { // Rotate 90 clockwise and flip horizontally
             $this->addFilter('flip', 'x');
             $this->addFilter('rotate', 90);
 
-        } elseif ((int)$this->_exif['Orientation'] === 8) { // Rotate 90 counterclockwise
+        } elseif ($orient === 8) { // Rotate 90 counterclockwise
             $this->addFilter('rotate', -90);
         }
 

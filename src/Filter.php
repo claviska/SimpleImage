@@ -325,13 +325,7 @@ class Filter
         $height = imagesy($image);
 
         $rgba      = Helper::normalizeColor($color);
-        $fillColor = imagecolorallocatealpha(
-            $image,
-            (int)$rgba[0],
-            (int)$rgba[1],
-            (int)$rgba[2],
-            (int)$rgba[3]
-        );
+        $fillColor = imagecolorallocatealpha($image, $rgba[0], $rgba[1], $rgba[2], $rgba[3]);
 
         Helper::addAlpha($image, false);
         imagefilledrectangle($image, 0, 0, $width, $height, $fillColor);
