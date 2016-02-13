@@ -37,14 +37,14 @@ class Text
     /**
      * Add text to an image
      *
-     * @param mixed  $image GD resource
-     * @param string $text  Some text to output on image as watermark
-     * @param string $fFile TTF font file path
-     * @param array  $params
-     * @return mixed
+     * @param mixed  $image  GD resource
+     * @param string $text   Some text to output on image as watermark
+     * @param string $fFile  TTF font file path
+     * @param array  $params Additional render params
+     *
      * @throws Exception
      */
-    public static function render($image, $text, $fFile, $params = array())
+    public static function render($image, $text, $fFile, array $params = array())
     {
         // Set vars
         $params        = array_merge(self::$_default, $params);

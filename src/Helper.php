@@ -14,7 +14,7 @@
 
 namespace JBZoo\Image;
 
-use JBZoo\Utils\Filter;
+use JBZoo\Utils\Filter as VarFilter;
 use JBZoo\Utils\Vars;
 use JBZoo\Utils\Arr;
 
@@ -184,9 +184,9 @@ class Helper
      */
     public static function range($value, $min, $max)
     {
-        $value = Filter::int($value);
-        $min   = Filter::int($min);
-        $max   = Filter::int($max);
+        $value = VarFilter::int($value);
+        $min   = VarFilter::int($min);
+        $max   = VarFilter::int($max);
 
         return Vars::limit($value, $min, $max);
     }
@@ -276,7 +276,7 @@ class Helper
             $opacity *= 100;
         }
 
-        $opacity = Filter::int($opacity);
+        $opacity = VarFilter::int($opacity);
         $opacity = Vars::limit($opacity, 0, 100);
 
         return $opacity;

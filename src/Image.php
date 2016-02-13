@@ -43,7 +43,7 @@ class Image
     protected $_quality = self::QUALITY;
 
     /**
-     * @var string|null
+     * @var string
      */
     protected $_filename;
 
@@ -275,10 +275,6 @@ class Image
 
         // Create the image
         $result = $this->_renderImageByFormat($format, $filename, $quality);
-
-        if (!$result) {
-            throw new Exception('Unable to save image: ' . $filename); // @codeCoverageIgnore
-        }
 
         $this->loadFile($filename);
         $this->_quality = $quality;
@@ -641,6 +637,9 @@ class Image
 
         // Determine aspect ratio
         $aspectRatio = $this->_height / $this->_width;
+
+        $width  = $this->_width;
+        $height = $this->_height;
 
         // Make width fit into new dimensions
         if ($this->_width > $maxWidth) {
