@@ -356,4 +356,63 @@ class FilterTest extends PHPUnit
 
         Helper::isFileEq($actual, $excepted);
     }
+
+    public function testBorder()
+    {
+        $excepted = Helper::getExpected(__FUNCTION__ . '.png');
+        $actual   = Helper::getActual(__FUNCTION__ . '.png');
+        $original = Helper::getOrig('butterfly.jpg');
+
+        $img = new Image();
+        $img->loadFile($original)
+            ->addFilter('border')
+            ->saveAs($actual);
+
+        Helper::isFileEq($actual, $excepted);
+    }
+
+    public function testBorderColor()
+    {
+        $excepted = Helper::getExpected(__FUNCTION__ . '.png');
+        $actual   = Helper::getActual(__FUNCTION__ . '.png');
+        $original = Helper::getOrig('butterfly.jpg');
+
+        $img = new Image();
+        $img->loadFile($original)
+            ->addFilter('border', array('color' => 'f00'))
+            ->saveAs($actual);
+
+        Helper::isFileEq($actual, $excepted);
+    }
+
+    public function testBorderSize()
+    {
+        $excepted = Helper::getExpected(__FUNCTION__ . '.png');
+        $actual   = Helper::getActual(__FUNCTION__ . '.png');
+        $original = Helper::getOrig('butterfly.jpg');
+
+        $img = new Image();
+        $img->loadFile($original)
+            ->addFilter('border', array('size' => 5))
+            ->saveAs($actual);
+
+        Helper::isFileEq($actual, $excepted);
+    }
+
+    public function testBorderColorSize()
+    {
+        $excepted = Helper::getExpected(__FUNCTION__ . '.png');
+        $actual   = Helper::getActual(__FUNCTION__ . '.png');
+        $original = Helper::getOrig('butterfly.jpg');
+
+        $img = new Image();
+        $img->loadFile($original)
+            ->addFilter('border', array(
+                'color' => 'ff0',
+                'size'  => '5',
+            ))
+            ->saveAs($actual);
+
+        Helper::isFileEq($actual, $excepted);
+    }
 }

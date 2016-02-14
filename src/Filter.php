@@ -29,7 +29,7 @@ class Filter
     /**
      * Add sepia effect (emulation)
      *
-     * @param mixed $image GD resource
+     * @param resource $image Image GD resource
      */
     public static function sepia($image)
     {
@@ -40,7 +40,7 @@ class Filter
     /**
      * Add grayscale effect
      *
-     * @param mixed $image GD resource
+     * @param resource $image Image GD resource
      */
     public static function grayscale($image)
     {
@@ -50,8 +50,8 @@ class Filter
     /**
      * Pixelate effect
      *
-     * @param mixed $image     GD resource
-     * @param int   $blockSize Size in pixels of each resulting block
+     * @param resource $image     Image GD resource
+     * @param int      $blockSize Size in pixels of each resulting block
      */
     public static function pixelate($image, $blockSize = 10)
     {
@@ -62,7 +62,7 @@ class Filter
     /**
      * Edge Detect
      *
-     * @param mixed $image GD resource
+     * @param resource $image Image GD resource
      */
     public static function edges($image)
     {
@@ -72,7 +72,7 @@ class Filter
     /**
      * Emboss
      *
-     * @param mixed $image GD resource
+     * @param resource $image Image GD resource
      */
     public static function emboss($image)
     {
@@ -82,7 +82,7 @@ class Filter
     /**
      * Negative
      *
-     * @param mixed $image GD resource
+     * @param resource $image Image GD resource
      */
     public static function invert($image)
     {
@@ -92,9 +92,9 @@ class Filter
     /**
      * Blur effect
      *
-     * @param mixed $image  GD resource
-     * @param int   $type   BLUR_SEL|BLUR_GAUS
-     * @param int   $passes Number of times to apply the filter
+     * @param resource $image  Image GD resource
+     * @param int      $type   BLUR_SEL|BLUR_GAUS
+     * @param int      $passes Number of times to apply the filter
      */
     public static function blur($image, $passes = 1, $type = self::BLUR_SEL)
     {
@@ -113,8 +113,8 @@ class Filter
     /**
      * Change brightness
      *
-     * @param mixed $image GD resource
-     * @param int   $level Darkest = -255, lightest = 255
+     * @param resource $image Image GD resource
+     * @param int      $level Darkest = -255, lightest = 255
      */
     public static function brightness($image, $level)
     {
@@ -124,8 +124,8 @@ class Filter
     /**
      * Change contrast
      *
-     * @param mixed $image GD resource
-     * @param int   $level Min = -100, max = 100
+     * @param resource $image Image GD resource
+     * @param int      $level Min = -100, max = 100
      */
     public static function contrast($image, $level)
     {
@@ -135,13 +135,13 @@ class Filter
     /**
      * Set colorize
      *
-     * @param mixed     $image      GD resource
+     * @param resource  $image      Image GD resource
      * @param string    $color      Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
      *                              Where red, green, blue - integers 0-255, alpha - integer 0-127
      * @param float|int $opacity    0-100
      * @return $this
      *
-     * @throws Exception
+     * @throws \JBZoo\Utils\Exception
      */
     public static function colorize($image, $color, $opacity)
     {
@@ -158,7 +158,7 @@ class Filter
     /**
      * Mean Remove
      *
-     * @param mixed $image GD resource
+     * @param resource $image Image GD resource
      */
     public static function meanRemove($image)
     {
@@ -168,8 +168,8 @@ class Filter
     /**
      * Smooth effect
      *
-     * @param mixed $image  GD resource
-     * @param int   $passes Number of times to apply the filter (1 - 2048)
+     * @param resource $image  Image GD resource
+     * @param int      $passes Number of times to apply the filter (1 - 2048)
      */
     public static function smooth($image, $passes = 1)
     {
@@ -179,8 +179,8 @@ class Filter
     /**
      * Desaturate
      *
-     * @param mixed $image   GD resource
-     * @param int   $percent Level of desaturization.
+     * @param resource $image   Image GD resource
+     * @param int      $percent Level of desaturization.
      * @return resource|null
      */
     public static function desaturate($image, $percent = 100)
@@ -219,7 +219,7 @@ class Filter
     /**
      * Changes the opacity level of the image
      *
-     * @param mixed     $image   GD resource
+     * @param resource  $image   Image GD resource
      * @param float|int $opacity 0-1 or 0-100
      *
      * @return mixed
@@ -256,12 +256,12 @@ class Filter
     /**
      * Rotate an image
      *
-     * @param mixed        $image   GD resource
+     * @param resource     $image   Image GD resource
      * @param int          $angle   -360 < x < 360
      * @param string|array $bgColor Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
      *                              Where red, green, blue - integers 0-255, alpha - integer 0-127
-     * @return $this
-     * @throws Exception
+     * @return resource
+     * @throws \JBZoo\Utils\Exception
      */
     public static function rotate($image, $angle, $bgColor = '#000000')
     {
@@ -317,8 +317,7 @@ class Filter
      * @param mixed  $image     GD resource
      * @param string $color     Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
      *                          Where red, green, blue - integers 0-255, alpha - integer 0-127
-     * @return $this
-     * @throws Exception
+     * @throws \JBZoo\Utils\Exception
      */
     public static function fill($image, $color = '#000000')
     {
@@ -339,11 +338,57 @@ class Filter
      * @param string $text     Some text to output on image as watermark
      * @param string $fontFile TTF font file path
      * @param array  $params
-     * @return mixed
-     * @throws Exception
+     * @throws \JBZoo\Image\Exception
      */
     public static function text($image, $text, $fontFile, $params = array())
     {
         Text::render($image, $text, $fontFile, $params);
+    }
+
+    /**
+     * Add border to an image
+     *
+     * @param resource $image  Image GD resource
+     * @param array    $params Some
+     * @return resource
+     * @throws \JBZoo\Utils\Exception
+     */
+    public static function border($image, array $params = array())
+    {
+        $params = array_merge(array(
+            'color' => '#333',
+            'size'  => 1,
+        ), $params);
+
+        $size   = Helper::range($params['size'], 1, 1000);
+        $rgba   = Helper::normalizeColor($params['color']);
+        $width  = imagesx($image);
+        $height = imagesy($image);
+
+
+        if (1) {
+            $x1 = 0;
+            $y1 = 0;
+            $x2 = $width - 1;
+            $y2 = $height - 1;
+
+            $color = imagecolorallocatealpha($image, $rgba[0], $rgba[1], $rgba[2], $rgba[3]);
+
+            for ($i = 0; $i < $size; $i++) {
+                imagerectangle($image, $x1++, $y1++, $x2--, $y2--, $color);
+            }
+
+        } else {
+            $imgAdjWidth  = $size * 2 + $width;
+            $imgAdjHeight = $size * 2 + $height;
+
+            $newImage    = imagecreatetruecolor($imgAdjWidth, $imgAdjHeight);
+            $borderColor = imagecolorallocate($newImage, $rgba[0], $rgba[1], $rgba[2]);
+
+            imagefilledrectangle($newImage, 0, 0, $imgAdjWidth, $imgAdjHeight, $borderColor);
+            imagecopyresized($newImage, $image, $size, $size, 0, 0, $width, $height, $width, $height);
+            imagedestroy($image);
+            return $newImage;
+        }
     }
 }

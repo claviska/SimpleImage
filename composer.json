@@ -3,7 +3,7 @@
     "type"              : "library",
     "description"       : "A PHP class that simplifies working with images (fork abeautifulsite/simpleimage)",
     "license"           : "MIT",
-    "keywords"          : ["image", "resize", "images", "jbzoo", "crop", "filters"],
+    "keywords"          : ["image", "resize", "images", "jbzoo", "crop", "filters", "thumbnail", "watermark", "gd"],
     "minimum-stability" : "stable",
     "authors"           : [
         {
