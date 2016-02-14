@@ -4,7 +4,7 @@
 
 [![License](https://poser.pugx.org/JBZoo/Image/license)](https://packagist.org/packages/JBZoo/Image) [![Latest Stable Version](https://poser.pugx.org/JBZoo/Image/v/stable)](https://packagist.org/packages/JBZoo/Image) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/JBZoo/Image/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/JBZoo/Image/?branch=master)
 
-Fork (Really huge global refactoring and test coverage!) - [Cory LaViska for A Beautiful Site, LLC](http://www.abeautifulsite.net/)
+Fork (Really huge global refactoring and test coverage!) - [Cory LaViska for A Beautiful Site, LLC](https://github.com/claviska/SimpleImage)
 
 ### Overview
 This class makes image manipulation in PHP as simple as possible.
