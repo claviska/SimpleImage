@@ -118,8 +118,7 @@ $img = new abeautifulsite\SimpleImage('image.jpg');
 $img->flip('x')->rotate(90)->best_fit(320, 200)->desaturate()->invert()->save('result.jpg')
 ```
 
-You can chain all of the methods below as well methods above.  (You cannot chain the constructor,
-however, as this is not supported by PHP.)
+You can chain all of the methods below as well methods above.
 
 ### Error Handling
 
@@ -223,6 +222,9 @@ $img->overlay('watermark.png', 'bottom right', .5, -10, -10);
 
 // Add 32-point white text top-centered (plus 20px) on the image*
 $img->text('Your Text', 'font.ttf', 32, '#FFFFFF', 'top', 0, 20);
+
+// Add multiple colored text
+$img->text('Your Text', 'font.ttf', 32, ['#FFFFFF' '#000000'], 'top', 0, 20);
 ```
 
 * Valid positions are *center, top, right, bottom, left, top left, top
