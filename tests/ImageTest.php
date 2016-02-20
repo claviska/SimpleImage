@@ -247,10 +247,17 @@ class ImageTest extends PHPUnit
 
         $img = new Image($original);
         isContain('data:image/gif;base64,R0lGODlhEAAQAMYAAHB', $img->getBase64());
+        isContain('data:image/gif;base64,R0lGODlhEAAQAMYAAHB', $img->getBase64(null));
         isContain('data:image/gif;base64,R0lGODlhEAAQAMYAAHB', $img->getBase64('gif'));
         isContain('data:image/png;base64,iVBORw0KGgoAAAANSUh', $img->getBase64('png'));
         isContain('data:image/jpeg;base64,/9j/4AAQSkZJRgABAQ', $img->getBase64('jpeg'));
         isContain('data:image/jpeg;base64,/9j/4AAQSkZJRgABAQ', $img->getBase64('jpg'));
+
+        isContain('R0lGODlhEAAQAMYAAHB', $img->getBase64(null, null, false));
+        isContain('R0lGODlhEAAQAMYAAHB', $img->getBase64('gif', null, false));
+        isContain('iVBORw0KGgoAAAANSUh', $img->getBase64('png', null, false));
+        isContain('/9j/4AAQSkZJRgABAQ', $img->getBase64('jpeg', null, false));
+        isContain('/9j/4AAQSkZJRgABAQ', $img->getBase64('jpg', null, false));
     }
 
     public function testGetBinary()
@@ -260,6 +267,7 @@ class ImageTest extends PHPUnit
         $img = new Image($original);
 
         isContain('47494638396110001000c60000707070a0a0a0eada22f0f0f0cbbd1e2e2b06f3', bin2hex($img->getBinary()));
+        isContain('47494638396110001000c60000707070a0a0a0eada22f0f0f0cbbd1e2e2b06f3', bin2hex($img->getBinary(null)));
         isContain('47494638396110001000c60000707070a0a0a0eada22f0f0f0cbbd1e2e2b06f3', bin2hex($img->getBinary('gif')));
         isContain('89504e470d0a1a0a0000000d4948445200000010000000100803000000282d0f', bin2hex($img->getBinary('png')));
         isContain('ffd8ffe000104a46494600010100000100010000fffe003a43524541544f523a', bin2hex($img->getBinary('jpeg')));

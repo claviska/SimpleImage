@@ -920,11 +920,17 @@ class Image
      *
      * @throws Exception
      */
-    public function getBase64($format = 'gif', $quality = null)
+    public function getBase64($format = 'gif', $quality = null, $addMime = true)
     {
         list($mimeType, $binaryData) = $this->_renderBinary($format, $quality);
 
-        return 'data:' . $mimeType . ';base64,' . base64_encode($binaryData);
+        $result = base64_encode($binaryData);
+
+        if ($addMime) {
+            $result = 'data:' . $mimeType . ';base64,' . $result;
+        }
+
+        return $result;
     }
 
     /**
