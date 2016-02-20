@@ -147,7 +147,14 @@ $img = new Image($imgRes);
 ```php
 $img = new Image($_SERVER['DOCUMENT_ROOT'] . '/resources/butterfly.jpg');
 
-$img->getBase64('gif'); // Get base64 code as string for gif image
+$img->getBase64();                  // Get base64 as string (format from inner state)
+$img->getBase64('gif');             // Convert to GIF and get base64 as string
+$img->getBase64('jpeg', 85);        // Convert to JPEG (q=85%) and get base64 as string
+$img->getBase64('png', 100, false); // Get only base64 without mime header
+
+$img->getBinary();              // Get clean binary data (format from inner state)
+$img->getBinary('jpeg', 85);    // Binary in JPEG format with quality 85%
+
 $img->getHeight();      // Height in px
 $img->getWidth();       // Width in px
 $img->cleanup();        // Full cleanup of internal state of object
