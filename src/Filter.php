@@ -365,30 +365,15 @@ class Filter
         $width  = imagesx($image);
         $height = imagesy($image);
 
+        $x1 = 0;
+        $y1 = 0;
+        $x2 = $width - 1;
+        $y2 = $height - 1;
 
-        if (1) {
-            $x1 = 0;
-            $y1 = 0;
-            $x2 = $width - 1;
-            $y2 = $height - 1;
+        $color = imagecolorallocatealpha($image, $rgba[0], $rgba[1], $rgba[2], $rgba[3]);
 
-            $color = imagecolorallocatealpha($image, $rgba[0], $rgba[1], $rgba[2], $rgba[3]);
-
-            for ($i = 0; $i < $size; $i++) {
-                imagerectangle($image, $x1++, $y1++, $x2--, $y2--, $color);
-            }
-
-        } else {
-            $imgAdjWidth  = $size * 2 + $width;
-            $imgAdjHeight = $size * 2 + $height;
-
-            $newImage    = imagecreatetruecolor($imgAdjWidth, $imgAdjHeight);
-            $borderColor = imagecolorallocate($newImage, $rgba[0], $rgba[1], $rgba[2]);
-
-            imagefilledrectangle($newImage, 0, 0, $imgAdjWidth, $imgAdjHeight, $borderColor);
-            imagecopyresized($newImage, $image, $size, $size, 0, 0, $width, $height, $width, $height);
-            imagedestroy($image);
-            return $newImage;
+        for ($i = 0; $i < $size; $i++) {
+            imagerectangle($image, $x1++, $y1++, $x2--, $y2--, $color);
         }
     }
 }
