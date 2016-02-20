@@ -311,6 +311,50 @@ class SimpleImage {
     }
 
     /**
+     * Crop to fit
+     *
+     * Center crop image and then resize it to fit within specified dimensions
+     *
+     * @param int           $crop_width
+     * @param int           $crop_height
+     *
+     * @return SimpleImage
+     *
+     */
+    function crop_to_fit( $c2f_width, $c2f_height ) {
+
+        // If it already fits, there's nothing to do
+        if ($this->width == $c2f_width && $this->height == $c2f_height) {
+            return $this;
+        }
+
+        // Determine aspect ratio
+        $aspect_ratio = $this->height / $this->width;
+
+        // landscape
+        if( $aspect_ratio < 1 )
+        {
+            $x1 = ( $this->width - $this->height ) / 2;
+            $x2 = $x1 + $this->height;
+            $y1 = 0;
+            $y2 = $this->height;
+            $this->crop( $x1, $y1, $x2, $y2 );
+        }
+        // portrait
+        elseif( $aspect_ratio > 1 )
+        {
+            $x1 = 0;
+            $x2 = $this->width;
+            $y1 = ( $this->height - $this->width ) / 2;
+            $y2 = $y1 + $this->width;
+            $this->crop( $x1, $y1, $x2, $y2 );
+        }
+
+        return $this->resize( $c2f_width, $c2f_height );
+
+    }
+
+    /**
      * Desaturate
      *
      * @param int           $percentage Level of desaturization.
