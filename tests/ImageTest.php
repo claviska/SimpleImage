@@ -241,7 +241,7 @@ class ImageTest extends PHPUnit
         Helper::isFileEq($actual, $excepted);
     }
 
-    public function testToBase64()
+    public function testGetBase64()
     {
         $original = Helper::getOrig('smile.gif');
 
@@ -251,6 +251,19 @@ class ImageTest extends PHPUnit
         isContain('data:image/png;base64,iVBORw0KGgoAAAANSUh', $img->getBase64('png'));
         isContain('data:image/jpeg;base64,/9j/4AAQSkZJRgABAQ', $img->getBase64('jpeg'));
         isContain('data:image/jpeg;base64,/9j/4AAQSkZJRgABAQ', $img->getBase64('jpg'));
+    }
+
+    public function testGetBinary()
+    {
+        $original = Helper::getOrig('smile.gif');
+
+        $img = new Image($original);
+
+        isContain('47494638396110001000c60000707070a0a0a0eada22f0f0f0cbbd1e2e2b06f3', bin2hex($img->getBinary()));
+        isContain('47494638396110001000c60000707070a0a0a0eada22f0f0f0cbbd1e2e2b06f3', bin2hex($img->getBinary('gif')));
+        isContain('89504e470d0a1a0a0000000d4948445200000010000000100803000000282d0f', bin2hex($img->getBinary('png')));
+        isContain('ffd8ffe000104a46494600010100000100010000fffe003a43524541544f523a', bin2hex($img->getBinary('jpeg')));
+        isContain('ffd8ffe000104a46494600010100000100010000fffe003a43524541544f523a', bin2hex($img->getBinary('jpg')));
     }
 
     /**

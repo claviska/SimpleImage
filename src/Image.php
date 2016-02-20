@@ -300,6 +300,8 @@ class Image
             throw new Exception('Image resource not defined');
         }
 
+        $format = $format ?: $this->_mime;
+
         $result = false;
         if (Helper::isJpeg($format)) {
             if ($this->_saveJpeg($filename, $quality)) {
@@ -920,17 +922,46 @@ class Image
      */
     public function getBase64($format = 'gif', $quality = null)
     {
+        list($mimeType, $binaryData) = $this->_renderBinary($format, $quality);
+
+        return 'data:' . $mimeType . ';base64,' . base64_encode($binaryData);
+    }
+
+    /**
+     * Outputs image as binary data
+     *
+     * @param null|string $format  If omitted or null - format of original file will be used, may be gif|jpg|png
+     * @param int|null    $quality Output image quality in percents 0-100
+     * @return string
+     *
+     * @throws Exception
+     */
+    public function getBinary($format = null, $quality = null)
+    {
+        $result = $this->_renderBinary($format, $quality);
+
+        return $result[1];
+    }
+
+    /**
+     *
+     * @param string $format
+     * @param int    $quality
+     * @return array
+     * @throws Exception
+     */
+    protected function _renderBinary($format, $quality)
+    {
         if (!$this->_image) {
             throw new Exception('Image resource not defined');
         }
 
-        // Output the image
         ob_start();
-        $mimetype  = $this->_renderImageByFormat($format, null, $quality);
+        $mimeType  = $this->_renderImageByFormat($format, null, $quality);
         $imageData = ob_get_contents();
         ob_end_clean();
 
-        return 'data:' . $mimetype . ';base64,' . base64_encode($imageData);
+        return array($mimeType, $imageData);
     }
 
     /**
