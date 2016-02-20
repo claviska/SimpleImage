@@ -4,7 +4,7 @@
 
 [![License](https://poser.pugx.org/JBZoo/Image/license)](https://packagist.org/packages/JBZoo/Image) [![Latest Stable Version](https://poser.pugx.org/JBZoo/Image/v/stable)](https://packagist.org/packages/JBZoo/Image) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/JBZoo/Image/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/JBZoo/Image/?branch=master)
 
-Fork (Really huge global refactoring and test coverage!) - [Cory LaViska for A Beautiful Site, LLC](http://www.abeautifulsite.net/)
+Fork (Really huge global refactoring and test coverage!) - [Cory LaViska for A Beautiful Site, LLC](https://github.com/claviska/SimpleImage)
 
 ### Overview
 This class makes image manipulation in PHP as simple as possible.
@@ -47,7 +47,7 @@ This class requires PHP 5.3 and PHP GD library. Recommended PHP 5.4 and above
 Just use the composer
 ```sh
 composer require jbzoo/image:"3.x-dev"  # Last dev
-composer require jbzoo/image            # Last stable
+composer require jbzoo/image:"^3.0"     # Last stable
 ```
 
 ### How to use
@@ -145,7 +145,7 @@ $img = new Image($imgRes);
 
 ### Other utility methods
 ```php
-$img = new Image('./resources/butterfly.jpg');
+$img = new Image($_SERVER['DOCUMENT_ROOT'] . '/resources/butterfly.jpg');
 
 $img->getBase64('gif'); // Get base64 code as string for gif image
 $img->getHeight();      // Height in px
@@ -161,8 +161,8 @@ $img->isPortrait();     // Check orientation
 $img->isLandscape();    // Check orientation
 $img->isSquare();       // Check orientation
 
-$img->getUrl();         // Get full url to image     - http://site.com/example/image.png
-$img->getPath();        // Get relative url to image - /example/image.png
+$img->getUrl();         // Get full url to image     - http://site.com/resources/butterfly.jpg
+$img->getPath();        // Get relative url to image - /resources/butterfly.jpg
 
 $imgInfo = $img->getInfo(); // Get array of all properties
 
@@ -192,7 +192,7 @@ $imgInfo = [
 ```
 
 
-### Add text to image (filter)
+### Add text on image (filter)
 ```php
 $img = new Image('./resources/butterfly.jpg');
 $img->addFilter(
