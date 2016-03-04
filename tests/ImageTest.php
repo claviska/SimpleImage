@@ -434,4 +434,21 @@ class ImageTest extends PHPUnit
             isTrue(strpos(PHP_VERSION, '5.3') === 0);
         }
     }
+
+    public function testInvalidImageString()
+    {
+        try {
+            $img = new Image();
+            $img->loadString('__INVALID__', true);
+        } catch(Exception $e) {
+            isTrue($e->getMessage() === 'Invalid image source.');
+        }
+
+        try {
+            $img = new Image('__INVALID__', true);
+        } catch(Exception $e) {
+            isTrue($e->getMessage() === 'Invalid image source.');
+        }
+    }
+
 }
