@@ -77,11 +77,12 @@ class Image
      * Constructor
      *
      * @param string|null $filename
+     * @param bool|null $strict
      *
      * @throws Exception
      * @throws \JBZoo\Utils\Exception
      */
-    public function __construct($filename = null)
+    public function __construct($filename = null, $strict = false)
     {
         Helper::checkGD();
 
@@ -92,7 +93,7 @@ class Image
             $this->loadResource($filename);
 
         } elseif (is_string($filename) && $filename) {
-            $this->loadString($filename);
+            $this->loadString($filename, $strict);
         }
     }
 
@@ -351,18 +352,19 @@ class Image
      * Load an image
      *
      * @param string $imageString Binary images
+     * @param bool|null $strict
      * @return $this
      *
      * @throws Exception
      */
-    public function loadString($imageString)
+    public function loadString($imageString, $strict = false)
     {
         if (!$imageString) {
             throw new Exception('Image string is empty!');
         }
 
         $this->cleanup();
-        $this->_loadMeta($imageString);
+        $this->_loadMeta($imageString, $strict);
 
         return $this;
     }
@@ -391,11 +393,12 @@ class Image
      * Get meta data of image or base64 string
      *
      * @param null|string $image
+     * @param bool|null $strict
      *
      * @return $this
      * @throws Exception
      */
-    protected function _loadMeta($image = null)
+    protected function _loadMeta($image = null, $strict = false)
     {
         // Gather meta data
         if (null === $image && $this->_filename) {
@@ -415,7 +418,7 @@ class Image
                 throw new Exception('PHP 5.4 is required to use method getimagesizefromstring');
             }
 
-            if (base64_decode($image) === false) {
+            if ($strict && (base64_decode($image, true) === false)) {
                 throw new Exception('Invalid image source.');
             }
 
