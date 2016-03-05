@@ -435,6 +435,9 @@ class ImageTest extends PHPUnit
         }
     }
 
+    /**
+     * @requires PHP 5.4
+     */
     public function testInvalidImageString()
     {
         try {
