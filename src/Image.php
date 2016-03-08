@@ -420,7 +420,7 @@ class Image
 
             if ($strict) {
                 $cleanedString = str_replace(' ', '+', preg_replace('#^data:image/[^;]+;base64,#', '', $image));
-                if((base64_decode($cleanedString, true) === false)) {
+                if (base64_decode($cleanedString, true) === false) {
                     throw new Exception('Invalid image source.');
                 }
             }
