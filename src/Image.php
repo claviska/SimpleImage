@@ -418,8 +418,11 @@ class Image
                 throw new Exception('PHP 5.4 is required to use method getimagesizefromstring');
             }
 
-            if ($strict && (base64_decode($image, true) === false)) {
-                throw new Exception('Invalid image source.');
+            if ($strict) {
+                $cleanedString = str_replace(' ', '+', preg_replace('#^data:image/[^;]+;base64,#', '', $image));
+                if((base64_decode($cleanedString, true) === false)) {
+                    throw new Exception('Invalid image source.');
+                }
             }
 
             $image        = Helper::strToBin($image);
