@@ -481,7 +481,7 @@ class Image
     {
         $result = array();
 
-        if (Sys::isFunc('exif_read_data') && Helper::isJpeg($this->_mime)) {
+        if ($this->_filename && Sys::isFunc('exif_read_data') && Helper::isJpeg($this->_mime)) {
             $result = exif_read_data($this->_filename);
         }
 
