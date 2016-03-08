@@ -136,7 +136,7 @@ class Image
      */
     public function getHeight()
     {
-        return $this->_width;
+        return $this->_height;
     }
 
     /**

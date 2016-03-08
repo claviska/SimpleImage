@@ -454,4 +454,13 @@ class ImageTest extends PHPUnit
         }
     }
 
+    public function testGetWidthAndHeight()
+    {
+        $original = Helper::getOrig('butterfly.png');
+
+        $img  = new Image($original);
+
+        is(640, $img->getWidth());
+        is(478, $img->getHeight());
+    }
 }
