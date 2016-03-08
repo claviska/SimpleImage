@@ -408,10 +408,10 @@ class ImageTest extends PHPUnit
             . 'QyDcwSVWCx1tN8N6z8bL/UfDei6rL4puvEUS6Xrev2trJZ+H9E0bcftMFn88im5kRm+XzpZ5JSjSGOCMCP+M8YuN3xu3Bz5/aa'
             . 'W9rycntOv/Lrk5NG77dOe9v0im8H9UW3suXX4f5fv5r/ADv5H//Z';
 
-        $bin    = base64_decode($imgStr, true);
+        $bin = base64_decode($imgStr, true);
 
         $actualClean      = Helper::getActual(__FUNCTION__ . '_clean.gif');
-        $actualBase64Gif     = Helper::getActual(__FUNCTION__ . '_base64.gif');
+        $actualBase64Gif  = Helper::getActual(__FUNCTION__ . '_base64.gif');
         $actualBase64Jpeg = Helper::getActual(__FUNCTION__ . '_base64.jpg');
         $actualBin        = Helper::getActual(__FUNCTION__ . '_bin.gif');
         $excepted         = Helper::getExpected(__FUNCTION__ . '.gif');
