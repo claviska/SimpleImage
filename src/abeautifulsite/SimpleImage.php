@@ -1159,7 +1159,7 @@ class SimpleImage {
             $this->fit_to_width($width);
         }
 
-        switch($focal) {
+        switch(strtolower($focal)) {
             case 'top':
                 $left = floor(($this->width / 2) - ($width / 2));
                 $right = $width + $left;
