@@ -157,6 +157,9 @@ $img->resize(320, 200);
 // Trim the image and resize to exactly 100x75
 $img->thumbnail(100, 75);
 
+// Trim the image and resize to exactly 100x75, keeping the top* of the image
+$img->thumbnail(100, 75, 'top');
+
 // Shrink the image to the specified width while maintaining proportion (width)
 $img->fit_to_width(320);
 
