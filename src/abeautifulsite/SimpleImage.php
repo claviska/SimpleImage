@@ -895,6 +895,14 @@ class SimpleImage {
             case 'jpg':
             case 'jpeg':
                 imageinterlace($this->image, true);
+                if($this->original_info['mime']=='image/png'){
+                    $input = imagecreatefrompng($this->filename);
+                    $output = imagecreatetruecolor($this->original_info['width'], $this->original_info['height']);
+                    $white = imagecolorallocate($output,  255, 255, 255);
+                    imagefilledrectangle($output, 0, 0, $this->original_info['width'], $this->original_info['height'], $white);
+                    imagecopy($output, $input, 0, 0, 0, 0, $this->original_info['width'],  $this->original_info['height']);
+                    $this->image=$output;
+                }
                 $result = imagejpeg($this->image, $filename, round($quality));
                 break;
             case 'png':
