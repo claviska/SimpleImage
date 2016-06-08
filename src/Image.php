@@ -621,7 +621,7 @@ class Image
 
         } else {
             // Preserve transparency in PNG
-            Helper::addAlpha($newImage);
+            Helper::addAlpha($newImage, false);
         }
 
         // Resize

@@ -36,4 +36,29 @@ class IssuesTest extends PHPUnit
 
         Helper::isFileEq($actual, $excepted);
     }
+
+    public function testIssue8()
+    {
+        $excepted = Helper::getExpected(__FUNCTION__ . '.png');
+        $actual   = Helper::getActual(__FUNCTION__ . '.png');
+        $base     = Helper::getOrig('issue-8/original.png');
+
+        $img = new Image($base);
+
+        if ($img->getHeight() != $img->getWidth()) {
+
+            if ($img->getWidth() < 175) {
+                $img->fitToWidth($img->getWidth());
+            } else {
+                $img->fitToWidth(175);
+            }
+
+        } else {
+            $img->bestFit(175, 175);
+        }
+
+        $img->saveAs($actual);
+
+        Helper::isFileEq($actual, $excepted);
+    }
 }
