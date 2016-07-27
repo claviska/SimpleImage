@@ -639,9 +639,6 @@ class SimpleImage {
                 break;
         }
 
-        // Sets image mimetype
-        $this->mimetype = $mimetype;
-
         // Sets the image data
         ob_start();
         switch ($mimetype) {
@@ -658,10 +655,10 @@ class SimpleImage {
                 throw new Exception('Unsupported image format: '.$this->filename);
                 break;
         }
-        $this->imagestring = ob_get_contents();
+        $imagestring = ob_get_contents();
         ob_end_clean();
 
-        return $this;
+        return [ $mimetype, $imagestring ];
     }
 
     /**
@@ -675,11 +672,11 @@ class SimpleImage {
      */
     function output($format = null, $quality = null) {
 
-        $this->generate( $format, $quality );
+        list( $mimetype, $imagestring ) = $this->generate( $format, $quality );
 
         // Output the image
-        header('Content-Type: '.$this->mimetype);
-        echo $this->imagestring;
+        header('Content-Type: '.$mimetype);
+        echo $imagestring;
     }
 
     /**
@@ -694,10 +691,10 @@ class SimpleImage {
      */
     function output_base64($format = null, $quality = null) {
 
-        $this->generate( $format, $quality );
+        list( $mimetype, $imagestring ) = $this->generate( $format, $quality );
 
         // Returns formatted string for img src
-        return 'data:'.$this->mimetype.';base64,'.base64_encode($this->imagestring);
+        return "data:{$mimetype};base64,".base64_encode($imagestring);
 
     }
 
@@ -876,10 +873,10 @@ class SimpleImage {
         if( !$format )
             $format = $this->file_ext($filename) ?: $this->original_info['format'];
 
-        $this->generate( $format, $quality );
+        list( $mimetype, $imagestring ) = $this->generate( $format, $quality );
 
         // Save the image
-        $result = file_put_contents( $filename, $this->imagestring );
+        $result = file_put_contents( $filename, $imagestring );
         if (!$result)
             throw new Exception('Unable to save image: ' . $filename);
 
