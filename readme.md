@@ -262,6 +262,9 @@ $height = $img->get_height();
 // Get the current orientation (returns 'portrait', 'landscape', or 'square')
 $orientation = $img->get_orientation();
 
+// Get the extension for the current file
+$height = $img->get_extension();
+
 // Flip the image and output it directly to the browser (i.e. without saving to file)
 $img->flip('x')->output();
 ```
