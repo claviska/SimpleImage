@@ -512,7 +512,7 @@ class SimpleImage {
      /**
      * Get the proper extension for the current file
      *
-     * @return int
+     * @return string
      *
      */
     function get_extension() {
