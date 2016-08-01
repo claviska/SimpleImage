@@ -229,8 +229,8 @@ $img->addFilter(
 
 ### Unit testing and Code Quality
 ```sh
-composer update-all
-composer test
+make
+make test-all
 ```
 
 
