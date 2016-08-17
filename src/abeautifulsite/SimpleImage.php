@@ -1046,7 +1046,9 @@ class SimpleImage {
 
                     // If the next letter is empty, we just move forward to the next letter
                     if($var !== " ") {
-                        $this->imagettfstroketext($this->image, $font_size, $angle, $x, $y, current($color_arr), current($stroke_color), $stroke_size, $font_file, $var);
+                        $color_value = current($color_arr);
+						$stroke_value = current($stroke_color);
+                        $this->imagettfstroketext($this->image, $font_size, $angle, $x, $y, $color_value, $stroke_value, $stroke_size, $font_file, $var);
 
                        // #000 is 0, black will reset the array so we write it this way
                         if(next($color_arr) === false) {
