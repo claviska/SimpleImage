@@ -658,7 +658,7 @@ class SimpleImage {
         $imagestring = ob_get_contents();
         ob_end_clean();
 
-        return [ $mimetype, $imagestring ];
+        return array($mimetype, $imagestring);
     }
 
     /**
