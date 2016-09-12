@@ -1192,6 +1192,30 @@ class SimpleImage {
         // Return trimmed image
         return $this->crop($left, $top, $right, $bottom);
     }
+    
+    /**
+     * Replace RGBA color index or range of the indexes with specified color
+     *
+     * @param int $start First index of range.
+     *
+     * @param int $end Last index of range.
+     *
+     * @param string $color Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
+     *                              Where red, green, blue - integers 0-255, alpha - integer 0-127
+     *
+     * @return SimpleImage
+     *
+     */
+    public function color_replace($color, $start, $end = '') {
+        $rgba = $this->normalize_color($color);
+        $end = $end ?: $start;
+
+        for ($index = $start; $index <= $end; $index++) {
+            imagecolorset($this->image, $index, $rgba['r'], $rgba['g'], $rgba['b'], $rgba['a']);
+        }
+
+        return $this;
+    }
 
     /**
      * Returns the file extension of the specified file
