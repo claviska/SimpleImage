@@ -43,6 +43,10 @@ class SimpleImage {
      *
      */
     function __construct($filename = null, $width = null, $height = null, $color = null) {
+        $filename_explode = explode("/", $filename); //Split file path
+        $filename_explode[count($filename_explode) - 1] = rawurlencode($filename_explode[count($filename_explode) - 1]); //Encode filename
+        $filename = implode("/", $filename_explode); //Join file path & name together
+
         if ($filename) {
             $this->load($filename);
         } elseif ($width) {
