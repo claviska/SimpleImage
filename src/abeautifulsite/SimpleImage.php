@@ -516,6 +516,26 @@ class SimpleImage {
         return $this->width;
     }
 
+     /**
+     * Get the proper extension for the current file
+     *
+     * @return string
+     *
+     */
+    function get_extension() {
+        switch (strtolower($this->original_info['format'])) {
+            case 'gif':
+                return 'gif';
+            case 'jpg':
+            case 'jpeg':
+                return 'jpg';
+            case 'png':
+                return 'png';
+            default:
+                throw new Exception('Unsupported format');
+        }
+    }
+
     /**
      * Invert
      *
