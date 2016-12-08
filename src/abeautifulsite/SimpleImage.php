@@ -1412,14 +1412,16 @@ class SimpleImage {
             } else {
                 return false;
             }
+            
             return array(
                 'r' => hexdec($r),
                 'g' => hexdec($g),
                 'b' => hexdec($b),
                 'a' => 0
             );
-
-        } elseif (is_array($color) && (count($color) == 3 || count($color) == 4)) {
+        }
+        
+        if (is_array($color) && (count($color) == 3 || count($color) == 4)) {
 
             if (isset($color['r'], $color['g'], $color['b'])) {
                 return array(
@@ -1428,7 +1430,9 @@ class SimpleImage {
                     'b' => $this->keep_within($color['b'], 0, 255),
                     'a' => $this->keep_within(isset($color['a']) ? $color['a'] : 0, 0, 127)
                 );
-            } elseif (isset($color[0], $color[1], $color[2])) {
+            }
+            
+            if (isset($color[0], $color[1], $color[2])) {
                 return array(
                     'r' => $this->keep_within($color[0], 0, 255),
                     'g' => $this->keep_within($color[1], 0, 255),
@@ -1438,6 +1442,7 @@ class SimpleImage {
             }
 
         }
+        
         return false;
     }
 
