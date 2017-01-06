@@ -43,6 +43,9 @@ class SimpleImage {
      *
      */
     function __construct($filename = null, $width = null, $height = null, $color = null) {
+        // Ignore JPEG warnings that cause imagecreatefromjpeg() to fail
+        ini_set('gd.jpeg_ignore_warning', 1);
+        
         if ($filename) {
             $this->load($filename);
         } elseif ($width) {
@@ -1235,9 +1238,10 @@ class SimpleImage {
                 case 'image/png':
                     $this->image = imagecreatefrompng($this->filename);
                     break;
-                default:
-                    throw new Exception('Invalid image: '.$this->filename);
-                    break;
+            }
+            
+            if(!$this->image) {
+              throw new Exception('Invalid or corrupt image: ' . $this->filename);              
             }
         } elseif (function_exists('getimagesizefromstring')) {
             $info = getimagesizefromstring($this->imagestring);
