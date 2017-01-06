@@ -45,7 +45,7 @@ class SimpleImage {
     function __construct($filename = null, $width = null, $height = null, $color = null) {
         // Ignore JPEG warnings that cause imagecreatefromjpeg() to fail
         ini_set('gd.jpeg_ignore_warning', 1);
-        
+
         if ($filename) {
             $this->load($filename);
         } elseif ($width) {
@@ -1113,7 +1113,7 @@ class SimpleImage {
      *
      * @param int           $width
      * @param int|null      $height If omitted - assumed equal to $width
-     * @param string        $focal 
+     * @param string        $focal
      *
      * @return SimpleImage
      *
@@ -1183,7 +1183,7 @@ class SimpleImage {
                 $top = $this->height - $height;
                 $bottom = $this->height;
                 break;
-            case 'center': 
+            case 'center':
             default:
                 $left = floor(($this->width / 2) - ($width / 2));
                 $right = $width + $left;
@@ -1239,9 +1239,9 @@ class SimpleImage {
                     $this->image = imagecreatefrompng($this->filename);
                     break;
             }
-            
+
             if(!$this->image) {
-              throw new Exception('Invalid or corrupt image: ' . $this->filename);              
+              throw new Exception('Invalid or corrupt image: ' . $this->filename);
             }
         } elseif (function_exists('getimagesizefromstring')) {
             $info = getimagesizefromstring($this->imagestring);
