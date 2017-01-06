@@ -198,6 +198,32 @@ class SimpleImage {
     }
 
     /**
+     * Border
+     *
+     * @param float|int     $width      Border width in pixels. Default 1
+     *
+     * @param string        $color      Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
+     *                                  Where red, green, blue - integers 0-255, alpha - integer 0-127. Default #000
+     *
+     * @return SimpleImage
+     *
+     */
+    function border($width = 1, $color = '#000') {
+        $x1 = 0;
+        $y1 = 0;
+        $x2 = $this->width - 1;
+        $y2 = $this->height - 1;
+        $color = $this->normalize_color($color);
+        $color = imagecolorallocatealpha($this->image, $color['r'], $color['g'], $color['b'], 0);
+
+        for($i = 0; $i < $width; $i++) {
+            imagerectangle($this->image, $x1++, $y1++, $x2--, $y2--, $color);
+        }
+
+        return $this;
+    }
+
+    /**
      * Brightness
      *
      * @param int           $level  Darkest = -255, lightest = 255
