@@ -57,6 +57,9 @@ try {
     // Crop
     $img->load('butterfly.jpg')->crop(160, 110, 460, 360)->save('processed/butterfly-crop.jpg');
 
+    // Border
+    $img->load('butterfly.jpg')->border(2, '#000')->save('processed/butterfly-border.jpg');
+
     // Desaturate
     $img->load('butterfly.jpg')->desaturate()->save('processed/butterfly-desaturate.jpg');
 
