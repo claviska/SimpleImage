@@ -1279,7 +1279,7 @@ class SimpleImage {
             'width' => $info[0],
             'height' => $info[1],
             'orientation' => $this->get_orientation(),
-            'exif' => function_exists('exif_read_data') && $info['mime'] === 'image/jpeg' && $this->imagestring === null ? $this->exif = @exif_read_data($this->filename) : null,
+            'exif' => $this->get_exif_data(),
             'format' => preg_replace('/^image\//', '', $info['mime']),
             'mime' => $info['mime']
         );
@@ -1291,6 +1291,34 @@ class SimpleImage {
 
         return $this;
 
+    }
+
+    /***
+     * Get the exif data from image if are defined.
+     *
+     * @return array|null
+     */
+    protected function get_exif_data() {
+        $info = Array();
+        $match_exif = Array();
+
+        $format_info = getimagesize($this->filename, $info);
+
+        $exif = null;
+
+        //Check if exif data can be retrieved (to avoid warnings from exif_read_data)
+        if(isset($info['APP1']))
+        {
+            preg_match("/^exif/i", $info['APP1'], $match_exif);
+
+            if(!empty($match_exif) && function_exists('exif_read_data') && $format_info['mime'] === 'image/jpeg' &&
+                $this->imagestring === null)
+            {
+                $exif = exif_read_data($this->filename);
+            }
+        }
+
+        return $exif;
     }
 
     /**
