@@ -1,4 +1,2 @@
 .DS_Store
-
-# Ignore processed example folder
-example/processed
+test/
