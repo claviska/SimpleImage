@@ -81,8 +81,6 @@ Thanks! 🙌
 
 Licensed under the [MIT license](http://opensource.org/licenses/MIT).
 
----
-
 ## API
 
 Order of awesomeness:
@@ -114,7 +112,7 @@ Returns a SimpleImage object.
 - `$color` (string|array) - Optional fill color for the new image (default 'transparent').
 Returns a SimpleImage object.
 
-## Savers
+### Savers
 
 `toDataUri($mimeType, $quality)` - Generates a data URI.
 - `$mimeType` (string) - The image format to output as a mime type (defaults to the original mime type).
@@ -415,8 +413,6 @@ As a best practice, always use the defined constants instead of their integers v
 - Color arguments can be a CSS color name (e.g. `LightBlue`), a hex color string (e.g. `#0099dd`), or an RGB(A) array (e.g. `['red' => 255, 'green' => 0, 'blue' => 0, 'alpha' => 1]`).
 
 - When `$thickness` > 1, GD draws lines of the desired thickness from the center origin. For example, a rectangle drawn at [10, 10, 20, 20] with a thickness of 3 will actually be draw at [9, 9, 21, 21]. This is true for all shapes and is not a bug in the SimpleImage library.
-
----
 
 ## Differences from SimpleImage 2.x
 
