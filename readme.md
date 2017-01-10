@@ -1,267 +1,453 @@
-The SimpleImage PHP class
-=========================
+# SimpleImage
 
-*By Cory LaViska for A Beautiful Site, LLC
-(http://www.abeautifulsite.net/)*
+A PHP class to that makes working with images as simple as possible.
 
-*Licensed under the MIT license: http://opensource.org/licenses/MIT*
+Developed and maintained by [Cory LaViska](https://github.com/claviska).
 
-Overview
---------
+_If this project has you loving PHP image manipulation again, please consider making [a small donation](https://paypal.me/claviska) to support its development._
 
-This class makes image manipulation in PHP as simple as possible. The
-examples are the best way to learn how to use it, but here it is in a
-nutshell:
+---
+
+## Overview
 
 ```php
 <?php
-
-include('src/abeautifulsite/SimpleImage.php');
-
 try {
-    $img = new abeautifulsite\SimpleImage('image.jpg');
-    $img->flip('x')->rotate(90)->best_fit(320, 200)->sepia()->save('example/result.gif');
-} catch(Exception $e) {
-    echo 'Error: ' . $e->getMessage();
-}
+  // Create a new SimpleImage object
+  $image = new \claviska\SimpleImage();
 
-?>
-```
+  // Magic! ✨
+  $image
+    ->fromFile('image.jpg')                     // load image.png
+    ->autoOrient()                              // adjust orientation based on exif data
+    ->resize(320, 200)                          // resize to 320x200 pixels
+    ->flip('x')                                 // flip horizontally
+    ->colorize('DarkBlue')                      // tint light blue
+    ->border('black', 10)                       // add a 10 pixel black border
+    ->overlay('watermark.png', 'bottom right')  // add a watermark image
+    ->toFile('new-image.png', 'image/png')      // convert to PNG and save a copy to new-image.png
+    ->toScreen();                               // output to the screen
 
-The two lines inside the _try_ block load **image.jpg**, flip it horizontally, rotate
-it 90 degrees clockwise, shrink it to fit within a 320x200 box, apply a sepia
-effect, convert it to a GIF, and save it to **result.gif**.
-
-With this class, you can effortlessly:
--   Resize images (free resize, resize to width, resize to height, resize to fit)
--   Crop images
--   Flip/rotate/adjust orientation
--   Adjust brightness & contrast
--   Desaturate, colorize, pixelate, blur, etc.
--   Overlay one image onto another (watermarking)
--   Add text using a font of your choice
--   Convert between GIF, JPEG, and PNG formats
--   Strip EXIF data
-
-Requirements
-------------
-
-This class requires PHP 5.3 and PHP GD library.
-
-Usage
------
-
-### Loading
-
-You can load an image when you instantiate a new SimpleImage object:
-
-```php
-$img = new abeautifulsite\SimpleImage('image.jpg');
-```
-
-Or you can create empty image 200x100 with black background:
-
-```php
-$img = new abeautifulsite\SimpleImage(null, 200, 100, '#000');
-```
-
-### Saving
-
-Images must be saved after you manipulate them. To save your changes to
-the original file, simply call:
-
-```php
-$img->save();
-```
-
-Alternatively, you can specify a new filename:
-
-```php
-$img->save('new-image.jpg');
-```
-
-You can specify quality as a second parameter in percents within range 0-100
-
-```php
-$img->save('new-image.jpg', 90);
-```
-
-### Converting Between Formats
-
-When saving, the resulting image format is determined by the file
-extension. For example, you can convert a JPEG to a GIF by doing this:
-
-```php
-$img = new abeautifulsite\SimpleImage('image.jpg');
-$img->save('image.gif');
-```
-
-### Stripping EXIF data
-
-There is no built-in method for stripping EXIF data, partly because
-there is currently no way to *prevent* EXIF data from being stripped
-using the GD library. However, you can easily strip EXIF data simply by
-loading and saving:
-
-```php
-$img = new abeautifulsite\SimpleImage('image.jpg');
-$img->save();
-```
-
-### Method Chaining
-
-SimpleImage supports method chaining, so you can make multiple changes
-and save the resulting image with just one line of code:
-
-```php
-$img = new abeautifulsite\SimpleImage('image.jpg');
-$img->flip('x')->rotate(90)->best_fit(320, 200)->desaturate()->invert()->save('result.jpg')
-```
-
-You can chain all of the methods below as well methods above.
-
-### Error Handling
-
-SimpleImage throws exceptions when things don't work right. You should
-always load/manipulate/save images inside of a *try/catch* block to
-handle them properly:
-
-```php
-try {
-    $img = new abeautifulsite\SimpleImage('image.jpg');
-    $img->flip('x')->save('flipped.jpg');
-} catch(Exception $e) {
-    echo 'Error: ' . $e->getMessage();
+  // And much more! 💪
+} catch(Exception $err) {
+  // Handle errors
+  echo $err->getMessage();
 }
 ```
 
-### Method Examples
+## Requirements
 
-Most methods have intelligent defaults so you don't need to pass in
-every argument.  Check out **SimpleImage.class.php** for
-required/optional parameters and valid ranges for certain arguments.
+- PHP 5.6+
+- [GD extension](http://php.net/manual/en/book.image.php)
 
-```php
-// Flip the image horizontally (use 'y' to flip vertically)
-$img->flip('x');
+## Features
 
-// Rotate the image 90 degrees clockwise
-$img->rotate(90);
+- Supports reading, writing, and converting GIF, JPEG, PNG, WEBP formats.
+- Reads and writes files and data URIs.
+- Manipulation: crop, resize, overlay/watermark, adding TTF text
+- Drawing: arc, border, dot, ellipse, line, polygon, rectangle, rounded rectangle
+- Filters: blur, brighten, colorize, contrast, darken, desaturate, edge detect, emboss, invert, pixelate, sepia, sketch
+- Utility methods: color adjustment, darken/lighten color, exif data, height/width, mime type, orientation
+- Color arguments can be passed in as any CSS color (e.g. `LightBlue`), a hex color, or an RGB(A) array.
+- Support for alpha-transparency (GIF, PNG, WEBP)
+- Chainable methods
+- Uses exceptions
+- Load with Composer or manually (just one file)
 
-// Adjust the orientation if needed (physically rotates/flips the image based on its EXIF 'Orientation' property)
-$img->auto_orient();
+## Installation
 
-// Resize the image to 320x200
-$img->resize(320, 200);
+Install with Composer:
 
-// Trim the image and resize to exactly 100x75
-$img->thumbnail(100, 75);
-
-// Trim the image and resize to exactly 100x75, keeping the top* of the image
-$img->thumbnail(100, 75, 'top');
-
-// Shrink the image to the specified width while maintaining proportion (width)
-$img->fit_to_width(320);
-
-// Shrink the image to the specified height while maintaining proportion (height)
-$img->fit_to_height(200);
-
-// Shrink the image proportionally to fit inside a 500x500 box
-$img->best_fit(500, 500);
-
-// Crop a portion of the image from x1, y1 to x2, y2
-$img->crop(100, 100, 400, 400);
-
-// Fill image with white color
-$img->fill('#fff');
-
-// Desaturate (grayscale)
-$img->desaturate();
-
-// Invert
-$img->invert();
-
-// Adjust Brightness (-255 to 255)
-$img->brightness(100);
-
-// Adjust Contrast (-100 to 100)
-$img->contrast(50);
-
-// Colorize red at 50% opacity
-$img->colorize('#FF0000', .5);
-
-// Edges filter
-$img->edges();
-
-// Emboss filter
-$img->emboss();
-
-// Mean removal filter
-$img->mean_remove();
-
-// Selective blur (one pass)
-$img->blur();
-
-// Gaussian blur (two passes)
-$img->blur('gaussian', 2);
-
-// Sketch filter
-$img->sketch();
-
-// Smooth filter (-10 to 10)
-$img->smooth(5);
-
-// Pixelate using 8px blocks
-$img->pixelate(8);
-
-// Sepia effect (simulated)
-$img->sepia();
-
-// Change opacity
-$img->opacity(.5);
-
-// Overlay watermark.png at 50% opacity at the bottom-right of the image with a 10 pixel horizontal and vertical margin
-$img->overlay('watermark.png', 'bottom right', .5, -10, -10);
-
-// Add 32-point white text top-centered (plus 20px) on the image*
-$img->text('Your Text', 'font.ttf', 32, '#FFFFFF', 'top', 0, 20);
-
-// Add multiple colored text
-$img->text('Your Text', 'font.ttf', 32, ['#FFFFFF' '#000000'], 'top', 0, 20);
+```
+composer require claviska/simpleimage
 ```
 
-* Valid positions are *center, top, right, bottom, left, top left, top
-right, bottom left, bottom right*
-
-### Utility Methods
-
-The following methods are not chainable, because they return information about
-the image you're working with or output the image directly to the browser:
+Or include the library manually:
 
 ```php
-// Get info about the original image (before any changes were made)
-//
-// Returns:
-//
-//  array(
-//      width => 320,
-//      height => 200,
-//      orientation => ['portrait', 'landscape', 'square'],
-//      exif => array(...),
-//      mime => ['image/jpeg', 'image/gif', 'image/png'],
-//      format => ['jpeg', 'gif', 'png']
-//  )
-$info = $img->get_original_info();
-
-// Get the current width
-$width = $img->get_width();
-
-// Get the current height
-$height = $img->get_height();
-
-// Get the current orientation (returns 'portrait', 'landscape', or 'square')
-$orientation = $img->get_orientation();
-
-// Flip the image and output it directly to the browser (i.e. without saving to file)
-$img->flip('x')->output();
+<?php
+require 'claviska/SimpleImage.php';
 ```
+
+## About
+
+SimpleImage is developed and maintained by [Cory LaViska](https://github.com/claviska). Copyright A Beautiful Site, LLC.
+
+Contributions are appreciated! If you enjoy using SimpleImage, especially in commercial applications, please consider [making a contribution](https://paypal.me/claviska) to support its development.
+
+Thanks! 🙌
+
+## License
+
+Licensed under the [MIT license](http://opensource.org/licenses/MIT).
+
+---
+
+## API
+
+Order of awesomeness:
+
+1. Load an image
+2. Manipulate the image
+3. Save/output the image
+
+API tips:
+
+- An asterisk denotes a required argument.
+- Methods that return a SimpleImage object are chainable.
+- You can pass a file or data URI to the constructor to avoid calling `fromFile` or `fromDataUri`.
+
+### Loaders
+
+`fromDataUri($uri)` - Loads an image from a data URI.
+- `$uri`* (string) - A data URI.
+Returns a SimpleImage object.
+
+
+`fromFile($file)` - Loads an image from a file.
+- `$file`* (string) - The image file to load.
+Returns a SimpleImage object.
+
+`fromNew($width, $height, $color)` - Creates a new image.
+- `$width`* (int) - The width of the image.
+- `$height`* (int) - The height of the image.
+- `$color` (string|array) - Optional fill color for the new image (default 'transparent').
+Returns a SimpleImage object.
+
+## Savers
+
+`toDataUri($mimeType, $quality)` - Generates a data URI.
+- `$mimeType` (string) - The image format to output as a mime type (defaults to the original mime type).
+- `$quality` (int) - Image quality as a percentage (default 100).
+Returns a string containing a data URI.
+
+`toFile($file, $mimeType, $quality)` - Writes the image to a file.
+- `$mimeType` (string) - The image format to output as a mime type (defaults to the original mime type).
+- `$quality` (int) - Image quality as a percentage (default 100).
+Returns a SimpleImage instance.
+
+`toScreen($mimeType, $quality)` - Outputs the image to the screen.
+- `$mimeType` (string) - The image format to output as a mime type (defaults to the original mime type).
+- `$quality` (int) - Image quality as a percentage (default 100).
+Returns a SimpleImage instance.
+
+### Utilities
+
+`getExif()` - Gets the image's exif data.
+Returns an array of exif data or null if no data is available.
+
+`getHeight()` - Gets the image's current height.
+Returns the height as an integer.
+
+`getMimeType()` - Gets the mime type of the loaded image.
+Returns a mime type string.
+
+`getOrientation()` - Gets the image's current orientation.
+Returns a string: 'landscape', 'portrait', or 'square'
+
+`getWidth()` - Gets the image's current width.
+Returns the width as an integer.
+
+### Manipulation
+
+`autoOrient()` - Rotates an image so the orientation will be correct based on its exif data. It is safe to call this method on images that don't have exif data (no changes will be made).
+Returns a SimpleImage object.
+
+`bestFit($maxWidth, $maxHeight)` - Proportionally resize the image to fit a specified width and height.
+- `$maxWidth`* (int) - The maximum width the image can be.
+- `$maxHeight`* (int) - The maximum height the image can be.
+Returns a SimpleImage object.
+
+`crop($x1, $y1, $x2, $y2)` - Crop the image.
+- $x1 - Top left x coordinate.
+- $y1 - Top left y coordinate.
+- $x2 - Bottom right x coordinate.
+- $y2 - Bottom right x coordinate.
+Returns a SimpleImage object.
+
+`fitToHeight($height)` - Proportionally resize the image to a specific height.
+- `$height`* (int) - The height to resize the image to.
+Returns a SimpleImage object.
+
+`fitToWidth($width)` - Proportionally resize the image to a specific width.
+- `$width`* (int) - The width to resize the image to.
+Returns a SimpleImage object.
+
+`flip($direction)` - Flip the image horizontally or vertically.
+- `$direction`* (string) - The direction to flip: x|y|both
+Returns a SimpleImage object.
+
+`maxColors($max, $dither)` - Reduces the image to a maximum number of colors.
+- `$max`* (int) - The maximum number of colors to use.
+- `$dither` (bool) - Whether or not to use a dithering effect (default true).
+Returns a SimpleImage object.
+
+`overlay($overlay, $anchor, $opacity, $xOffset, $yOffset)` - Place an image on top of the current image.
+- `$overlay`* (string|SimpleImage) - The image to overlay. This can be a filename, a data URI, or a SimpleImage object.
+- `$anchor` (string) - The anchor point: 'center', 'top', 'bottom', 'left', 'right', 'top left', 'top right', 'bottom left', 'bottom right' (default 'center')
+- `$opacity` (float) - The opacity level of the overlay 0-1 (default 1).
+- `$xOffset` (int) - Horizontal offset in pixels (default 0).
+- `$yOffset` (int) - Vertical offset in pixels (default 0).
+Returns a SimpleImage object.
+
+`resize($width, $height)` - Resize an image to the specified dimensions. This method WILL NOT maintain proportions. To resize an image without stretching it, use fitToWidth, fitToHeight, or bestFit.
+- `$width`* (int) - The new image width.
+- `$height`* (int) - The new image height.
+Returns a SimpleImage object.
+
+`rotate($angle, $backgroundColor)` - Rotates the image.
+- `$angle`* (int) - The angle of rotation (-360 - 360).
+- `$backgroundColor` (string|array) - The background color to use for the uncovered zone area after rotation (default 'transparent').
+Returns a SimpleImage object.
+
+`text($text, $options)` - Adds text to the image.
+- `$text`* (string) - The desired text.
+- `$options` (array) - An array of options.
+    - `fontFile`* (string) - The TrueType (or compatible) font file to use.
+    - `size` (int) - The size of the font in pixels (default 12).
+    - `color` (string|array) - The text color (default black).
+    - `anchor` (string) - The anchor point: 'center', 'top', 'bottom', 'left', 'right',
+      'top left', 'top right', 'bottom left', 'bottom right' (default 'center').
+    - `xOffset` (int) - The horizontal offset in pixels (default 0).
+    - `yOffset` (int) - The vertical offset in pixels (default 0).
+    - `shadow` (array) - Text shadow params.
+      - `x`* (int) - Horizontal offset in pixels.
+      - `y`* (int) - Vertical offset in pixels.
+      - `color`* (string|array) - The text shadow color.
+Returns a SimpleImage object.
+
+`thumbnail($width, $height, $anchor)` - Creates a thumbnail image. This function attempts to get the image as close to the provided dimensions as possible, then crops the remaining overflow to force the desired size. Useful for generating thumbnail images.
+- `$width`* (int) - The thumbnail width.
+- `$height`* (int) - The thumbnail height.
+- `$anchor` (string) - The anchor point: 'center', 'top', 'bottom', 'left', 'right', 'top left', 'top right', 'bottom left', 'bottom right' (default 'center').
+Returns a SimpleImage object.
+
+###  Drawing
+
+`arc($x, $y, $width, $height, $start, $end, $color, $thickness)` - Draws an arc.
+- `$x`* (int) - The x coordinate of the arc's center.
+- `$y`* (int) - The y coordinate of the arc's center.
+- `$width`* (int) - The width of the arc.
+- `$height`* (int) - The height of the arc.
+- `$start`* (int) - The start of the arc in degrees.
+- `$end`* (int) - The end of the arc in degrees.
+- `$color`* (string|array) - The arc color.
+- `$thickness` (int|string) - Line thickness in pixels or 'filled' (default 1).
+Returns a SimpleImage object.
+
+`border($color, $thickness)`-  Draws a border around the image.
+- `$color`* (string|array) - The border color.
+- `$thickness` (int) - The thickness of the border (default 1).
+- Returns a SimpleImage object.
+
+`dot($x, $y, $color)` - Draws a single pixel dot.
+- `$x`* (int) - The x coordinate of the dot.
+- `$y`* (int) - The y coordinate of the dot.
+- `$color`* (string|array) - The dot color.
+Returns a SimpleImage object.
+
+`ellipse($x, $y, $width, $height, $color, $thickness)` - Draws an ellipse.
+- `$x`* (int) - The x coordinate of the center.
+- `$y`* (int) - The y coordinate of the center.
+- `$width`* (int) - The ellipse width.
+- `$height`* (int) - The ellipse height.
+- `$color`* (string|array) - The ellipse color.
+- `$thickness` (int|string) - Line thickness in pixels or 'filled' (default 1).
+Returns a SimpleImage object.
+
+`fill($color)` - Fills the image with a solid color.
+- `$color` (string|array) - The fill color.
+Returns a SimpleImage object.
+
+`line($x1, $y1, $x2, $y2, $color, $thickness)` - Draws a line.
+- `$x1`* (int) - The x coordinate for the first point.
+- `$y1`* (int) - The y coordinate for the first point.
+- `$x2`* (int) - The x coordinate for the second point.
+- `$y2`* (int) - The y coordinate for the second point.
+- `$color` (string|array) - The line color.
+- `$thickness` (int) - The line thickness (default 1).
+Returns a SimpleImage object.
+
+`polygon($vertices, $color, $thickness)` - Draws a polygon.
+- `$vertices`* (array) - The polygon's vertices in an array of x/y arrays. Example:
+  ```
+  [
+    ['x' => x1, 'y' => y1],
+    ['x' => x2, 'y' => y2],
+    ['x' => xN, 'y' => yN]
+  ]
+  ```
+- `$color`* (string|array) - The polygon color.
+- `$thickness` (int|string) - Line thickness in pixels or 'filled' (default 1).
+Returns a SimpleImage object.
+
+`rectangle($x1, $y1, $x2, $y2, $color, $thickness)` - Draws a rectangle.
+- `$x1`* (int) - The upper left x coordinate.
+- `$y1`* (int) - The upper left y coordinate.
+- `$x2`* (int) - The bottom right x coordinate.
+- `$y2`* (int) - The bottom right y coordinate.
+- `$color`* (string|array) - The rectangle color.
+- `$thickness` (int|string) - Line thickness in pixels or 'filled' (default 1).
+Returns a SimpleImage object.
+
+`roundedRectangle($x1, $y1, $x2, $y2, $radius, $color, $thickness)` - Draws a rounded rectangle.
+- `$x1`* (int) - The upper left x coordinate.
+- `$y1`* (int) - The upper left y coordinate.
+- `$x2`* (int) - The bottom right x coordinate.
+- `$y2`* (int) - The bottom right y coordinate.
+- `$radius`* (int) - The border radius in pixels.
+- `$color`* (string|array) - The rectangle color.
+- `$thickness` (int|string) - Line thickness in pixels or 'filled' (default 1).
+Returns a SimpleImage object.
+
+### Filters
+
+`blur($type, $passes)` - Applies the blur filter.
+- `$type` (string) - The blur algorithm to use: 'selective', 'gaussian' (default 'gaussian').
+- `$passes` (int) - The number of time to apply the filter, enhancing the effect (default 1).
+Returns a SimpleImage object.
+
+`brighten($percentage)` - Applies the brightness filter to brighten the image.
+- `$percentage`* (int) - Percentage to brighten the image (0 - 100).
+Returns a SimpleImage object.
+
+`colorize($color)` - Applies the colorize filter.
+- `$color`* (string|array) - The filter color.
+Returns a SimpleImage object.
+
+`contrast($percentage)` -  Applies the contrast filter.
+- `$percentage`* (int) - Percentage to adjust (-100 - 100).
+Returns a SimpleImage object.
+
+`darken($percentage)` -  Applies the brightness filter to darken the image.
+- `$percentage`* (int) - Percentage to darken the image (0 - 100).
+Returns a SimpleImage object.
+
+`desaturate()` - Applies the desaturate (grayscale) filter.
+Returns a SimpleImage object.
+
+`edgeDetect()` - Applies the edge detect filter.
+Returns a SimpleImage object.
+
+`emboss()` - Applies the emboss filter.
+Returns a SimpleImage object.
+
+`invert()` - Inverts the image's colors.
+Returns a SimpleImage object.
+
+`pixelate($size)` -  Applies the pixelate filter.
+- `$size` (int) - The size of the blocks in pixels (default 10).
+Returns a SimpleImage object.
+
+`sepia()` - Simulates a sepia effect by desaturating the image and applying a sepia tone.
+Returns a SimpleImage object.
+
+`sketch()` - Applies the mean remove filter to produce a sketch effect.
+Returns a SimpleImage object.
+
+### Color utilities
+
+`adjustColor($color, $red, $green, $blue, $alpha)` - Adjusts a color by increasing/decreasing red/green/blue/alpha values independently.
+- `$color`* (string|array) - The color to adjust.
+- `$red`* (int) - Red adjustment (-255 - 255).
+- `$green`* (int) - Green adjustment (-255 - 255).
+- `$blue`* (int) - Blue adjustment (-255 - 255).
+- `$alpha`* (float) - Alpha adjustment (-1 - 1).
+Returns an RGBA color array.
+
+`darkenColor($color, $amount)` - Darkens a color.
+- `$color`* (string|array) - The color to darken.
+- `$amount`* (int) - Amount to darken (0 - 255).
+Returns an RGBA color array.
+
+`lightenColor($color, $amount)` - Lightens a color.
+- `$color`* (string|array) - The color to lighten.
+- `$amount`* (int) - Amount to darken (0 - 255).
+Returns an RGBA color array.
+
+`normalizeColor($color)` - Normalizes a hex or array color value to a well-formatted RGBA array.
+- `$color`* (string|array) - A CSS color name, hex string, or an array [red, green, blue, alpha].
+Returns an array [red, green, blue, alpha]
+
+### Exceptions
+
+SimpleImage throws standard exceptions when things go wrong. You should always use a try/catch block around your code to properly handle them.
+
+```php
+try {
+  $image = new \claviska\SimpleImage('image.jpeg')
+  // ...
+} catch(Exception $err) {
+  echo $err->getMessage();
+}
+```
+
+To check for specific errors, compare `$err->getCode()` to the defined error constants.
+
+```php
+try {
+  $image = new \claviska\SimpleImage('image.jpeg')
+  // ...
+} catch(Exception $err) {
+  if($err->getCode() === $image::ERR_FILE_NOT_FOUND) {
+    echo 'File not found!';
+  } else {
+    echo $err->getMessage();
+  }
+}
+```
+
+As a best practice, always use the defined constants instead of their integers values. The values will likely change in future versions, and WILL NOT be considered a breaking change.
+
+- `ERR_FILE_NOT_FOUND` - The specified file could not be found or loaded for some reason.
+- `ERR_FONT_FILE` - The specified font file could not be loaded.
+- `ERR_FREETYPE_NOT_ENABLED` - Freetype support is not enabled in your version of PHP.
+- `ERR_GD_NOT_ENABLED` - The GD extension is not enabled in your version of PHP.
+- `ERR_INVALID_COLOR` - An invalid color value was passed as an argument.
+- `ERR_INVALID_DATA_URI` - The specified data URI is not valid.
+- `ERR_INVALID_IMAGE` - The specified image is not valid.
+- `ERR_UNSUPPORTED_FORMAT` - The image format specified is not valid.
+- `ERR_WEBP_NOT_ENABLED` - WEBP support is not enabled in your version of PHP.
+- `ERR_WRITE` - Unable to write to the file system.
+
+### Useful Things To Know
+
+- Color arguments can be a CSS color name (e.g. `LightBlue`), a hex color string (e.g. `#0099dd`), or an RGB(A) array (e.g. `['red' => 255, 'green' => 0, 'blue' => 0, 'alpha' => 1]`).
+
+- When `$thickness` > 1, GD draws lines of the desired thickness from the center origin. For example, a rectangle drawn at [10, 10, 20, 20] with a thickness of 3 will actually be draw at [9, 9, 21, 21]. This is true for all shapes and is not a bug in the SimpleImage library.
+
+---
+
+## Differences from SimpleImage 2.x
+
+- Normalized color arguments (colors can be a CSS color name, hex color, or RGB(A) array).
+- Normalized alpha (opacity) arguments: 0 (transparent) - 1 (opaque)
+- Added text shadow to `text` method.
+- Added `arc` method for drawing arcs.
+- Added `border` method for drawing borders.
+- Added `dot` method for drawing individual pixels.
+- Added `ellipse` method for drawing ellipses and circles.
+- Added `line` method for drawing lines.
+- Added `polygon` method for drawing polygons.
+- Added `rectangle` method for drawing rectangles.
+- Added `roundedRectangle` method for drawing rounded rectangles.
+- Added `adjustColor` method for modifying RGBA color channels to create relative color variations.
+- Added `darkenColor` method to darken a color.
+- Added `lightenColor` method to lighten a color.
+- Changed namespace from `abeautifulsite` to `claviska`.
+- Changed `create` method to `fromNew`.
+- Changed `load` method to `fromFile`.
+- Changed `load_base64` method to `fromDataUri`.
+- Changed `output` method to `toScreen`.x
+- Changed `output_base64` method to `toDataUri`.
+- Changed `save` method to `toFile`.
+- Changed `text` method to accept an array of options instead of tons of arguments.
+- Removed text stroke from `text` method because it produced dirty results and didn't support transparency.
+- Removed `smooth` method because its arguments in the PHP manual aren't documented well.
+- Removed deprecated method `adaptive_resize` (use `thumbnail` instead).
+- Removed `get_meta_data` (use `getExif`, `getHeight`, `getMime`, `getOrientation`, and `getWidth` instead).
+- Added [.editorconfig](http://editorconfig.org/) file. Please make sure your editor supports these settings before submitting contributions.
+- Switched from four spaces to two for indentations (sorry PHP-FIG!).
+- Switched from underscore_methods to camelCaseMethods.
+- Organized methods into groups based on function
+- Removed PHPDoc comments. At this time, I don't wish to incorporate them into the library.
