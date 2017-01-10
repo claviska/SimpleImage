@@ -66,7 +66,7 @@ Or include the library manually:
 
 ```php
 <?php
-require 'claviska/SimpleImage.php';
+require 'src/claviska/SimpleImage.php';
 ```
 
 ## About
