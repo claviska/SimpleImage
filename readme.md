@@ -1,6 +1,6 @@
 # SimpleImage
 
-A PHP class to that makes working with images as simple as possible.
+A PHP class that makes working with images as simple as possible.
 
 Developed and maintained by [Cory LaViska](https://github.com/claviska).
 
@@ -97,108 +97,188 @@ API tips:
 
 ### Loaders
 
-`fromDataUri($uri)` - Loads an image from a data URI.
+#### `fromDataUri($uri)`
+
+Loads an image from a data URI.
+
 - `$uri`* (string) - A data URI.
+
 Returns a SimpleImage object.
 
 
-`fromFile($file)` - Loads an image from a file.
+#### `fromFile($file)`
+
+Loads an image from a file.
+
 - `$file`* (string) - The image file to load.
+
 Returns a SimpleImage object.
 
-`fromNew($width, $height, $color)` - Creates a new image.
+#### `fromNew($width, $height, $color)`
+
+Creates a new image.
+
 - `$width`* (int) - The width of the image.
 - `$height`* (int) - The height of the image.
 - `$color` (string|array) - Optional fill color for the new image (default 'transparent').
+
 Returns a SimpleImage object.
 
 ### Savers
 
-`toDataUri($mimeType, $quality)` - Generates a data URI.
+#### `toDataUri($mimeType, $quality)`
+
+Generates a data URI.
+
 - `$mimeType` (string) - The image format to output as a mime type (defaults to the original mime type).
 - `$quality` (int) - Image quality as a percentage (default 100).
+
 Returns a string containing a data URI.
 
-`toFile($file, $mimeType, $quality)` - Writes the image to a file.
+#### `toFile($file, $mimeType, $quality)`
+
+Writes the image to a file.
+
 - `$mimeType` (string) - The image format to output as a mime type (defaults to the original mime type).
 - `$quality` (int) - Image quality as a percentage (default 100).
+
 Returns a SimpleImage instance.
 
-`toScreen($mimeType, $quality)` - Outputs the image to the screen.
+#### `toScreen($mimeType, $quality)`
+
+Outputs the image to the screen.
+
 - `$mimeType` (string) - The image format to output as a mime type (defaults to the original mime type).
 - `$quality` (int) - Image quality as a percentage (default 100).
+
 Returns a SimpleImage instance.
 
 ### Utilities
 
-`getExif()` - Gets the image's exif data.
+#### `getExif()`
+
+Gets the image's exif data.
+
 Returns an array of exif data or null if no data is available.
 
-`getHeight()` - Gets the image's current height.
+#### `getHeight()`
+
+Gets the image's current height.
+
 Returns the height as an integer.
 
-`getMimeType()` - Gets the mime type of the loaded image.
+#### `getMimeType()`
+
+Gets the mime type of the loaded image.
+
 Returns a mime type string.
 
-`getOrientation()` - Gets the image's current orientation.
+#### `getOrientation()`
+
+Gets the image's current orientation.
+
 Returns a string: 'landscape', 'portrait', or 'square'
 
-`getWidth()` - Gets the image's current width.
+#### `getWidth()`
+
+Gets the image's current width.
+
 Returns the width as an integer.
 
 ### Manipulation
 
-`autoOrient()` - Rotates an image so the orientation will be correct based on its exif data. It is safe to call this method on images that don't have exif data (no changes will be made).
+#### `autoOrient()`
+
+Rotates an image so the orientation will be correct based on its exif data. It is safe to call this method on images that don't have exif data (no changes will be made).
 Returns a SimpleImage object.
 
-`bestFit($maxWidth, $maxHeight)` - Proportionally resize the image to fit a specified width and height.
+#### `bestFit($maxWidth, $maxHeight)`
+
+Proportionally resize the image to fit a specified width and height.
+
 - `$maxWidth`* (int) - The maximum width the image can be.
 - `$maxHeight`* (int) - The maximum height the image can be.
+
 Returns a SimpleImage object.
 
-`crop($x1, $y1, $x2, $y2)` - Crop the image.
+#### `crop($x1, $y1, $x2, $y2)`
+
+Crop the image.
+
 - $x1 - Top left x coordinate.
 - $y1 - Top left y coordinate.
 - $x2 - Bottom right x coordinate.
 - $y2 - Bottom right x coordinate.
+
 Returns a SimpleImage object.
 
-`fitToHeight($height)` - Proportionally resize the image to a specific height.
+#### `fitToHeight($height)`
+
+Proportionally resize the image to a specific height.
+
 - `$height`* (int) - The height to resize the image to.
+
 Returns a SimpleImage object.
 
-`fitToWidth($width)` - Proportionally resize the image to a specific width.
+#### `fitToWidth($width)`
+
+Proportionally resize the image to a specific width.
+
 - `$width`* (int) - The width to resize the image to.
+
 Returns a SimpleImage object.
 
-`flip($direction)` - Flip the image horizontally or vertically.
+#### `flip($direction)`
+
+Flip the image horizontally or vertically.
+
 - `$direction`* (string) - The direction to flip: x|y|both
+
 Returns a SimpleImage object.
 
-`maxColors($max, $dither)` - Reduces the image to a maximum number of colors.
+#### `maxColors($max, $dither)`
+
+Reduces the image to a maximum number of colors.
+
 - `$max`* (int) - The maximum number of colors to use.
 - `$dither` (bool) - Whether or not to use a dithering effect (default true).
+
 Returns a SimpleImage object.
 
-`overlay($overlay, $anchor, $opacity, $xOffset, $yOffset)` - Place an image on top of the current image.
+#### `overlay($overlay, $anchor, $opacity, $xOffset, $yOffset)`
+
+Place an image on top of the current image.
+
 - `$overlay`* (string|SimpleImage) - The image to overlay. This can be a filename, a data URI, or a SimpleImage object.
 - `$anchor` (string) - The anchor point: 'center', 'top', 'bottom', 'left', 'right', 'top left', 'top right', 'bottom left', 'bottom right' (default 'center')
 - `$opacity` (float) - The opacity level of the overlay 0-1 (default 1).
 - `$xOffset` (int) - Horizontal offset in pixels (default 0).
 - `$yOffset` (int) - Vertical offset in pixels (default 0).
+
 Returns a SimpleImage object.
 
-`resize($width, $height)` - Resize an image to the specified dimensions. This method WILL NOT maintain proportions. To resize an image without stretching it, use fitToWidth, fitToHeight, or bestFit.
+#### `resize($width, $height)`
+
+Resize an image to the specified dimensions. This method WILL NOT maintain proportions. To resize an image without stretching it, use fitToWidth, fitToHeight, or bestFit.
+
 - `$width`* (int) - The new image width.
 - `$height`* (int) - The new image height.
+
 Returns a SimpleImage object.
 
-`rotate($angle, $backgroundColor)` - Rotates the image.
+#### `rotate($angle, $backgroundColor)`
+
+Rotates the image.
+
 - `$angle`* (int) - The angle of rotation (-360 - 360).
 - `$backgroundColor` (string|array) - The background color to use for the uncovered zone area after rotation (default 'transparent').
+
 Returns a SimpleImage object.
 
-`text($text, $options)` - Adds text to the image.
+#### `text($text, $options)`
+
+Adds text to the image.
+
 - `$text`* (string) - The desired text.
 - `$options` (array) - An array of options.
     - `fontFile`* (string) - The TrueType (or compatible) font file to use.
@@ -214,15 +294,22 @@ Returns a SimpleImage object.
       - `color`* (string|array) - The text shadow color.
 Returns a SimpleImage object.
 
-`thumbnail($width, $height, $anchor)` - Creates a thumbnail image. This function attempts to get the image as close to the provided dimensions as possible, then crops the remaining overflow to force the desired size. Useful for generating thumbnail images.
+#### `thumbnail($width, $height, $anchor)`
+
+Creates a thumbnail image. This function attempts to get the image as close to the provided dimensions as possible, then crops the remaining overflow to force the desired size. Useful for generating thumbnail images.
+
 - `$width`* (int) - The thumbnail width.
 - `$height`* (int) - The thumbnail height.
 - `$anchor` (string) - The anchor point: 'center', 'top', 'bottom', 'left', 'right', 'top left', 'top right', 'bottom left', 'bottom right' (default 'center').
+
 Returns a SimpleImage object.
 
 ###  Drawing
 
-`arc($x, $y, $width, $height, $start, $end, $color, $thickness)` - Draws an arc.
+#### `arc($x, $y, $width, $height, $start, $end, $color, $thickness)`
+
+Draws an arc.
+
 - `$x`* (int) - The x coordinate of the arc's center.
 - `$y`* (int) - The y coordinate of the arc's center.
 - `$width`* (int) - The width of the arc.
@@ -231,42 +318,66 @@ Returns a SimpleImage object.
 - `$end`* (int) - The end of the arc in degrees.
 - `$color`* (string|array) - The arc color.
 - `$thickness` (int|string) - Line thickness in pixels or 'filled' (default 1).
+
 Returns a SimpleImage object.
 
-`border($color, $thickness)`-  Draws a border around the image.
+#### `border($color, $thickness)`
+
+Draws a border around the image.
+
 - `$color`* (string|array) - The border color.
 - `$thickness` (int) - The thickness of the border (default 1).
-- Returns a SimpleImage object.
 
-`dot($x, $y, $color)` - Draws a single pixel dot.
+Returns a SimpleImage object.
+
+#### `dot($x, $y, $color)`
+
+Draws a single pixel dot.
+
 - `$x`* (int) - The x coordinate of the dot.
 - `$y`* (int) - The y coordinate of the dot.
 - `$color`* (string|array) - The dot color.
+
 Returns a SimpleImage object.
 
-`ellipse($x, $y, $width, $height, $color, $thickness)` - Draws an ellipse.
+#### `ellipse($x, $y, $width, $height, $color, $thickness)`
+
+Draws an ellipse.
+
 - `$x`* (int) - The x coordinate of the center.
 - `$y`* (int) - The y coordinate of the center.
 - `$width`* (int) - The ellipse width.
 - `$height`* (int) - The ellipse height.
 - `$color`* (string|array) - The ellipse color.
 - `$thickness` (int|string) - Line thickness in pixels or 'filled' (default 1).
+
 Returns a SimpleImage object.
 
-`fill($color)` - Fills the image with a solid color.
+#### `fill($color)`
+
+Fills the image with a solid color.
+
 - `$color` (string|array) - The fill color.
+
 Returns a SimpleImage object.
 
-`line($x1, $y1, $x2, $y2, $color, $thickness)` - Draws a line.
+#### `line($x1, $y1, $x2, $y2, $color, $thickness)`
+
+Draws a line.
+
 - `$x1`* (int) - The x coordinate for the first point.
 - `$y1`* (int) - The y coordinate for the first point.
 - `$x2`* (int) - The x coordinate for the second point.
 - `$y2`* (int) - The y coordinate for the second point.
 - `$color` (string|array) - The line color.
 - `$thickness` (int) - The line thickness (default 1).
+
 Returns a SimpleImage object.
 
-`polygon($vertices, $color, $thickness)` - Draws a polygon.
+#### `polygon($vertices, $color, $thickness)`
+
+Draws a polygon.
+
 - `$vertices`* (array) - The polygon's vertices in an array of x/y arrays. Example:
   ```
   [
@@ -277,18 +388,26 @@ Returns a SimpleImage object.
   ```
 - `$color`* (string|array) - The polygon color.
 - `$thickness` (int|string) - Line thickness in pixels or 'filled' (default 1).
+
 Returns a SimpleImage object.
 
-`rectangle($x1, $y1, $x2, $y2, $color, $thickness)` - Draws a rectangle.
+#### `rectangle($x1, $y1, $x2, $y2, $color, $thickness)`
+
+Draws a rectangle.
+
 - `$x1`* (int) - The upper left x coordinate.
 - `$y1`* (int) - The upper left y coordinate.
 - `$x2`* (int) - The bottom right x coordinate.
 - `$y2`* (int) - The bottom right y coordinate.
 - `$color`* (string|array) - The rectangle color.
 - `$thickness` (int|string) - Line thickness in pixels or 'filled' (default 1).
+
 Returns a SimpleImage object.
 
-`roundedRectangle($x1, $y1, $x2, $y2, $radius, $color, $thickness)` - Draws a rounded rectangle.
+#### `roundedRectangle($x1, $y1, $x2, $y2, $radius, $color, $thickness)`
+
+Draws a rounded rectangle.
+
 - `$x1`* (int) - The upper left x coordinate.
 - `$y1`* (int) - The upper left y coordinate.
 - `$x2`* (int) - The bottom right x coordinate.
@@ -296,75 +415,134 @@ Returns a SimpleImage object.
 - `$radius`* (int) - The border radius in pixels.
 - `$color`* (string|array) - The rectangle color.
 - `$thickness` (int|string) - Line thickness in pixels or 'filled' (default 1).
+
 Returns a SimpleImage object.
 
 ### Filters
 
-`blur($type, $passes)` - Applies the blur filter.
+#### `blur($type, $passes)`
+
+Applies the blur filter.
+
 - `$type` (string) - The blur algorithm to use: 'selective', 'gaussian' (default 'gaussian').
 - `$passes` (int) - The number of time to apply the filter, enhancing the effect (default 1).
+
 Returns a SimpleImage object.
 
-`brighten($percentage)` - Applies the brightness filter to brighten the image.
+#### `brighten($percentage)`
+
+Applies the brightness filter to brighten the image.
+
 - `$percentage`* (int) - Percentage to brighten the image (0 - 100).
+
 Returns a SimpleImage object.
 
-`colorize($color)` - Applies the colorize filter.
+#### `colorize($color)`
+
+Applies the colorize filter.
+
 - `$color`* (string|array) - The filter color.
+
 Returns a SimpleImage object.
 
-`contrast($percentage)` -  Applies the contrast filter.
+#### `contrast($percentage)`
+
+Applies the contrast filter.
+
 - `$percentage`* (int) - Percentage to adjust (-100 - 100).
+
 Returns a SimpleImage object.
 
-`darken($percentage)` -  Applies the brightness filter to darken the image.
+#### `darken($percentage)`
+
+Applies the brightness filter to darken the image.
+
 - `$percentage`* (int) - Percentage to darken the image (0 - 100).
+
 Returns a SimpleImage object.
 
-`desaturate()` - Applies the desaturate (grayscale) filter.
+#### `desaturate()`
+
+Applies the desaturate (grayscale) filter.
+
 Returns a SimpleImage object.
 
-`edgeDetect()` - Applies the edge detect filter.
+#### `edgeDetect()`
+
+Applies the edge detect filter.
+
 Returns a SimpleImage object.
 
-`emboss()` - Applies the emboss filter.
+#### `emboss()`
+
+Applies the emboss filter.
+
 Returns a SimpleImage object.
 
-`invert()` - Inverts the image's colors.
+#### `invert()`
+
+Inverts the image's colors.
+
 Returns a SimpleImage object.
 
-`pixelate($size)` -  Applies the pixelate filter.
+#### `pixelate($size)`
+
+Applies the pixelate filter.
+
 - `$size` (int) - The size of the blocks in pixels (default 10).
+
 Returns a SimpleImage object.
 
-`sepia()` - Simulates a sepia effect by desaturating the image and applying a sepia tone.
+#### `sepia()`
+
+Simulates a sepia effect by desaturating the image and applying a sepia tone.
+
 Returns a SimpleImage object.
 
-`sketch()` - Applies the mean remove filter to produce a sketch effect.
+#### `sketch()`
+
+Applies the mean remove filter to produce a sketch effect.
+
 Returns a SimpleImage object.
 
 ### Color utilities
 
-`adjustColor($color, $red, $green, $blue, $alpha)` - Adjusts a color by increasing/decreasing red/green/blue/alpha values independently.
+#### `adjustColor($color, $red, $green, $blue, $alpha)`
+
+Adjusts a color by increasing/decreasing red/green/blue/alpha values independently.
+
 - `$color`* (string|array) - The color to adjust.
 - `$red`* (int) - Red adjustment (-255 - 255).
 - `$green`* (int) - Green adjustment (-255 - 255).
 - `$blue`* (int) - Blue adjustment (-255 - 255).
 - `$alpha`* (float) - Alpha adjustment (-1 - 1).
+
 Returns an RGBA color array.
 
-`darkenColor($color, $amount)` - Darkens a color.
+#### `darkenColor($color, $amount)`
+
+Darkens a color.
+
 - `$color`* (string|array) - The color to darken.
 - `$amount`* (int) - Amount to darken (0 - 255).
+
 Returns an RGBA color array.
 
-`lightenColor($color, $amount)` - Lightens a color.
+#### `lightenColor($color, $amount)`
+
+Lightens a color.
+
 - `$color`* (string|array) - The color to lighten.
 - `$amount`* (int) - Amount to darken (0 - 255).
+
 Returns an RGBA color array.
 
-`normalizeColor($color)` - Normalizes a hex or array color value to a well-formatted RGBA array.
+#### `normalizeColor($color)`
+
+Normalizes a hex or array color value to a well-formatted RGBA array.
+
 - `$color`* (string|array) - A CSS color name, hex string, or an array [red, green, blue, alpha].
+
 Returns an array [red, green, blue, alpha]
 
 ### Exceptions
@@ -372,6 +550,7 @@ Returns an array [red, green, blue, alpha]
 SimpleImage throws standard exceptions when things go wrong. You should always use a try/catch block around your code to properly handle them.
 
 ```php
+<?php
 try {
   $image = new \claviska\SimpleImage('image.jpeg')
   // ...
@@ -383,6 +562,7 @@ try {
 To check for specific errors, compare `$err->getCode()` to the defined error constants.
 
 ```php
+<?php
 try {
   $image = new \claviska\SimpleImage('image.jpeg')
   // ...
