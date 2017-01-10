@@ -1,6 +1,6 @@
 {
   "name": "claviska/simpleimage",
-  "description": "Simple image manipulation in PHP using GD.",
+  "description": "A PHP class that makes working with images as simple as possible.",
   "license": "MIT",
   "require": {
     "php": ">=5.6.0",
