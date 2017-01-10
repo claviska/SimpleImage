@@ -620,6 +620,7 @@ As a best practice, always use the defined constants instead of their integers v
 - Added `adjustColor` method for modifying RGBA color channels to create relative color variations.
 - Added `darkenColor` method to darken a color.
 - Added `lightenColor` method to lighten a color.
+- Added `toDownload` method to force the image to download on the client's machine.
 - Changed namespace from `abeautifulsite` to `claviska`.
 - Changed `create` method to `fromNew`.
 - Changed `load` method to `fromFile`.
