@@ -2,7 +2,7 @@
 //
 // SimpleImage
 //
-//  A PHP class to that makes working with images as simple as possible.
+//  A PHP class that makes working with images as simple as possible.
 //
 //  Developed and maintained by Cory LaViska <https://github.com/claviska>.
 //
