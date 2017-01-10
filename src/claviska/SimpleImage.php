@@ -262,6 +262,31 @@ class SimpleImage {
   }
 
   //
+  // Forces the image to be downloaded to the clients machine. Must be called before any output is
+  // sent to the screen.
+  //
+  //  $filename* (string) - The filename (without path) to send to the client (e.g. 'image.jpeg').
+  //  $mimeType (string) - The image format to output as a mime type (defaults to the original mime
+  //    type).
+  //  $quality (int) - Image quality as a percentage (default 100).
+  //
+  public function toDownload($filename, $mimeType = null, $quality = 100) {
+    $image = $this->generate($mimeType, $quality);
+
+    // Set download headers
+    header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+    header('Content-Description: File Transfer');
+    header('Content-Length: ' . strlen($image['data']));
+    header('Content-Transfer-Encoding: Binary');
+    header('Content-Type: application/octet-stream');
+    header("Content-Disposition: attachment; filename=\"$filename\"");
+
+    echo $image['data'];
+
+    return $this;
+  }
+
+  //
   // Writes the image to a file.
   //
   //  $mimeType (string) - The image format to output as a mime type (defaults to the original mime
@@ -282,7 +307,7 @@ class SimpleImage {
   }
 
   //
-  // Outputs the image to the screen.
+  // Outputs the image to the screen. Must be called before any output is sent to the screen.
   //
   //  $mimeType (string) - The image format to output as a mime type (defaults to the original mime
   //    type).

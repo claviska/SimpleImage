@@ -135,6 +135,16 @@ Generates a data URI.
 
 Returns a string containing a data URI.
 
+#### `toDownload($filename, $mimeType, $quality)`
+
+Forces the image to be downloaded to the clients machine. Must be called before any output is sent to the screen.
+
+- `$filename`* (string) - The filename (without path) to send to the client (e.g. 'image.jpeg').
+- `$mimeType` (string) - The image format to output as a mime type (defaults to the original mime type).
+- `$quality` (int) - Image quality as a percentage (default 100).
+
+Returns a SimpleImage object.
+
 #### `toFile($file, $mimeType, $quality)`
 
 Writes the image to a file.
@@ -142,16 +152,16 @@ Writes the image to a file.
 - `$mimeType` (string) - The image format to output as a mime type (defaults to the original mime type).
 - `$quality` (int) - Image quality as a percentage (default 100).
 
-Returns a SimpleImage instance.
+Returns a SimpleImage object.
 
 #### `toScreen($mimeType, $quality)`
 
-Outputs the image to the screen.
+Outputs the image to the screen. Must be called before any output is sent to the screen.
 
 - `$mimeType` (string) - The image format to output as a mime type (defaults to the original mime type).
 - `$quality` (int) - Image quality as a percentage (default 100).
 
-Returns a SimpleImage instance.
+Returns a SimpleImage object.
 
 ### Utilities
 
