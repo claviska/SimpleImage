@@ -95,6 +95,8 @@ API tips:
 - Methods that return a SimpleImage object are chainable.
 - You can pass a file or data URI to the constructor to avoid calling `fromFile` or `fromDataUri`.
 - Static methods can be called with `$image::methodName()` or `\claviska\SimpleImage::methodName()`.
+- Colors can be a CSS color (e.g. `white`), a hex string (e.g. '#ffffff'), or an RGBA array.
+- You can pipe transparency to `normalizeColor` when you pass a CSS color or hex string: `white|0.25`
 
 ### Loaders
 
