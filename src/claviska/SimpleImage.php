@@ -1565,14 +1565,6 @@ class SimpleImage {
       // Alpha defaults to 1 (fully opaque)
       $color['alpha'] = isset($color['alpha']) ? $color['alpha'] : 1;
 
-      $arr = [
-        'red' => (int) $this->keepWithin((int) $color['red'], 0, 255),
-        'green' => (int) $this->keepWithin((int) $color['green'], 0, 255),
-        'blue' => (int) $this->keepWithin((int) $color['blue'], 0, 255),
-        // Convert 0-1 alpha values to 0-127 (to mimic the way CSS opacity works)
-        'alpha' => $this->keepWithin(127 - round(127 * $color['alpha']), 0, 127)
-      ];
-
       return [
         'red' => (int) $this->keepWithin((int) $color['red'], 0, 255),
         'green' => (int) $this->keepWithin((int) $color['green'], 0, 255),
