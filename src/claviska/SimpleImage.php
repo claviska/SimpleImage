@@ -587,15 +587,13 @@ class SimpleImage {
     // Apply the filter pixel by pixel
     for($x = 0; $x < $this->getWidth(); $x++) {
       for($y = 0; $y < $this->getHeight(); $y++) {
-        $index = imagecolorat($this->image, $x, $y);
-        $rgb = imagecolorsforindex($this->image, $index);
+        $rgb = $this->getColorAt($x, $y);
         $gray = min(255, round(0.299 * $rgb['red'] + 0.114 * $rgb['blue'] + 0.587 * $rgb['green']));
-        $color = $this->allocateColor([
+        $this->dot($x, $y, [
           'red' => $pixels['red'][$gray],
           'green' => $pixels['green'][$gray],
           'blue' => $pixels['blue'][$gray]
         ]);
-        imagesetpixel($this->image, $x, $y, $color);
       }
     }
 
@@ -1553,6 +1551,28 @@ class SimpleImage {
     }
 
     return $colors;
+  }
+
+  //
+  // Gets the RGBA value of a single pixel.
+  //
+  //  $x* (int) - The horizontal position of the pixel.
+  //  $y* (int) - The vertical position of the pixel.
+  //
+  // Returns an RGBA color array or false if the x/y position is off the canvas.
+  //
+  public function getColorAt($x, $y) {
+    // Coordinates must be on the canvas
+    if($x < 0 || $x > $this->getWidth() || $y < 0 || $y > $this->getHeight()) {
+      return false;
+    }
+
+    // Get the color of this pixel and convert it to RGBA
+    $color = imagecolorat($this->image, $x, $y);
+    $rgba = imagecolorsforindex($this->image, $color);
+    $rgba['alpha'] = 127 - ($color >> 24) & 0xFF;
+
+    return $rgba;
   }
 
   //

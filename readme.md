@@ -564,6 +564,15 @@ Extracts colors from an image like a human would do.™ This method requires the
 
 Returns an array of RGBA colors arrays.
 
+#### `getColorAt($x, $y)`
+
+Gets the RGBA value of a single pixel.
+
+- `$x`* (int) - The horizontal position of the pixel.
+- `$y`* (int) - The vertical position of the pixel.
+
+Returns an RGBA color array or false if the x/y position is off the canvas.
+
 #### `(static) lightenColor($color, $amount)`
 
 Lightens a color.
@@ -652,6 +661,7 @@ As a best practice, always use the defined constants instead of their integers v
 - Added `adjustColor` method for modifying RGBA color channels to create relative color variations.
 - Added `darkenColor` method to darken a color.
 - Added `extractColors` method to get the most common colors from the image.
+- Added `getColorAt` method to get the RGBA values of a specific pixel.
 - Added `lightenColor` method to lighten a color.
 - Added `toDownload` method to force the image to download on the client's machine.
 - Added `duotone` filter to create duotone images.
