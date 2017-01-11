@@ -562,7 +562,7 @@ Normalizes a hex or array color value to a well-formatted RGBA array.
 
 - `$color`* (string|array) - A CSS color name, hex string, or an array [red, green, blue, alpha].
 
-Returns an array [red, green, blue, alpha]
+Returns an array [red, green, blue, alpha].
 
 ### Exceptions
 

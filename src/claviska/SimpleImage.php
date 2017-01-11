@@ -1256,7 +1256,7 @@ class SimpleImage {
       $color['red'],
       $color['green'],
       $color['blue'],
-      $color['alpha']
+      127 - ($color['alpha'] * 127)
     );
 
     return $this;
@@ -1391,7 +1391,7 @@ class SimpleImage {
       $color['red'],
       $color['green'],
       $color['blue'],
-      $color['alpha']
+      127 - ($color['alpha'] * 127)
     );
     if($index > -1) {
       // Yes, return this color index
@@ -1404,7 +1404,7 @@ class SimpleImage {
       $color['red'],
       $color['green'],
       $color['blue'],
-      $color['alpha']
+      127 - ($color['alpha'] * 127)
     );
   }
 
@@ -1615,8 +1615,7 @@ class SimpleImage {
         'red' => (int) $this->keepWithin((int) $color['red'], 0, 255),
         'green' => (int) $this->keepWithin((int) $color['green'], 0, 255),
         'blue' => (int) $this->keepWithin((int) $color['blue'], 0, 255),
-        // Convert 0-1 alpha values to 0-127 (to mimic the way CSS opacity works)
-        'alpha' => $this->keepWithin(127 - round(127 * $color['alpha']), 0, 127)
+        'alpha' => $this->keepWithin($color['alpha'], 0, 1)
       ];
     }
 
