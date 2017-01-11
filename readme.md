@@ -538,6 +538,15 @@ Darkens a color.
 
 Returns an RGBA color array.
 
+#### `extractColors($count = 10, $backgroundColor = null)`
+
+Extracts colors from an image like a human would do.™ This method requires the third-party library \League\ColorExtractor. If you're using Composer, it will be installed for you automatically.
+
+- `$count` (int) - The max number of colors to extract (default 5).
+- `$backgroundColor` (string|array) - By default any pixel with alpha value greater than zero will be discarded. This is because transparent colors are not perceived as is. For example, fully transparent black would be seen white on a white background. So if you want to take transparency into account, you have to specify a default background color.
+
+Returns an array of RGBA colors arrays.
+
 #### `lightenColor($color, $amount)`
 
 Lightens a color.

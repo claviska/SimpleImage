@@ -25,9 +25,10 @@ class SimpleImage {
     ERR_INVALID_COLOR = 5,
     ERR_INVALID_DATA_URI = 6,
     ERR_INVALID_IMAGE = 7,
-    ERR_UNSUPPORTED_FORMAT = 8,
-    ERR_WEBP_NOT_ENABLED = 9,
-    ERR_WRITE = 10;
+    ERR_LIB_NOT_LOADED = 8,
+    ERR_UNSUPPORTED_FORMAT = 9,
+    ERR_WEBP_NOT_ENABLED = 10,
+    ERR_WRITE = 11;
 
   private $image, $mimeType, $exif;
 
@@ -1441,6 +1442,51 @@ class SimpleImage {
   //
   public function darkenColor($color, $amount) {
     return $this->adjustColor($color, -$amount, -$amount, -$amount, 0);
+  }
+
+  //
+  // Extracts colors from an image like a human would do.™ This method requires the third-party
+  // library \League\ColorExtractor. If you're using Composer, it will be installed for you
+  // automatically.
+  //
+  //  $count (int) - The max number of colors to extract (default 5).
+  //  $backgroundColor (string|array) - By default any pixel with alpha value greater than zero will
+  //    be discarded. This is because transparent colors are not perceived as is. For example, fully
+  //    transparent black would be seen white on a white background. So if you want to take
+  //    transparency into account, you have to specify a default background color.
+  //
+  // Returns an array of RGBA colors arrays.
+  //
+  public function extractColors($count = 5, $backgroundColor = null) {
+    // Check for required library
+    if(!class_exists('\League\ColorExtractor\ColorExtractor')) {
+      throw new \Exception(
+        'Required library \League\ColorExtractor is missing.',
+        self::ERR_LIB_NOT_LOADED
+      );
+    }
+
+    // Convert background color to an integer value
+    if($backgroundColor) {
+      $backgroundColor = $this->normalizeColor($backgroundColor);
+      $backgroundColor = \League\ColorExtractor\Color::fromRgbToInt([
+        'r' => $backgroundColor['red'],
+        'g' => $backgroundColor['green'],
+        'b' => $backgroundColor['blue']
+      ]);
+    }
+
+    // Extract colors from the image
+    $palette = \League\ColorExtractor\Palette::fromGD($this->image, $backgroundColor);
+    $extractor = new \League\ColorExtractor\ColorExtractor($palette);
+    $colors = $extractor->extract($count);
+
+    // Convert colors to an RGBA color array
+    foreach($colors as $key => $value) {
+      $colors[$key] = $this->normalizeColor(\League\ColorExtractor\Color::fromIntToHex($value));
+    }
+
+    return $colors;
   }
 
   //
