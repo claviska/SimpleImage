@@ -1070,7 +1070,11 @@ class SimpleImage {
   //
   public function fill($color) {
     // Draw a filled rectangle over the entire image
-    $this->rectangle(0, 0, $this->getWidth(), $this->getHeight(), $color, 'filled');
+    $this->rectangle(0, 0, $this->getWidth(), $this->getHeight(), 'white', 'filled');
+
+    // Now flood it with the appropriate color
+    $color = $this->allocateColor($color);
+    imagefill($this->image, 0, 0, $color);
 
     return $this;
   }
