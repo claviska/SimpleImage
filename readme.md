@@ -94,6 +94,7 @@ API tips:
 - An asterisk denotes a required argument.
 - Methods that return a SimpleImage object are chainable.
 - You can pass a file or data URI to the constructor to avoid calling `fromFile` or `fromDataUri`.
+- Static methods can be called with `$image::methodName()` or `\claviska\SimpleImage::methodName()`.
 
 ### Loaders
 
@@ -517,7 +518,7 @@ Returns a SimpleImage object.
 
 ### Color utilities
 
-#### `adjustColor($color, $red, $green, $blue, $alpha)`
+#### `(static) adjustColor($color, $red, $green, $blue, $alpha)`
 
 Adjusts a color by increasing/decreasing red/green/blue/alpha values independently.
 
@@ -529,7 +530,7 @@ Adjusts a color by increasing/decreasing red/green/blue/alpha values independent
 
 Returns an RGBA color array.
 
-#### `darkenColor($color, $amount)`
+#### `(static) darkenColor($color, $amount)`
 
 Darkens a color.
 
@@ -547,7 +548,7 @@ Extracts colors from an image like a human would do.™ This method requires the
 
 Returns an array of RGBA colors arrays.
 
-#### `lightenColor($color, $amount)`
+#### `(static) lightenColor($color, $amount)`
 
 Lightens a color.
 
@@ -556,7 +557,7 @@ Lightens a color.
 
 Returns an RGBA color array.
 
-#### `normalizeColor($color, $alpha)`
+#### `(static) normalizeColor($color, $alpha)`
 
 Normalizes a hex or array color value to a well-formatted RGBA array.
 

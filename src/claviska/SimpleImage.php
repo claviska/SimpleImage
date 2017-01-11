@@ -203,7 +203,7 @@ class SimpleImage {
     $mimeType = $mimeType ?: $this->mimeType;
 
     // Enforce quality range
-    $quality = $this->keepWithin($quality, 0, 100);
+    $quality = self::keepWithin($quality, 0, 100);
 
     // Capture output
     ob_start();
@@ -339,7 +339,7 @@ class SimpleImage {
   //
   // Returns an int|float value.
   //
-  private function keepWithin($value, $min, $max) {
+  private static function keepWithin($value, $min, $max) {
     if($value < $min) return $min;
     if($value > $max) return $max;
     return $value;
@@ -402,7 +402,7 @@ class SimpleImage {
   //
   // Same as PHP's imagecopymerge, but works with transparent images. Used internally for overlay.
   //
-  private function imageCopyMergeAlpha($dstIm, $srcIm, $dstX, $dstY, $srcX, $srcY, $srcW, $srcH, $pct) {
+  private static function imageCopyMergeAlpha($dstIm, $srcIm, $dstX, $dstY, $srcX, $srcY, $srcW, $srcH, $pct) {
     // Get image width and height and percentage
     $pct /= 100;
     $w = imagesx($srcIm);
@@ -542,10 +542,10 @@ class SimpleImage {
   //
   public function crop($x1, $y1, $x2, $y2) {
     // Keep crop within image dimensions
-    $x1 = $this->keepWithin($x1, 0, $this->getWidth());
-    $x2 = $this->keepWithin($x2, 0, $this->getWidth());
-    $y1 = $this->keepWithin($y1, 0, $this->getHeight());
-    $y2 = $this->keepWithin($y2, 0, $this->getHeight());
+    $x1 = self::keepWithin($x1, 0, $this->getWidth());
+    $x2 = self::keepWithin($x2, 0, $this->getWidth());
+    $y1 = self::keepWithin($y1, 0, $this->getHeight());
+    $y2 = self::keepWithin($y2, 0, $this->getHeight());
 
     // Crop it
     $this->image = imagecrop($this->image, [
@@ -643,7 +643,7 @@ class SimpleImage {
     }
 
     // Convert opacity
-    $opacity = $this->keepWithin($opacity, 0, 1) * 100;
+    $opacity = self::keepWithin($opacity, 0, 1) * 100;
 
     // Determine placement
     switch($anchor) {
@@ -686,7 +686,7 @@ class SimpleImage {
     }
 
     // Perform the overlay
-    $this->imageCopyMergeAlpha(
+    self::imageCopyMergeAlpha(
       $this->image,
       $overlay->image,
       $x, $y,
@@ -749,7 +749,7 @@ class SimpleImage {
 
     $this->image = imagerotate(
       $this->image,
-      -($this->keepWithin($angle, -360, 360)),
+      -(self::keepWithin($angle, -360, 360)),
       $backgroundColor
     );
 
@@ -1233,7 +1233,7 @@ class SimpleImage {
   // Returns a SimpleImage object.
   //
   public function brighten($percentage) {
-    $percentage = $this->keepWithin(255 * $percentage / 100, 0, 255);
+    $percentage = self::keepWithin(255 * $percentage / 100, 0, 255);
 
     imagefilter($this->image, IMG_FILTER_BRIGHTNESS, $percentage);
 
@@ -1248,7 +1248,7 @@ class SimpleImage {
   // Returns a SimpleImage object.
   //
   public function colorize($color) {
-    $color = $this->normalizeColor($color);
+    $color = self::normalizeColor($color);
 
     imagefilter(
       $this->image,
@@ -1270,7 +1270,7 @@ class SimpleImage {
   // Returns a SimpleImage object.
   //
   public function contrast($percentage) {
-    imagefilter($this->image, IMG_FILTER_CONTRAST, $this->keepWithin($percentage, -100, 100));
+    imagefilter($this->image, IMG_FILTER_CONTRAST, self::keepWithin($percentage, -100, 100));
 
     return $this;
   }
@@ -1283,7 +1283,7 @@ class SimpleImage {
   // Returns a SimpleImage object.
   //
   public function darken($percentage) {
-    $percentage = $this->keepWithin(255 * $percentage / 100, 0, 255);
+    $percentage = self::keepWithin(255 * $percentage / 100, 0, 255);
 
     imagefilter($this->image, IMG_FILTER_BRIGHTNESS, -$percentage);
 
@@ -1383,7 +1383,7 @@ class SimpleImage {
   // Returns a color identifier.
   //
   private function allocateColor($color) {
-    $color = $this->normalizeColor($color);
+    $color = self::normalizeColor($color);
 
     // Was this color already allocated?
     $index = imagecolorexactalpha(
@@ -1419,12 +1419,12 @@ class SimpleImage {
   //
   // Returns an RGBA color array.
   //
-  public function adjustColor($color, $red, $green, $blue, $alpha) {
+  public static function adjustColor($color, $red, $green, $blue, $alpha) {
     // Normalize to RGBA
-    $color = $this->normalizeColor($color);
+    $color = self::normalizeColor($color);
 
     // Adjust each channel
-    return $this->normalizeColor([
+    return self::normalizeColor([
       'red' => $color['red'] + $red,
       'green' => $color['green'] + $green,
       'blue' => $color['blue'] + $blue,
@@ -1440,8 +1440,8 @@ class SimpleImage {
   //
   // Returns an RGBA color array.
   //
-  public function darkenColor($color, $amount) {
-    return $this->adjustColor($color, -$amount, -$amount, -$amount, 0);
+  public static function darkenColor($color, $amount) {
+    return self::adjustColor($color, -$amount, -$amount, -$amount, 0);
   }
 
   //
@@ -1468,7 +1468,7 @@ class SimpleImage {
 
     // Convert background color to an integer value
     if($backgroundColor) {
-      $backgroundColor = $this->normalizeColor($backgroundColor);
+      $backgroundColor = self::normalizeColor($backgroundColor);
       $backgroundColor = \League\ColorExtractor\Color::fromRgbToInt([
         'r' => $backgroundColor['red'],
         'g' => $backgroundColor['green'],
@@ -1483,7 +1483,7 @@ class SimpleImage {
 
     // Convert colors to an RGBA color array
     foreach($colors as $key => $value) {
-      $colors[$key] = $this->normalizeColor(\League\ColorExtractor\Color::fromIntToHex($value));
+      $colors[$key] = self::normalizeColor(\League\ColorExtractor\Color::fromIntToHex($value));
     }
 
     return $colors;
@@ -1497,8 +1497,8 @@ class SimpleImage {
   //
   // Returns an RGBA color array.
   //
-  public function lightenColor($color, $amount) {
-    return $this->adjustColor($color, $amount, $amount, $amount, 0);
+  public static function lightenColor($color, $amount) {
+    return self::adjustColor($color, $amount, $amount, $amount, 0);
   }
 
   //
@@ -1510,7 +1510,7 @@ class SimpleImage {
   //
   // Returns an array: [red, green, blue, alpha]
   //
-  public function normalizeColor($color, $alpha = 1) {
+  public static function normalizeColor($color, $alpha = 1) {
     // 140 CSS color names and hex values
     $cssColors = [
       'aliceblue' => '#f0f8ff', 'antiquewhite' => '#faebd7', 'aqua' => '#00ffff',
@@ -1614,10 +1614,10 @@ class SimpleImage {
       $color['alpha'] = isset($color['alpha']) ? $color['alpha'] : $alpha;
 
       return [
-        'red' => (int) $this->keepWithin((int) $color['red'], 0, 255),
-        'green' => (int) $this->keepWithin((int) $color['green'], 0, 255),
-        'blue' => (int) $this->keepWithin((int) $color['blue'], 0, 255),
-        'alpha' => $this->keepWithin($color['alpha'], 0, 1)
+        'red' => (int) self::keepWithin((int) $color['red'], 0, 255),
+        'green' => (int) self::keepWithin((int) $color['green'], 0, 255),
+        'blue' => (int) self::keepWithin((int) $color['blue'], 0, 255),
+        'alpha' => self::keepWithin($color['alpha'], 0, 1)
       ];
     }
 
