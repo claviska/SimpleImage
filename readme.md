@@ -46,8 +46,8 @@ try {
 - Reads and writes files and data URIs.
 - Manipulation: crop, resize, overlay/watermark, adding TTF text
 - Drawing: arc, border, dot, ellipse, line, polygon, rectangle, rounded rectangle
-- Filters: blur, brighten, colorize, contrast, darken, desaturate, edge detect, emboss, invert, pixelate, sepia, sketch
-- Utility methods: color adjustment, darken/lighten color, exif data, height/width, mime type, orientation
+- Filters: blur, brighten, colorize, contrast, darken, desaturate, edge detect, emboss, invert, pixelate, sepia, sharpen, sketch
+- Utility methods: color adjustment, darken/lighten color, extract colors, exif data, height/width, mime type, orientation
 - Color arguments can be passed in as any CSS color (e.g. `LightBlue`), a hex color, or an RGB(A) array.
 - Support for alpha-transparency (GIF, PNG, WEBP)
 - Chainable methods
@@ -637,8 +637,10 @@ As a best practice, always use the defined constants instead of their integers v
 - Added `roundedRectangle` method for drawing rounded rectangles.
 - Added `adjustColor` method for modifying RGBA color channels to create relative color variations.
 - Added `darkenColor` method to darken a color.
+- Added `extractColors` method to get the most common colors from the image.
 - Added `lightenColor` method to lighten a color.
 - Added `toDownload` method to force the image to download on the client's machine.
+- Added `sharpen` method to sharpen the image.
 - Changed namespace from `abeautifulsite` to `claviska`.
 - Changed `create` method to `fromNew`.
 - Changed `load` method to `fromFile`.
