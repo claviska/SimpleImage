@@ -510,6 +510,12 @@ Simulates a sepia effect by desaturating the image and applying a sepia tone.
 
 Returns a SimpleImage object.
 
+#### `sharpen()`
+
+Sharpens the image.
+
+Returns a SimpleImage object.
+
 #### `sketch()`
 
 Applies the mean remove filter to produce a sketch effect.

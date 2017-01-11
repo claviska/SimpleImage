@@ -1360,6 +1360,24 @@ class SimpleImage {
   }
 
   //
+  // Sharpens the image.
+  //
+  // Returns a SimpleImage object.
+  //
+  public function sharpen() {
+    $sharpen = [
+      [0, -1, 0],
+      [-1, 5, -1],
+      [0, -1, 0]
+    ];
+    $divisor = array_sum(array_map('array_sum', $sharpen));
+
+    imageconvolution($this->image, $sharpen, $divisor, 0);
+
+    return $this;
+  }
+
+  //
   // Applies the mean remove filter to produce a sketch effect.
   //
   // Returns a SimpleImage object.
