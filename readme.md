@@ -602,6 +602,7 @@ As a best practice, always use the defined constants instead of their integers v
 - `ERR_FONT_FILE` - The specified font file could not be loaded.
 - `ERR_FREETYPE_NOT_ENABLED` - Freetype support is not enabled in your version of PHP.
 - `ERR_GD_NOT_ENABLED` - The GD extension is not enabled in your version of PHP.
+- `ERR_LIB_NOT_LOADED` - A required library has not been loaded.
 - `ERR_INVALID_COLOR` - An invalid color value was passed as an argument.
 - `ERR_INVALID_DATA_URI` - The specified data URI is not valid.
 - `ERR_INVALID_IMAGE` - The specified image is not valid.
