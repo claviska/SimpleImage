@@ -1527,12 +1527,14 @@ class SimpleImage {
   // Normalizes a hex or array color value to a well-formatted RGBA array.
   //
   //  $color* (string|array) - A CSS color name, hex string, or an array [red, green, blue, alpha].
-  //  $alpha (float) - The alpha level to use if a color name, hex string, or RGB array is used. If
-  //    an RGBA color is used, this argument will be ignored. (default 1)
+  //    You can pipe alpha transparency through hex strings and color names. For example:
+  //
+  //      #fff|0.50 <-- 50% white
+  //      red|0.25 <-- 25% red
   //
   // Returns an array: [red, green, blue, alpha]
   //
-  public static function normalizeColor($color, $alpha = 1) {
+  public static function normalizeColor($color) {
     // 140 CSS color names and hex values
     $cssColors = [
       'aliceblue' => '#f0f8ff', 'antiquewhite' => '#faebd7', 'aqua' => '#00ffff',
@@ -1584,6 +1586,15 @@ class SimpleImage {
       'yellow' => '#ffff00', 'yellowgreen' => '#9acd32'
     ];
 
+    // Parse alpha from '#fff|.5' and 'white|.5'
+    if(is_string($color) && strstr($color, '|')) {
+      $color = explode('|', $color);
+      $alpha = (float) $color[1];
+      $color = trim($color[0]);
+    } else {
+      $alpha = 1;
+    }
+
     // Translate CSS color names to hex values
     if(is_string($color) && array_key_exists(strtolower($color), $cssColors)) {
       $color = $cssColors[strtolower($color)];
@@ -1632,8 +1643,8 @@ class SimpleImage {
       $color['green'] = isset($color['green']) ? $color['green'] : 0;
       $color['blue'] = isset($color['blue']) ? $color['blue'] : 0;
 
-      // Alpha defaults to $alpha
-      $color['alpha'] = isset($color['alpha']) ? $color['alpha'] : $alpha;
+      // Alpha defaults to 1
+      $color['alpha'] = isset($color['alpha']) ? $color['alpha'] : 1;
 
       return [
         'red' => (int) self::keepWithin((int) $color['red'], 0, 255),
