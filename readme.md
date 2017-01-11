@@ -556,13 +556,14 @@ Lightens a color.
 
 Returns an RGBA color array.
 
-#### `normalizeColor($color)`
+#### `normalizeColor($color, $alpha)`
 
 Normalizes a hex or array color value to a well-formatted RGBA array.
 
 - `$color`* (string|array) - A CSS color name, hex string, or an array [red, green, blue, alpha].
+- `$alpha` (float) - The alpha level to use if a color name, hex string, or RGB array is used. If an RGBA color is used, this argument will be ignored. (default 1)
 
-Returns an array [red, green, blue, alpha].
+Returns an array: [red, green, blue, alpha]
 
 ### Exceptions
 
