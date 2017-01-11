@@ -108,7 +108,6 @@ Loads an image from a data URI.
 
 Returns a SimpleImage object.
 
-
 #### `fromFile($file)`
 
 Loads an image from a file.
@@ -480,6 +479,15 @@ Applies the desaturate (grayscale) filter.
 
 Returns a SimpleImage object.
 
+#### `duotone($lightColor, $darkColor)`
+
+Applies the duotone filter to the image.
+
+- `$lightColor`* (string|array) - The lightest color in the duotone.
+- `$darkColor`* (string|array) - The darkest color in the duotone.
+
+Returns a SimpleImage object.
+
 #### `edgeDetect()`
 
 Applies the edge detect filter.
@@ -646,6 +654,7 @@ As a best practice, always use the defined constants instead of their integers v
 - Added `extractColors` method to get the most common colors from the image.
 - Added `lightenColor` method to lighten a color.
 - Added `toDownload` method to force the image to download on the client's machine.
+- Added `duotone` filter to create duotone images.
 - Added `sharpen` method to sharpen the image.
 - Changed namespace from `abeautifulsite` to `claviska`.
 - Changed `create` method to `fromNew`.

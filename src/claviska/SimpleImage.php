@@ -559,6 +559,50 @@ class SimpleImage {
   }
 
   //
+  // Applies a duotone filter to the image.
+  //
+  //  $lightColor* (string|array) - The lightest color in the duotone.
+  //  $darkColor* (string|array) - The darkest color in the duotone.
+  //
+  // Returns a SimpleImage object.
+  //
+  function duotone($lightColor, $darkColor) {
+    $lightColor = self::normalizeColor($lightColor);
+    $darkColor = self::normalizeColor($darkColor);
+
+    // Calculate averages between light and dark colors
+    $redAvg = $lightColor['red'] - $darkColor['red'];
+    $greenAvg = $lightColor['green'] - $darkColor['green'];
+    $blueAvg = $lightColor['blue'] - $darkColor['blue'];
+
+    // Create a matrix of all possible duotone colors based on gray values
+    $pixels = [];
+    for($i = 0; $i <= 255; $i++) {
+      $grayAvg = $i / 255;
+      $pixels['red'][$i] = $darkColor['red'] + $grayAvg * $redAvg;
+      $pixels['green'][$i] = $darkColor['green'] + $grayAvg * $greenAvg;
+      $pixels['blue'][$i] = $darkColor['blue'] + $grayAvg * $blueAvg;
+    }
+
+    // Apply the filter pixel by pixel
+    for($x = 0; $x < $this->getWidth(); $x++) {
+      for($y = 0; $y < $this->getHeight(); $y++) {
+        $index = imagecolorat($this->image, $x, $y);
+        $rgb = imagecolorsforindex($this->image, $index);
+        $gray = min(255, round(0.299 * $rgb['red'] + 0.114 * $rgb['blue'] + 0.587 * $rgb['green']));
+        $color = $this->allocateColor([
+          'red' => $pixels['red'][$gray],
+          'green' => $pixels['green'][$gray],
+          'blue' => $pixels['blue'][$gray]
+        ]);
+        imagesetpixel($this->image, $x, $y, $color);
+      }
+    }
+
+    return $this;
+  }
+
+  //
   // Proportionally resize the image to a specific height.
   //
   //  $height* (int) - The height to resize the image to.
