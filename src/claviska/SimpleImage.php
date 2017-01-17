@@ -97,6 +97,9 @@ class SimpleImage {
     // Get image data
     $uri = base64_decode(preg_replace('/^data:(.*?);base64,/', '', $uri));
     $this->image = imagecreatefromstring($uri);
+    if(!$this->image) {
+      throw new \Exception("Invalid image data.", self::ERR_INVALID_IMAGE);
+    }
 
     return $this;
   }
