@@ -112,10 +112,13 @@ class SimpleImage {
   // Returns a SimpleImage instance.
   //
   public function fromFile($file) {
-    // Does the file exist?
-    if(!file_exists($file)) {
+    // Check if the file exists and is readable. We're using fopen() instead of file_exists()
+    // because not all URL wrappers support the latter.
+    $handle = @fopen($file, 'r');
+    if($handle === false) {
       throw new \Exception("File not found: $file", self::ERR_FILE_NOT_FOUND);
     }
+    fclose($handle);
 
     // Get image info
     $info = getimagesize($file);
