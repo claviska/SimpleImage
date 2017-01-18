@@ -111,7 +111,22 @@ class SimpleImage {
   // Returns a SimpleImage instance.
   //
   public function fromRaw($raw) {
-    return $this->fromDataUri(base64_encode($raw));
+    // check vaild format
+    $binary_check['png'] = "\x89\x50\x4e\x47\x0d\x0a\x1a\x0a";
+    $binary_check['gif'] = "GIF";
+    $binary_check['jpeg'] = "\xFF\xD8\xFF";
+
+    $is_supprt = false;
+    foreach ($binary_check as $key => $value) {
+      if (substr($raw, 0, strlen($binary_check[$key])) === $value ) {
+        $is_supprt = true;
+      }
+    }
+    if (!$is_supprt) {
+      throw new \Exception("Invalid image data.", self::ERR_INVALID_IMAGE);
+    }
+    $this->image = imagecreatefromstring($raw);
+    return $this;
   }
 
   //
