@@ -292,9 +292,17 @@ class SimpleImage {
 
     return 'data:' . $image['mimeType'] . ';base64,' . base64_encode($image['data']);
   }
-
+  //
+  // Generates a binary data
+  //
+  //  $mimeType (string) - The image format to output as a mime type (defaults to the original mime
+  //    type).
+  //  $quality (int) - Image quality as a percentage (default 100).
+  //
+  // Returns a binary data string.
+  //
   public function toRaw($mimeType = null, $quality = 100) {
-    return $this->generate($mimeType, $quality);
+    return $this->generate($mimeType, $quality)['data'];
   }
   //
   // Forces the image to be downloaded to the clients machine. Must be called before any output is
