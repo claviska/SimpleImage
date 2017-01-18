@@ -846,10 +846,13 @@ class SimpleImage {
   //      - x* (int) - Horizontal offset in pixels.
   //      - y* (int) - Vertical offset in pixels.
   //      - color* (string|array) - The text shadow color.
+  //  $boundary (array) - If passed, this variable will contain an array with coordinates that
+  //    surround the text: [x1, y1, x2, y2, width, height]. This can be used for calculating the
+  //    text's position after it gets added to the image.
   //
   // Returns a SimpleImage object.
   //
-  public function text($text, $options) {
+  public function text($text, $options, &$boundary = null) {
     // Check for freetype support
     if(!function_exists('imagettftext')) {
       throw new \Exception(
@@ -925,6 +928,19 @@ class SimpleImage {
       $y = ($this->getHeight() / 2) - (($boxHeight / 2) - $boxHeight) + $yOffset;
       break;
     }
+
+    $x = (int) round($x);
+    $y = (int) round($y);
+
+    // Pass the boundary back by reference
+    $boundary = [
+      'x1' => $x,
+      'y1' => $y - $boxHeight, // $y is the baseline, not the top!
+      'x2' => $x + $boxWidth,
+      'y2' => $y,
+      'width' => $boxWidth,
+      'height' => $boxHeight
+    ];
 
     // Text shadow
     if(is_array($options['shadow'])) {

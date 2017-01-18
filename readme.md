@@ -307,23 +307,27 @@ Rotates the image.
 
 Returns a SimpleImage object.
 
-#### `text($text, $options)`
+#### `text($text, $options, &$boundary)`
 
 Adds text to the image.
 
-- `$text`* (string) - The desired text.
+- `$text*` (string) - The desired text.
 - `$options` (array) - An array of options.
-    - `fontFile`* (string) - The TrueType (or compatible) font file to use.
-    - `size` (int) - The size of the font in pixels (default 12).
-    - `color` (string|array) - The text color (default black).
-    - `anchor` (string) - The anchor point: 'center', 'top', 'bottom', 'left', 'right',
-      'top left', 'top right', 'bottom left', 'bottom right' (default 'center').
-    - `xOffset` (int) - The horizontal offset in pixels (default 0).
-    - `yOffset` (int) - The vertical offset in pixels (default 0).
-    - `shadow` (array) - Text shadow params.
-      - `x`* (int) - Horizontal offset in pixels.
-      - `y`* (int) - Vertical offset in pixels.
-      - `color`* (string|array) - The text shadow color.
+  - `fontFile`* (string) - The TrueType (or compatible) font file to use.
+  - `size` (int) - The size of the font in pixels (default 12).
+  - `color` (string|array) - The text color (default black).
+  - `anchor` (string) - The anchor point: 'center', 'top', 'bottom', 'left', 'right',
+    'top left', 'top right', 'bottom left', 'bottom right' (default 'center').
+  - `xOffset` (int) - The horizontal offset in pixels (default 0).
+  - `yOffset` (int) - The vertical offset in pixels (default 0).
+  - `shadow` (array) - Text shadow params.
+    - `x`* (int) - Horizontal offset in pixels.
+    - `y`* (int) - Vertical offset in pixels.
+    - `color`* (string|array) - The text shadow color.
+- `$boundary` (array) - If passed, this variable will contain an array with coordinates that
+  surround the text: [x1, y1, x2, y2, width, height]. This can be used for calculating the
+  text's position after it gets added to the image.
+
 Returns a SimpleImage object.
 
 #### `thumbnail($width, $height, $anchor)`
