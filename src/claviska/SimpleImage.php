@@ -76,7 +76,7 @@ class SimpleImage {
   //
   //  $uri* (string) - A data URI.
   //
-  // Returns a SimpleImage instance.
+  // Returns a SimpleImage object.
   //
   public function fromDataUri($uri) {
     // Basic formatting check
@@ -109,7 +109,7 @@ class SimpleImage {
   //
   //  $file* (string) - The image file to load.
   //
-  // Returns a SimpleImage instance.
+  // Returns a SimpleImage object.
   //
   public function fromFile($file) {
     // Check if the file exists and is readable. We're using fopen() instead of file_exists()
@@ -177,7 +177,7 @@ class SimpleImage {
   //  $height* (int) - The height of the image.
   //  $color (string|array) - Optional fill color for the new image (default 'transparent').
   //
-  // Returns a SimpleImage instance.
+  // Returns a SimpleImage object.
   //
   public function fromNew($width, $height, $color = 'transparent') {
     $this->image = imagecreatetruecolor($width, $height);
@@ -198,7 +198,7 @@ class SimpleImage {
   //
   //    $string = file_get_contents('image.jpg');
   //
-  // Returns a SimpleImage instance.
+  // Returns a SimpleImage object.
   //
   public function fromString($string) {
     return $this->fromFile('data://;base64,' . base64_encode($string));
@@ -313,7 +313,7 @@ class SimpleImage {
   //    type).
   //  $quality (int) - Image quality as a percentage (default 100).
   //
-  // Returns a SimpleImage instance.
+  // Returns a SimpleImage object.
   //
   public function toFile($file, $mimeType = null, $quality = 100) {
     $image = $this->generate($mimeType, $quality);
@@ -333,7 +333,7 @@ class SimpleImage {
   //    type).
   //  $quality (int) - Image quality as a percentage (default 100).
   //
-  // Returns a SimpleImage instance.
+  // Returns a SimpleImage object.
   //
   public function toScreen($mimeType = null, $quality = 100) {
     $image = $this->generate($mimeType, $quality);
@@ -352,7 +352,7 @@ class SimpleImage {
   //    type).
   //  $quality (int) - Image quality as a percentage (default 100).
   //
-  // Returns a SimpleImage instance.
+  // Returns a SimpleImage object.
   //
   public function toString($mimeType = null, $quality = 100) {
     return $this->generate($mimeType, $quality)['data'];

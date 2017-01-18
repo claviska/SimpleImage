@@ -18,7 +18,7 @@ try {
 
   // Magic! ✨
   $image
-    ->fromFile('image.jpg')                     // load image.png
+    ->fromFile('image.jpg')                     // load image.jpg
     ->autoOrient()                              // adjust orientation based on exif data
     ->resize(320, 200)                          // resize to 320x200 pixels
     ->flip('x')                                 // flip horizontally
@@ -135,7 +135,7 @@ Creates a new image from a string.
   $string = file_get_contents('image.jpg');
   ```
 
-Returns a SimpleImage instance.
+Returns a SimpleImage object.
 
 ### Savers
 
@@ -183,7 +183,7 @@ Generates an image string.
 - `$mimeType` (string) - The image format to output as a mime type (defaults to the original mime type).
 - `$quality` (int) - Image quality as a percentage (default 100).
 
-Returns a SimpleImage instance.
+Returns a SimpleImage object.
 
 ### Utilities
 
