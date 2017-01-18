@@ -126,6 +126,17 @@ Creates a new image.
 
 Returns a SimpleImage object.
 
+#### `fromString($string)`
+
+Creates a new image from a string.
+
+- `$string`* (string) - The raw image data as a string. Example:
+  ```
+  $string = file_get_contents('image.jpg');
+  ```
+
+Returns a SimpleImage instance.
+
 ### Savers
 
 #### `toDataUri($mimeType, $quality)`
@@ -164,6 +175,15 @@ Outputs the image to the screen. Must be called before any output is sent to the
 - `$quality` (int) - Image quality as a percentage (default 100).
 
 Returns a SimpleImage object.
+
+#### `toString($mimeType, $quality)`
+
+Generates an image string.
+
+- `$mimeType` (string) - The image format to output as a mime type (defaults to the original mime type).
+- `$quality` (int) - Image quality as a percentage (default 100).
+
+Returns a SimpleImage instance.
 
 ### Utilities
 

@@ -191,6 +191,19 @@ class SimpleImage {
     return $this;
   }
 
+  //
+  // Creates a new image from a string.
+  //
+  //  $string* (string) - The raw image data as a string. Example:
+  //
+  //    $string = file_get_contents('image.jpg');
+  //
+  // Returns a SimpleImage instance.
+  //
+  public function fromString($string) {
+    return $this->fromFile('data://;base64,' . base64_encode($string));
+  }
+
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // Savers
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -330,6 +343,19 @@ class SimpleImage {
     echo $image['data'];
 
     return $this;
+  }
+
+  //
+  // Generates an image string.
+  //
+  //  $mimeType (string) - The image format to output as a mime type (defaults to the original mime
+  //    type).
+  //  $quality (int) - Image quality as a percentage (default 100).
+  //
+  // Returns a SimpleImage instance.
+  //
+  public function toString($mimeType = null, $quality = 100) {
+    return $this->generate($mimeType, $quality)['data'];
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
