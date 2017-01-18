@@ -881,13 +881,33 @@ class SimpleImage {
     $yOffset = $options['yOffset'];
     $angle = 0;
 
-    // Determine textbox dimensions
+    // Calculate the bounding box dimensions
+    //
+    // Since imagettfbox() returns a bounding box from the text's baseline, we can end up with
+    // different heights for different strings of the same font size. For example, 'type' will often
+    // be taller than 'text' because the former has a descending letter.
+    //
+    // To compensate for this, we create two bounding boxes: one to measure the cap height and
+    // another to measure the descender height. Based on that, we can adjust the text vertically
+    // to appear inside the box with a reasonable amount of consistency.
+    //
+    // See: https://github.com/claviska/SimpleImage/issues/165
+    //
     $box = imagettfbbox($size, $angle, $fontFile, $text);
     if(!$box) {
       throw new \Exception("Unable to load font file: $fontFile", self::ERR_FONT_FILE);
     }
     $boxWidth = abs($box[6] - $box[2]);
-    $boxHeight = abs($box[7] - $box[1]);
+    $boxHeight = $options['size'];
+
+    // Determine cap height
+    $box = imagettfbbox($size, $angle, $fontFile, 'X');
+    $capHeight = abs($box[7] - $box[1]);
+
+    // Determine descender height
+    $box = imagettfbbox($size, $angle, $fontFile, 'X Qgjpqy');
+    $fullHeight = abs($box[7] - $box[1]);
+    $descenderHeight = $fullHeight - $capHeight;
 
     // Determine position
     switch($anchor) {
@@ -949,7 +969,7 @@ class SimpleImage {
         $size,
         $angle,
         $x + $options['shadow']['x'],
-        $y + $options['shadow']['y'],
+        $y + $options['shadow']['y'] - $descenderHeight,
         $this->allocateColor($options['shadow']['color']),
         $fontFile,
         $text
@@ -957,7 +977,7 @@ class SimpleImage {
     }
 
     // Draw the text
-    imagettftext($this->image, $size, $angle, $x, $y, $color, $fontFile, $text);
+    imagettftext($this->image, $size, $angle, $x, $y - $descenderHeight, $color, $fontFile, $text);
 
     return $this;
   }
