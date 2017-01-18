@@ -53,6 +53,7 @@ try {
 - Chainable methods
 - Uses exceptions
 - Load with Composer or manually (just one file)
+- [Semantic Versioning](http://semver.org/)
 
 ## Installation
 
