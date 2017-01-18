@@ -43,11 +43,12 @@ try {
 ## Features
 
 - Supports reading, writing, and converting GIF, JPEG, PNG, WEBP formats.
-- Reads and writes files and data URIs.
+- Reads and writes files, data URIs, and image strings.
 - Manipulation: crop, resize, overlay/watermark, adding TTF text
 - Drawing: arc, border, dot, ellipse, line, polygon, rectangle, rounded rectangle
 - Filters: blur, brighten, colorize, contrast, darken, desaturate, edge detect, emboss, invert, pixelate, sepia, sharpen, sketch
-- Utility methods: color adjustment, darken/lighten color, extract colors, exif data, height/width, mime type, orientation
+- Utilities: color adjustment, darken/lighten color, extract colors
+- Properties: exif data, height/width, mime type, orientation
 - Color arguments can be passed in as any CSS color (e.g. `LightBlue`), a hex color, or an RGB(A) array.
 - Support for alpha-transparency (GIF, PNG, WEBP)
 - Chainable methods
@@ -675,6 +676,8 @@ As a best practice, always use the defined constants instead of their integers v
 - Normalized color arguments (colors can be a CSS color name, hex color, or RGB(A) array).
 - Normalized alpha (opacity) arguments: 0 (transparent) - 1 (opaque)
 - Added text shadow to `text` method.
+- Added `fromString()` method to load images from strings.
+- Added `toString()` method to generate image strings.
 - Added `arc` method for drawing arcs.
 - Added `border` method for drawing borders.
 - Added `dot` method for drawing individual pixels.
