@@ -103,6 +103,16 @@ class SimpleImage {
 
     return $this;
   }
+  //
+  // Loads an image from a binary data
+  //
+  //  $raw* (string) - binary
+  //
+  // Returns a SimpleImage instance.
+  //
+  public function fromRaw($raw) {
+    return $this->fromDataUri(base64_encode($raw));
+  }
 
   //
   // Loads an image from a file.
@@ -268,6 +278,9 @@ class SimpleImage {
     return 'data:' . $image['mimeType'] . ';base64,' . base64_encode($image['data']);
   }
 
+  public function toRaw($mimeType = null, $quality = 100) {
+    return $this->generate($mimeType, $quality);
+  }
   //
   // Forces the image to be downloaded to the clients machine. Must be called before any output is
   // sent to the screen.
