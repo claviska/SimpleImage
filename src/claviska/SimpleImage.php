@@ -378,8 +378,8 @@ class SimpleImage {
   }
   
   private function resizeNecessary($width, $height) {
-     return !($this->getWidth() == $width 
-         && $this->getHeight() == $height);
+    return !($this->getWidth() === $width 
+      && $this->getHeight() === $height);
   }
 
   //
@@ -795,8 +795,8 @@ class SimpleImage {
     // workaround is to create a new truecolor image, allocate a transparent color, and copy the
     // image over to it using imagecopyresampled.
 
-    if (!$this->resizeNecessary($width, $height)) {
-        return $this;
+    if(!$this->resizeNecessary($width, $height)) {
+      return $this;
     }
       
     // Create a new true color image
