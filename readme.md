@@ -189,6 +189,12 @@ Returns a SimpleImage object.
 
 ### Utilities
 
+#### `getAspectRatio()`
+
+Gets the image's current aspect ratio.
+
+Returns the aspect ratio as a float.
+
 #### `getExif()`
 
 Gets the image's exif data.

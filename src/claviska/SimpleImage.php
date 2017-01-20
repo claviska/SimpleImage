@@ -378,6 +378,15 @@ class SimpleImage {
   }
 
   //
+  // Gets the image's current aspect ratio.
+  //
+  // Returns the aspect ratio as a float.
+  //
+  public function getAspectRatio() {
+    return $this->getWidth() / $this->getHeight();
+  }
+
+  //
   // Gets the image's exif data.
   //
   // Returns an array of exif data or null if no data is available.
@@ -534,28 +543,25 @@ class SimpleImage {
   // Returns a SimpleImage object.
   //
   public function bestFit($maxWidth, $maxHeight) {
-    // Determine aspect ratio
-    $aspectRatio = $this->getHeight() / $this->getWidth();
-
     // Calculate max width or height based on orientation
     if($this->getOrientation() === 'portrait') {
       $height = $maxHeight;
-      $width = $maxHeight / $aspectRatio;
+      $width = $maxHeight * $this->getAspectRatio();
     } else {
       $width = $maxWidth;
-      $height = $maxWidth * $aspectRatio;
+      $height = $maxWidth / $this->getAspectRatio();
     }
 
     // Reduce to max width
     if($width > $maxWidth) {
       $width = $maxWidth;
-      $height = $width * $aspectRatio;
+      $height = $width / $this->getAspectRatio();
     }
 
     // Reduce to max height
     if($height > $maxHeight) {
       $height = $maxHeight;
-      $width = $height / $aspectRatio;
+      $width = $height * $this->getAspectRatio();
     }
 
     return $this->resize($width, $height);
@@ -789,14 +795,12 @@ class SimpleImage {
 
     // Resize to width
     if($width && !$height) {
-      $aspectRatio = $this->getHeight() / $this->getWidth();
-      $height = $width * $aspectRatio;
+      $height = $width / $this->getAspectRatio();
     }
 
     // Resize to height
     if(!$width && $height) {
-      $aspectRatio = $this->getHeight() / $this->getWidth();
-      $width = $height / $aspectRatio;
+      $width = $height * $this->getAspectRatio();
     }
 
     // If the dimensions are the same, there's no need to resize
