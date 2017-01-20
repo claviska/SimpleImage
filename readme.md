@@ -228,7 +228,7 @@ Returns a SimpleImage object.
 
 #### `bestFit($maxWidth, $maxHeight)`
 
-Proportionally resize the image to fit a specified width and height.
+Proportionally resize the image to fit inside a specific width and height.
 
 - `$maxWidth`* (int) - The maximum width the image can be.
 - `$maxHeight`* (int) - The maximum height the image can be.

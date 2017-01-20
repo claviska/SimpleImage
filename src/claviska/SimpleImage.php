@@ -526,7 +526,7 @@ class SimpleImage {
   }
 
   //
-  // Proportionally resize the image to fit a specified width and height.
+  // Proportionally resize the image to fit inside a specific width and height.
   //
   //  $maxWidth* (int) - The maximum width the image can be.
   //  $maxHeight* (int) - The maximum height the image can be.
@@ -534,26 +534,25 @@ class SimpleImage {
   // Returns a SimpleImage object.
   //
   public function bestFit($maxWidth, $maxHeight) {
-    $width = $this->getWidth();
-    $height = $this->getHeight();
+    // Determine aspect ratio
+    $aspectRatio = $this->getHeight() / $this->getWidth();
 
-    if($width <= $maxWidth && $height <= $maxHeight) {
-      return $this;
+    // Calculate max width or height based on orientation
+    if($this->getOrientation() === 'portrait') {
+      $height = $maxHeight;
+      $width = $maxHeight / $aspectRatio;
+    } else {
+      $width = $maxWidth;
+      $height = $maxWidth * $aspectRatio;
     }
 
-    // Determine aspect ratio
-    $aspectRatio = $height / $width;
-
-    // Make width fit into new dimensions
+    // Reduce to max width
     if($width > $maxWidth) {
       $width = $maxWidth;
       $height = $width * $aspectRatio;
-    } else {
-      $width = $width;
-      $height = $height;
     }
 
-    // Make height fit into new dimensions
+    // Reduce to max height
     if($height > $maxHeight) {
       $height = $maxHeight;
       $width = $height / $aspectRatio;
