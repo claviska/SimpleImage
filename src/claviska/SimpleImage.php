@@ -376,6 +376,11 @@ class SimpleImage {
     if($value > $max) return $max;
     return $value;
   }
+  
+  private function resizeNecessary($width, $height) {
+    return !($this->getWidth() === $width 
+      && $this->getHeight() === $height);
+  }
 
   //
   // Gets the image's exif data.
@@ -533,30 +538,33 @@ class SimpleImage {
   //
   // Returns a SimpleImage object.
   //
-  public function bestFit($maxWidth, $maxHeight) {
+  public function bestFit($maxWidth, $maxHeight, $upscale = false) {
     $width = $this->getWidth();
     $height = $this->getHeight();
 
-    if($width <= $maxWidth && $height <= $maxHeight) {
+    if(!$upscale && $width <= $maxWidth && $height <= $maxHeight) {
       return $this;
     }
 
     // Determine aspect ratio
     $aspectRatio = $height / $width;
 
-    // Make width fit into new dimensions
-    if($width > $maxWidth) {
-      $width = $maxWidth;
-      $height = $width * $aspectRatio;
-    } else {
-      $width = $width;
-      $height = $height;
-    }
-
-    // Make height fit into new dimensions
-    if($height > $maxHeight) {
-      $height = $maxHeight;
-      $width = $height / $aspectRatio;
+    switch (true) {
+        // Portrait
+        case $aspectRatio > 1:
+            $height = $maxHeight;
+            $width = ceil($height / $aspectRatio);
+            break;
+        // Landscape
+        case $aspectRatio < 1:
+            $width = $maxWidth;
+            $height = ceil($width * $aspectRatio);
+            break;
+        // Square
+        default:
+            $width = $maxWidth;
+            $height = $maxHeight;
+            break;
     }
 
     return $this->resize($width, $height);
@@ -787,6 +795,10 @@ class SimpleImage {
     // workaround is to create a new truecolor image, allocate a transparent color, and copy the
     // image over to it using imagecopyresampled.
 
+    if(!$this->resizeNecessary($width, $height)) {
+      return $this;
+    }
+      
     // Create a new true color image
     $newImage = imagecreatetruecolor($width, $height);
     $transparentColor = imagecolorallocatealpha($newImage, 0, 0, 0, 127);
