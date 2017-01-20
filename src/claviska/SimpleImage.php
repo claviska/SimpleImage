@@ -435,19 +435,13 @@ class SimpleImage {
   // Same as PHP's imagecopymerge, but works with transparent images. Used internally for overlay.
   //
   private static function imageCopyMergeAlpha($dstIm, $srcIm, $dstX, $dstY, $srcX, $srcY, $srcW, $srcH, $pct) {
+    // Are we merging with transparency?
     if($pct < 100) {
-      // Turn alpha blending off
+      // Disable alpha blending and "colorize" the image using a transparent color
       imagealphablending($srcIm, false);
-      imagesavealpha($srcIm, true); // this one helps you keep the alpha.
-        
-      // the fourth parameter is alpha
       imagefilter($srcIm, IMG_FILTER_COLORIZE, 0, 0, 0, 127 * ((100 - $pct) / 100));
-      
-      // Enable alpha blending and copy the image
-      imagealphablending($dstIm, true);
-      imagealphablending($srcIm, true);
     }
-    
+
     imagecopy($dstIm, $srcIm, $dstX, $dstY, $srcX, $srcY, $srcW, $srcH);
 
     return true;
