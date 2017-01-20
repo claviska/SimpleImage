@@ -635,29 +635,29 @@ class SimpleImage {
   //
   // Proportionally resize the image to a specific height.
   //
+  // **DEPRECATED:** This method was deprecated in version 3.2.2 and will be removed in version 4.0.
+  // Please use `resize(null, $height)` instead.
+  //
   //  $height* (int) - The height to resize the image to.
   //
   // Returns a SimpleImage object.
   //
   public function fitToHeight($height) {
-    $aspectRatio = $this->getHeight() / $this->getWidth();
-    $width = $height / $aspectRatio;
-
-    return $this->resize($width, $height);
+    return $this->resize(null, $height);
   }
 
   //
   // Proportionally resize the image to a specific width.
+  //
+  // **DEPRECATED:** This method was deprecated in version 3.2.2 and will be removed in version 4.0.
+  // Please use `resize($width, null)` instead.
   //
   //  $width* (int) - The width to resize the image to.
   //
   // Returns a SimpleImage object.
   //
   public function fitToWidth($width) {
-    $aspectRatio = $this->getHeight() / $this->getWidth();
-    $height = $width * $aspectRatio;
-
-    return $this->resize($width, $height);
+    return $this->resize($width, null);
   }
 
   //
@@ -774,20 +774,40 @@ class SimpleImage {
   }
 
   //
-  // Resize an image to the specified dimensions. This method WILL NOT maintain proportions. To
-  // resize an image without stretching it, use fitToWidth, fitToHeight, or bestFit.
+  // Resize an image to the specified dimensions. If only one dimension is specified, the image will
+  // be resized proportionally.
   //
   //  $width* (int) - The new image width.
   //  $height* (int) - The new image height.
   //
   // Returns a SimpleImage object.
   //
-  public function resize($width, $height) {
+  public function resize($width = null, $height = null) {
+    // No dimentions specified
+    if(!$width && !$height) {
+      return $this;
+    }
+
+    // Resize to width
+    if($width && !$height) {
+      $aspectRatio = $this->getHeight() / $this->getWidth();
+      $height = $width * $aspectRatio;
+    }
+
+    // Resize to height
+    if(!$width && $height) {
+      $aspectRatio = $this->getHeight() / $this->getWidth();
+      $width = $height / $aspectRatio;
+    }
+
+    // If the dimensions are the same, there's no need to resize
+    if($this->getWidth() === $width && $this->getHeight() === $height) {
+      return $this;
+    }
+
     // We can't use imagescale because it doesn't seem to preserve transparency properly. The
     // workaround is to create a new truecolor image, allocate a transparent color, and copy the
     // image over to it using imagecopyresampled.
-
-    // Create a new true color image
     $newImage = imagecreatetruecolor($width, $height);
     $transparentColor = imagecolorallocatealpha($newImage, 0, 0, 0, 127);
     imagecolortransparent($newImage, $transparentColor);
@@ -1001,9 +1021,9 @@ class SimpleImage {
 
     // Fit to height/width
     if($targetRatio > $currentRatio) {
-      $this->fitToHeight($height);
+      $this->resize(null, $height);
     } else {
-      $this->fitToWidth($width);
+      $this->resize($width, null);
     }
 
     switch($anchor) {

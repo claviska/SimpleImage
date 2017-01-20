@@ -250,6 +250,8 @@ Returns a SimpleImage object.
 
 Proportionally resize the image to a specific height.
 
+**DEPRECATED:** This method was deprecated in version 3.2.2 and will be removed in version 4.0. Please use `resize(null, $height)` instead.
+
 - `$height`* (int) - The height to resize the image to.
 
 Returns a SimpleImage object.
@@ -257,6 +259,8 @@ Returns a SimpleImage object.
 #### `fitToWidth($width)`
 
 Proportionally resize the image to a specific width.
+
+**DEPRECATED:** This method was deprecated in version 3.2.2 and will be removed in version 4.0. Please use `resize($width, null)` instead.
 
 - `$width`* (int) - The width to resize the image to.
 
