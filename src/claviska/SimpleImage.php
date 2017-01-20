@@ -1432,6 +1432,32 @@ class SimpleImage {
   }
 
   //
+  // Changes the image's opacity level.
+  //
+  //  $opacity* (float) - The desired opacity level (0 - 1).
+  //
+  // Returns a SimpleImage object.
+  //
+  public function opacity($opacity) {
+    // Create a transparent image
+    $newImage = new SimpleImage();
+    $newImage->fromNew($this->getWidth(), $this->getHeight());
+
+    // Copy the current image (with opacity) onto the transparent image
+    self::imageCopyMergeAlpha(
+      $newImage->image,
+      $this->image,
+      $x, $y,
+      0, 0,
+      $this->getWidth(),
+      $this->getHeight(),
+      self::keepWithin($opacity, 0, 1) * 100
+    );
+
+    return $this;
+  }
+
+  //
   // Applies the pixelate filter.
   //
   //  $size (int) - The size of the blocks in pixels (default 10).

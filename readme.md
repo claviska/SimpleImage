@@ -46,7 +46,7 @@ try {
 - Reads and writes files, data URIs, and image strings.
 - Manipulation: crop, resize, overlay/watermark, adding TTF text
 - Drawing: arc, border, dot, ellipse, line, polygon, rectangle, rounded rectangle
-- Filters: blur, brighten, colorize, contrast, darken, desaturate, edge detect, emboss, invert, pixelate, sepia, sharpen, sketch
+- Filters: blur, brighten, colorize, contrast, darken, desaturate, edge detect, emboss, invert, opacity, pixelate, sepia, sharpen, sketch
 - Utilities: color adjustment, darken/lighten color, extract colors
 - Properties: exif data, height/width, mime type, orientation
 - Color arguments can be passed in as any CSS color (e.g. `LightBlue`), a hex color, or an RGB(A) array.
@@ -539,6 +539,14 @@ Returns a SimpleImage object.
 #### `invert()`
 
 Inverts the image's colors.
+
+Returns a SimpleImage object.
+
+#### `opacity()`
+
+Changes the image's opacity level.
+
+- `$opacity`* (float) - The desired opacity level (0 - 1).
 
 Returns a SimpleImage object.
 
