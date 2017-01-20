@@ -376,6 +376,11 @@ class SimpleImage {
     if($value > $max) return $max;
     return $value;
   }
+  
+  private function resizeNecessary($width, $height) {
+     return !($this->getWidth() == $width 
+         && $this->getHeight() == $height);
+  }
 
   //
   // Gets the image's exif data.
@@ -790,6 +795,10 @@ class SimpleImage {
     // workaround is to create a new truecolor image, allocate a transparent color, and copy the
     // image over to it using imagecopyresampled.
 
+    if (!$this->resizeNecessary($width, $height)) {
+        return $this;
+    }
+      
     // Create a new true color image
     $newImage = imagecreatetruecolor($width, $height);
     $transparentColor = imagecolorallocatealpha($newImage, 0, 0, 0, 127);
