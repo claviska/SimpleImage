@@ -435,53 +435,19 @@ class SimpleImage {
   // Same as PHP's imagecopymerge, but works with transparent images. Used internally for overlay.
   //
   private static function imageCopyMergeAlpha($dstIm, $srcIm, $dstX, $dstY, $srcX, $srcY, $srcW, $srcH, $pct) {
-    // Get image width and height and percentage
-    $pct /= 100;
-    $w = imagesx($srcIm);
-    $h = imagesy($srcIm);
-
-    // Turn alpha blending off
-    imagealphablending($srcIm, false);
-
-    // Find the most opaque pixel in the image (the one with the smallest alpha value)
-    $minAlpha = 127;
-    for($x = 0; $x < $w; $x++) {
-      for($y = 0; $y < $h; $y++) {
-        $alpha = (imagecolorat($srcIm, $x, $y) >> 24) & 0xFF;
-        if($alpha < $minAlpha) {
-          $minAlpha = $alpha;
-        }
-      }
+    if($pct < 100) {
+      // Turn alpha blending off
+      imagealphablending($srcIm, false);
+      imagesavealpha($srcIm, true); // this one helps you keep the alpha.
+        
+      // the fourth parameter is alpha
+      imagefilter($srcIm, IMG_FILTER_COLORIZE, 0, 0, 0, 127 * ((100 - $pct) / 100));
+      
+      // Enable alpha blending and copy the image
+      imagealphablending($dstIm, true);
+      imagealphablending($srcIm, true);
     }
-    // Loop through image pixels and modify alpha for each
-    for($x = 0; $x < $w; $x++) {
-      for($y = 0; $y < $h; $y++) {
-        // Get current alpha value (represents the TANSPARENCY!)
-        $colorXY = imagecolorat($srcIm, $x, $y);
-        $alpha = ($colorXY >> 24) & 0xFF;
-        // Calculate new alpha
-        if($minAlpha !== 127) {
-          $alpha = 127 + 127 * $pct * ($alpha - 127) / (127 - $minAlpha);
-        } else {
-          $alpha += 127 * $pct;
-        }
-        // Get the color index with new alpha
-        $alphaColorXY = imagecolorallocatealpha(
-          $srcIm,
-          ($colorXY >> 16) & 0xFF,
-          ($colorXY >> 8) & 0xFF,
-          $colorXY & 0xFF,
-          $alpha
-        );
-        // Set pixel with the new color + opacity
-        if(!imagesetpixel($srcIm, $x, $y, $alphaColorXY)) {
-          return false;
-        }
-      }
-    }
-    // Enable alpha blending and copy the image
-    imagealphablending($dstIm, true);
-    imagealphablending($srcIm, true);
+    
     imagecopy($dstIm, $srcIm, $dstX, $dstY, $srcX, $srcY, $srcW, $srcH);
 
     return true;
