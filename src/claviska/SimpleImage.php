@@ -533,30 +533,33 @@ class SimpleImage {
   //
   // Returns a SimpleImage object.
   //
-  public function bestFit($maxWidth, $maxHeight) {
+  public function bestFit($maxWidth, $maxHeight, $upscale = false) {
     $width = $this->getWidth();
     $height = $this->getHeight();
 
-    if($width <= $maxWidth && $height <= $maxHeight) {
+    if(!$upscale && $width <= $maxWidth && $height <= $maxHeight) {
       return $this;
     }
 
     // Determine aspect ratio
     $aspectRatio = $height / $width;
 
-    // Make width fit into new dimensions
-    if($width > $maxWidth) {
-      $width = $maxWidth;
-      $height = $width * $aspectRatio;
-    } else {
-      $width = $width;
-      $height = $height;
-    }
-
-    // Make height fit into new dimensions
-    if($height > $maxHeight) {
-      $height = $maxHeight;
-      $width = $height / $aspectRatio;
+    switch (true) {
+        // Portrait
+        case $aspectRatio > 1:
+            $height = $maxHeight;
+            $width = ceil($height / $aspectRatio);
+            break;
+        // Landscape
+        case $aspectRatio < 1:
+            $width = $maxWidth;
+            $height = ceil($width * $aspectRatio);
+            break;
+        // Square
+        default:
+            $width = $maxWidth;
+            $height = $maxHeight;
+            break;
     }
 
     return $this->resize($width, $height);
