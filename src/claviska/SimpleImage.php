@@ -28,7 +28,8 @@ class SimpleImage {
     ERR_LIB_NOT_LOADED = 8,
     ERR_UNSUPPORTED_FORMAT = 9,
     ERR_WEBP_NOT_ENABLED = 10,
-    ERR_WRITE = 11;
+    ERR_WRITE = 11,
+    ERR_INVALID_SCALE = 12;
 
   private $image, $mimeType, $exif;
 
@@ -787,6 +788,27 @@ class SimpleImage {
 
     // Swap out the new image
     $this->image = $newImage;
+
+    return $this;
+  }
+
+  //
+  // Scales the image proportionally.
+  // $scale (float) - The percentage by which the image should be scaled, where 50 = half of the original size,
+  // 100 = the original size, 200 = twice the original size, etc. (Must be greater than zero.)
+  //
+  // Returns a SimpleImage object.
+  public function scale($scale) {
+    if ($scale <= 0) {
+      throw new \Exception(
+        "Scale must be greater than 0%",
+          self::ERR_INVALID_SCALE
+        );
+    }
+    $this->resize(
+      round($this->getWidth() * ($scale / 100)),
+      round($this->getHeight() * ($scale / 100))
+    );
 
     return $this;
   }
