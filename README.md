@@ -303,7 +303,7 @@ Returns a SimpleImage object.
 
 #### `resize($width, $height)`
 
-Resize an image to the specified dimensions. This method WILL NOT maintain proportions. To resize an image without stretching it, use fitToWidth, fitToHeight, or bestFit.
+Resize an image to the specified dimensions. If only one dimension is specified, the image will be resized proportionally.
 
 - `$width`* (int) - The new image width.
 - `$height`* (int) - The new image height.
