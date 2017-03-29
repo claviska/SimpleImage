@@ -503,6 +503,11 @@ class SimpleImage {
   // Returns a SimpleImage object.
   //
   public function bestFit($maxWidth, $maxHeight) {
+    // If the image already fits, there's nothing to do
+    if($this->getWidth() <= $maxWidth && $this->getHeight() <= $maxHeight) {
+      return $this;
+    }
+
     // Calculate max width or height based on orientation
     if($this->getOrientation() === 'portrait') {
       $height = $maxHeight;
