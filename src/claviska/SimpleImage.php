@@ -221,6 +221,9 @@ class SimpleImage {
     // Format defaults to the original mime type
     $mimeType = $mimeType ?: $this->mimeType;
 
+    // Null quality reverts to default
+    if($quality === null) $quality = 100;
+
     // Enforce quality range
     $quality = self::keepWithin($quality, 0, 100);
 
