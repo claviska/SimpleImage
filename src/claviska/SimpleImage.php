@@ -103,6 +103,31 @@ class SimpleImage {
 
     return $this;
   }
+  //
+  // Loads an image from a binary data
+  //
+  //  $raw* (string) - binary
+  //
+  // Returns a SimpleImage instance.
+  //
+  public function fromRaw($raw) {
+    // check vaild format
+    $binary_check['png'] = "\x89\x50\x4e\x47\x0d\x0a\x1a\x0a";
+    $binary_check['gif'] = "GIF";
+    $binary_check['jpeg'] = "\xFF\xD8\xFF";
+
+    $is_supprt = false;
+    foreach ($binary_check as $key => $value) {
+      if (substr($raw, 0, strlen($binary_check[$key])) === $value ) {
+        $is_supprt = true;
+      }
+    }
+    if (!$is_supprt) {
+      throw new \Exception("Invalid image data.", self::ERR_INVALID_IMAGE);
+    }
+    $this->image = imagecreatefromstring($raw);
+    return $this;
+  }
 
   //
   // Loads an image from a file.
@@ -281,7 +306,18 @@ class SimpleImage {
 
     return 'data:' . $image['mimeType'] . ';base64,' . base64_encode($image['data']);
   }
-
+  //
+  // Generates a binary data
+  //
+  //  $mimeType (string) - The image format to output as a mime type (defaults to the original mime
+  //    type).
+  //  $quality (int) - Image quality as a percentage (default 100).
+  //
+  // Returns a binary data string.
+  //
+  public function toRaw($mimeType = null, $quality = 100) {
+    return $this->generate($mimeType, $quality)['data'];
+  }
   //
   // Forces the image to be downloaded to the clients machine. Must be called before any output is
   // sent to the screen.
