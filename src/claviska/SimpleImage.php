@@ -466,6 +466,10 @@ class SimpleImage {
   public function autoOrient() {
     $exif = $this->getExif();
 
+    if(!$exif || !isset($exif['Orientation'])){
+      return $this;
+    }
+
     switch($exif['Orientation']) {
     case 1: // Do nothing!
       break;
