@@ -817,8 +817,9 @@ class SimpleImage {
     $this->image = imagerotate(
       $this->image,
       -(self::keepWithin($angle, -360, 360)),
-      $backgroundColor
+      imagecolorallocatealpha($this->image, 0, 0, 0, 127)
     );
+    imagecolortransparent($this->image, imagecolorallocatealpha($this->image, 0, 0, 0, 127));
 
     return $this;
   }

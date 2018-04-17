@@ -15,8 +15,8 @@
     }
   ],
   "autoload": {
-    "psr-0": {
-      "claviska": "src/"
+    "psr-4": {
+      "claviska\\": "src/claviska"
     }
   }
 }
