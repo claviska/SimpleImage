@@ -5,7 +5,8 @@
   "require": {
     "php": ">=5.6.0",
     "ext-gd": "*",
-    "league/color-extractor": "0.3.*"
+    "league/color-extractor": "0.3.*",
+    "imagecow/imagecow": "^2.3"
   },
   "authors": [
     {
@@ -15,8 +16,8 @@
     }
   ],
   "autoload": {
-    "psr-4": {
-      "claviska\\": "src/claviska"
+    "psr-0": {
+      "claviska": "src/"
     }
   }
 }
