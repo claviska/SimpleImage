@@ -1457,7 +1457,7 @@ class SimpleImage {
     self::imageCopyMergeAlpha(
       $newImage->image,
       $this->image,
-      $x, $y,
+      0, 0,
       0, 0,
       $this->getWidth(),
       $this->getHeight(),
