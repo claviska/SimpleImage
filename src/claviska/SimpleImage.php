@@ -566,6 +566,45 @@ class SimpleImage {
   }
 
   //
+  // Crops the image to fit inside a specific width and height as best as possible.
+  //
+  // $dstw - Output crop width.
+  // $dsth - Output crop height.
+  //
+  // Returns a SimpleImage object.
+  //
+  public function bestCrop($dstw, $dsth){
+    $w = $this->getWidth();
+    $h = $this->getHeight();
+    // Calculate the new width and height based on the aspect ratio of the provided width and height to fit as best
+    // possible inside the original image.
+    if($w > $h) {
+      $new_height = $dsth;
+      $new_width = floor($w * ($new_height / $h));
+      $crop_x = ceil(($w - $h) / 2);
+      $crop_y = 0;
+    } else {
+      $new_width = $dstw;
+      $new_height = floor( $h * ( $new_width / $w ));
+      $crop_x = 0;
+      $crop_y = ceil(($h - $w) / 2);
+    }
+
+    // Create a new image object width the output width and height.
+    $this->image = imagecreatetruecolor($dstw,$dsth);
+
+    // Preserve transparency if the original image had.
+    if($this->getMimeType() === "image/png"){
+      imagealphablending($this->image, false);
+      imagesavealpha($this->image, true);
+    }
+
+    // Render the new cropping output to the image object.
+    imagecopyresampled($this->image, $this->image, 0, 0, $crop_x, $crop_y, $new_width, $new_height, $w, $h);
+    return $this;
+  }
+
+  //
   // Applies a duotone filter to the image.
   //
   //  $lightColor* (string|array) - The lightest color in the duotone.
