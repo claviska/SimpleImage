@@ -310,6 +310,22 @@ Resize an image to the specified dimensions. If only one dimension is specified,
 
 Returns a SimpleImage object.
 
+#### `scale($factor)`
+
+Resize an image to the relative size of the original resolution.
+
+- `$factor`* (float) - Factor of the scale.
+
+#### `resizeProportionally($width, $height, $backgroundColor)`
+
+Resize an image to tightly fit a rectangular of the specified dimensions, without deformation. Resized image is centred in the rectangular of given background.
+
+- `$width`* (int) - The new image width.
+- `$height` (int) -  The new image height. If not specified, resizes to the square.
+- `$backgroundColor` (string|array) - The background color to use for the uncovered zone area (default 'transparent').
+
+Returns a SimpleImage object.
+
 #### `rotate($angle, $backgroundColor)`
 
 Rotates the image.
