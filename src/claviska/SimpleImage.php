@@ -802,6 +802,60 @@ class SimpleImage {
   }
 
   //
+  // Resize an image to the relative size of the original resolution.
+  //
+  //  $factor* (float) - Factor of the scale.
+  //
+  // Returns a SimpleImage object.
+  //
+  public function scale($factor) {
+    return $this->resize($this->getWidth() * $factor);
+  }
+
+  //
+  // Resize an image to tightly fit a rectangular of the specified dimensions, without deformation. 
+  // Resized image is centred in the rectangular of given background.
+  //
+  //  $width* (int) - The new image width.
+  //  $height (int) - The new image height. If not specified, resizes to the square.
+  //  $backgroundColor (string|array) - The background color to use for the uncovered zone area.
+  //
+  // Returns a SimpleImage object.
+  //
+  public function resizeProportionally($width, $height = null, $backgroundColor = 'transparent') {
+    // $backgroundColor = $this->allocateColor($backgroundColor);
+    $color = $this->normalizeColor($backgroundColor);
+    
+    if(!$height)
+    $height = $width;
+    
+    $aspectRatio = $width / $height;
+    if($aspectRatio > $this->getAspectRatio())
+    $this->resize(null, $height);
+    else
+    $this->resize($width, null);
+    
+    // fill background, then place centered resized image
+    $newImage = imagecreatetruecolor($width, $height);
+    fwrite(STDERR, "test: " . $color['red'] . " " . $color['green'] . " " . $color['blue'] . " " . $color['alpha']);
+    $color = imagecolorallocatealpha(
+      $newImage, $color['red'], $color['green'], $color['blue'], 127 - $color['alpha']*127
+    );
+    imagefill($newImage, 0, 0, $color);
+    imagecopy($newImage, $this->image,
+      ($width - $this->getWidth())/2,
+      ($height - $this->getHeight())/2,
+      0, 0,
+      $this->getWidth(),  $this->getHeight()
+    );
+
+    // Swap out the new image
+    $this->image = $newImage;
+
+    return $this;
+  }
+
+  //
   // Rotates the image.
   //
   // $angle* (int) - The angle of rotation (-360 - 360).
