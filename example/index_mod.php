@@ -10,7 +10,7 @@ try {
 
   // Manipulate it
   $image
-    ->fromFile('parrot.jpg')              // load parrot.jpg
+    ->fromFile('flag.png')                // load flag.png
     ->autoOrient()                        // adjust orientation based on exif data
     ->resizeProportionally(450)           // proportinoally resize to a square
     // ->resizeProportionally(300, 600, 'aqua|0.5')// proportinoally resize to fit inside a 250x400 box

@@ -813,8 +813,8 @@ class SimpleImage {
   }
 
   //
-  // Resize an image to tightly fit a rectangular of the specified dimensions, without deformation. 
-  // Resized image is centred in the rectangular of given background.
+  // Resize an image to tightly fit a rectangle of the specified dimensions, without deformation. 
+  // Resized image is centred in the rectangle of given background.
   //
   //  $width* (int) - The new image width.
   //  $height (int) - The new image height. If not specified, resizes to the square.
@@ -826,18 +826,19 @@ class SimpleImage {
     // $backgroundColor = $this->allocateColor($backgroundColor);
     $color = $this->normalizeColor($backgroundColor);
     
-    if(!$height)
-    $height = $width;
+    if(!$height) {
+      $height = $width;
+    }
     
     $aspectRatio = $width / $height;
-    if($aspectRatio > $this->getAspectRatio())
-    $this->resize(null, $height);
-    else
-    $this->resize($width, null);
+    if($aspectRatio > $this->getAspectRatio()) {
+      $this->resize(null, $height);
+    } else {
+      $this->resize($width, null);
+    }
     
     // fill background, then place centered resized image
     $newImage = imagecreatetruecolor($width, $height);
-    fwrite(STDERR, "test: " . $color['red'] . " " . $color['green'] . " " . $color['blue'] . " " . $color['alpha']);
     $color = imagecolorallocatealpha(
       $newImage, $color['red'], $color['green'], $color['blue'], 127 - $color['alpha']*127
     );

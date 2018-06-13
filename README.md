@@ -318,7 +318,7 @@ Resize an image to the relative size of the original resolution.
 
 #### `resizeProportionally($width, $height, $backgroundColor)`
 
-Resize an image to tightly fit a rectangular of the specified dimensions, without deformation. Resized image is centred in the rectangular of given background.
+Resize an image to tightly fit a rectangle of the specified dimensions, without deformation. Resized image is centred in the rectangle of given background.
 
 - `$width`* (int) - The new image width.
 - `$height` (int) -  The new image height. If not specified, resizes to the square.
