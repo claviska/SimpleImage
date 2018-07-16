@@ -819,6 +819,7 @@ class SimpleImage {
       -(self::keepWithin($angle, -360, 360)),
       $backgroundColor
     );
+    imagecolortransparent($this->image, imagecolorallocatealpha($this->image, 0, 0, 0, 127));
 
     return $this;
   }
