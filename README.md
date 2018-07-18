@@ -568,7 +568,7 @@ Returns a SimpleImage object.
 
 Sharpens the image.
 
-- `$amount` (int) - Sharpening amount (default 50)
+- `$amount` (int) - Sharpening amount (1 - 100, default 50)
 
 Returns a SimpleImage object.
 
