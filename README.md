@@ -564,9 +564,11 @@ Simulates a sepia effect by desaturating the image and applying a sepia tone.
 
 Returns a SimpleImage object.
 
-#### `sharpen()`
+#### `sharpen($amount)`
 
 Sharpens the image.
+
+- `$amount` (int) - Sharpening amount (default 50)
 
 Returns a SimpleImage object.
 
