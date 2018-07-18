@@ -1502,7 +1502,7 @@ class SimpleImage {
   //
   public function sharpen($amount = 50) {
     // Normalize amount
-    $amount = max(1, min(99, $amount)) / 100;
+    $amount = max(1, min(100, $amount)) / 100;
 
     $sharpen = [
       [-1, -1, -1],
