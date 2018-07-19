@@ -1496,13 +1496,18 @@ class SimpleImage {
   //
   // Sharpens the image.
   //
+  //  $amount (int) - Sharpening amount (default 50)
+  //
   // Returns a SimpleImage object.
   //
-  public function sharpen() {
+  public function sharpen($amount = 50) {
+    // Normalize amount
+    $amount = max(1, min(100, $amount)) / 100;
+
     $sharpen = [
-      [0, -1, 0],
-      [-1, 5, -1],
-      [0, -1, 0]
+      [-1, -1, -1],
+      [-1,  8 / $amount, -1],
+      [-1, -1, -1],
     ];
     $divisor = array_sum(array_map('array_sum', $sharpen));
 
