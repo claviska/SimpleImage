@@ -1,22 +1,14 @@
 language: php
 
 php:
-  - 5.3
-  - 5.4
-  - 5.5
   - 5.6
   - 7.0
-  - '7.1.0alpha1'
-  - hhvm
+  - 7.1
+  - 7.2
 
 matrix:
   fast_finish: true
-  allow_failures:
-    - php: '7.1.0alpha1'
-    - php: hhvm
   include:
-    - php: 5.6
-      env: XDEBUG_OFF="yes"
     - php: 7.0
       env: XDEBUG_OFF="yes"
 
