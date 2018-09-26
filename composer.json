@@ -27,7 +27,7 @@
     "require"           : {
         "php"         : ">=5.3.10",
         "ext-gd"      : "*",
-        "jbzoo/utils" : "^1.4"
+        "jbzoo/utils" : "^1.4|^2.2"
     },
     "require-dev"       : {
         "jbzoo/phpunit" : "^1.7"
