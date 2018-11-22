@@ -554,13 +554,41 @@ class SimpleImage {
     $y1 = self::keepWithin($y1, 0, $this->getHeight());
     $y2 = self::keepWithin($y2, 0, $this->getHeight());
 
-    // Crop it
-    $this->image = imagecrop($this->image, [
-      'x' => min($x1, $x2),
-      'y' => min($y1, $y2),
-      'width' => abs($x2 - $x1),
-      'height' => abs($y2 - $y1)
-    ]);
+    switch($this->mimeType) {
+    case 'image/png':
+      // Copy the png over to a true color image to preserve its transparency. This is a
+      // workaround to prevent imagepalettetruecolor() from borking transparency.
+      $x = min($x1, $x2);
+      $y = min($y1, $y2);
+      $width = abs($x2 - $x1);
+      $height = abs($y2 - $y1);
+
+      $newImage = imagecreatetruecolor($width, $height);
+      $transparentColor = imagecolorallocatealpha($newImage, 0, 0, 0, 127);
+      imagecolortransparent($newImage, $transparentColor);
+      imagefill($newImage, 0, 0, $transparentColor);
+      imagecopyresampled(
+        $newImage,
+        $this->image,
+        0, 0, $x, $y,
+        $width,
+        $height,
+        $width,
+        $height
+      );
+
+      // Swap out the new image
+      $this->image = $newImage;
+      break;
+    default:
+      // Crop it
+      $this->image = imagecrop($this->image, [
+        'x' => min($x1, $x2),
+        'y' => min($y1, $y2),
+        'width' => abs($x2 - $x1),
+        'height' => abs($y2 - $y1)
+      ]);
+    }
 
     return $this;
   }
