@@ -30,7 +30,7 @@ class SimpleImage {
     ERR_WEBP_NOT_ENABLED = 10,
     ERR_WRITE = 11;
 
-  protected $image, $mimeType, $exif;
+  protected $image, $mimeType, $exif, $bits;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // Magic methods
@@ -126,6 +126,7 @@ class SimpleImage {
       throw new \Exception("Invalid image file: $file", self::ERR_INVALID_IMAGE);
     }
     $this->mimeType = $info['mime'];
+    $this->bits = $info['bits'];
 
     // Create image object from file
     switch($this->mimeType) {
@@ -554,14 +555,12 @@ class SimpleImage {
     $y1 = self::keepWithin($y1, 0, $this->getHeight());
     $y2 = self::keepWithin($y2, 0, $this->getHeight());
 
-    switch($this->mimeType) {
-    case 'image/png':
-      // Copy the png over to a true color image to preserve its transparency. This is a
-      // workaround to prevent imagepalettetruecolor() from borking transparency.
-      $x = min($x1, $x2);
-      $y = min($y1, $y2);
-      $width = abs($x2 - $x1);
-      $height = abs($y2 - $y1);
+    $x = min($x1, $x2);
+    $y = min($y1, $y2);
+    $width = abs($x2 - $x1);
+    $height = abs($y2 - $y1);
+    
+    if ($this->mimeType == 'image/png' && GD_BUNDLED === 0) {
 
       $newImage = imagecreatetruecolor($width, $height);
       $transparentColor = imagecolorallocatealpha($newImage, 0, 0, 0, 127);
@@ -579,8 +578,39 @@ class SimpleImage {
 
       // Swap out the new image
       $this->image = $newImage;
-      break;
-    default:
+    }
+    elseif ($this->mimeType == 'image/gif' && GD_BUNDLED === 0){
+        
+        $newImage = imagecreatetruecolor($width, $height);
+        
+        $trnprt_indx = imagecolortransparent($this->image);
+        if ($trnprt_indx >= 0) {
+            $trnprt_color = imagecolorsforindex($this->image, $trnprt_indx);
+            $trnprt_indx = imagecolorallocate($newImage, $trnprt_color['red'], $trnprt_color['green'], $trnprt_color['blue']);
+            imagefill($newImage, 0, 0, $trnprt_indx);
+            imagecolortransparent($newImage, $trnprt_indx);
+        }
+        
+        if ($this->bits == 1) {
+          $transparentColor = imagecolorallocatealpha($newImage, 0, 0, 0, 127);
+          imagecolortransparent($newImage, $trnprt_indx);
+          imagefill($newImage, 0, 0, $transparentColor);
+        }
+        
+        imagecopyresampled(
+          $newImage,
+          $this->image,
+          0, 0, $x, $y,
+          $width,
+          $height,
+          $width,
+          $height
+        );
+        
+        $this->image = $newImage;
+    }
+    else {
+      
       // Crop it
       $this->image = imagecrop($this->image, [
         'x' => min($x1, $x2),
@@ -588,6 +618,7 @@ class SimpleImage {
         'width' => abs($x2 - $x1),
         'height' => abs($y2 - $y1)
       ]);
+    
     }
 
     return $this;
@@ -809,22 +840,59 @@ class SimpleImage {
     // We can't use imagescale because it doesn't seem to preserve transparency properly. The
     // workaround is to create a new truecolor image, allocate a transparent color, and copy the
     // image over to it using imagecopyresampled.
-    $newImage = imagecreatetruecolor($width, $height);
-    $transparentColor = imagecolorallocatealpha($newImage, 0, 0, 0, 127);
-    imagecolortransparent($newImage, $transparentColor);
-    imagefill($newImage, 0, 0, $transparentColor);
-    imagecopyresampled(
-      $newImage,
-      $this->image,
-      0, 0, 0, 0,
-      $width,
-      $height,
-      $this->getWidth(),
-      $this->getHeight()
-    );
+    
+    if ($this->mimeType == 'image/png') {
 
-    // Swap out the new image
-    $this->image = $newImage;
+      $newImage = imagecreatetruecolor($width, $height);
+      $transparentColor = imagecolorallocatealpha($newImage, 0, 0, 0, 127);
+      imagecolortransparent($newImage, $transparentColor);
+      imagefill($newImage, 0, 0, $transparentColor);
+      imagecopyresampled(
+        $newImage,
+        $this->image,
+        0, 0, 0, 0,
+        $width,
+        $height,
+        $this->getWidth(),
+        $this->getHeight()
+      );
+
+      // Swap out the new image
+      $this->image = $newImage;
+    }
+    elseif ($this->mimeType == 'image/gif'){
+      $newImage = imagecreatetruecolor($width, $height);
+      
+      $trnprt_indx = imagecolortransparent($this->image);
+      if ($trnprt_indx >= 0) {
+          $trnprt_color = imagecolorsforindex($this->image, $trnprt_indx);
+          $trnprt_indx = imagecolorallocate($newImage, $trnprt_color['red'], $trnprt_color['green'], $trnprt_color['blue']);
+          imagefill($newImage, 0, 0, $trnprt_indx);
+          imagecolortransparent($newImage, $trnprt_indx);
+      }
+      
+      if ($this->bits == 1) {
+        $transparentColor = imagecolorallocatealpha($newImage, 0, 0, 0, 127);
+        imagecolortransparent($newImage, $transparentColor);
+        imagefill($newImage, 0, 0, $transparentColor);
+      }
+      
+      imagecopyresampled(
+        $newImage,
+        $this->image,
+        0, 0, 0, 0,
+        $width,
+        $height,
+        $this->getWidth(),
+        $this->getHeight()
+      );
+      
+      // Swap out the new image
+      $this->image = $newImage;
+    }
+    else {
+      imagescale($this->image, $width, $height);
+    }
 
     return $this;
   }
@@ -842,12 +910,44 @@ class SimpleImage {
     // Rotate the image on a canvas with the desired background color
     $backgroundColor = $this->allocateColor($backgroundColor);
 
-    $this->image = imagerotate(
-      $this->image,
-      -(self::keepWithin($angle, -360, 360)),
-      $backgroundColor
-    );
-    imagecolortransparent($this->image, imagecolorallocatealpha($this->image, 0, 0, 0, 127));
+    if ($this->mimeType == 'image/gif' && GD_BUNDLED === 1 && $this->bits == 8){
+        
+      $trnprt_indx = imagecolortransparent($this->image);
+      if ($trnprt_indx >= 0) {
+          $trnprt_color = imagecolorsforindex($this->image, $trnprt_indx);
+          $trnprt_indx = imagecolorallocate($this->image, $trnprt_color['red'], $trnprt_color['green'], $trnprt_color['blue']);
+          imagefill($this->image, 0, 0, $trnprt_indx);
+          imagecolortransparent($this->image, $trnprt_indx);
+      }
+      
+      $transparentColor = imagecolorallocatealpha($this->image, 0, 0, 0, 127);
+      
+      $this->image = imagerotate(
+        $this->image,
+        -(self::keepWithin($angle, -360, 360)),
+        $transparentColor
+      );
+      
+      imagefill($this->image, 0, 0, $trnprt_indx);
+      imagecolortransparent($this->image, $trnprt_indx);
+      
+      imagefill($this->image, 0, 0, $transparentColor);
+      imagecolortransparent($this->image, $transparentColor);
+      
+      imagefill($this->image, 0, 0, $backgroundColor);
+      
+    }
+    
+    else {
+      
+      $this->image = imagerotate(
+        $this->image,
+        -(self::keepWithin($angle, -360, 360)),
+        $backgroundColor
+      );
+      imagecolortransparent($this->image, imagecolorallocatealpha($this->image, 0, 0, 0, 127));
+      
+    }
 
     return $this;
   }
