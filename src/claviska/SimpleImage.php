@@ -559,8 +559,14 @@ class SimpleImage {
     $y = min($y1, $y2);
     $width = abs($x2 - $x1);
     $height = abs($y2 - $y1);
-    
-    if ($this->mimeType == 'image/png' && GD_BUNDLED === 0) {
+
+    // PHP comes with libgd or with a bundled version, that differs from the
+    // original libgd. Both versions provide a constant `GD_BUNDLED` with a 
+    // value 1 or 0. libgd seems to rotate transparent gif properly, but it has
+    // problems with resize and crop. The bundled version seems to crop and resize
+    // without problems, but it fails on rotations.
+
+    if($this->mimeType == 'image/png' && GD_BUNDLED === 0) {
 
       $newImage = imagecreatetruecolor($width, $height);
       $transparentColor = imagecolorallocatealpha($newImage, 0, 0, 0, 127);
@@ -578,39 +584,44 @@ class SimpleImage {
 
       // Swap out the new image
       $this->image = $newImage;
-    }
-    elseif ($this->mimeType == 'image/gif' && GD_BUNDLED === 0){
-        
-        $newImage = imagecreatetruecolor($width, $height);
-        
-        $trnprt_indx = imagecolortransparent($this->image);
-        if ($trnprt_indx >= 0) {
-            $trnprt_color = imagecolorsforindex($this->image, $trnprt_indx);
-            $trnprt_indx = imagecolorallocate($newImage, $trnprt_color['red'], $trnprt_color['green'], $trnprt_color['blue']);
-            imagefill($newImage, 0, 0, $trnprt_indx);
-            imagecolortransparent($newImage, $trnprt_indx);
-        }
-        
-        if ($this->bits == 1) {
-          $transparentColor = imagecolorallocatealpha($newImage, 0, 0, 0, 127);
-          imagecolortransparent($newImage, $trnprt_indx);
-          imagefill($newImage, 0, 0, $transparentColor);
-        }
-        
-        imagecopyresampled(
-          $newImage,
-          $this->image,
-          0, 0, $x, $y,
-          $width,
-          $height,
-          $width,
-          $height
-        );
-        
-        $this->image = $newImage;
-    }
-    else {
-      
+
+    } elseif($this->mimeType == 'image/gif' && GD_BUNDLED === 0){
+
+      $newImage = imagecreatetruecolor($width, $height);
+
+      // `imagecolorallocatealpha` seems to fail for 8bit gif and leads to artefacts
+      // The alpha channel detection works with RGBA indexes and `imagecolorsforindex()`
+      $transparencyIndex = imagecolortransparent($this->image);
+      if ($transparencyIndex >= 0) {
+          $transparentColorRGBA = imagecolorsforindex($this->image, $transparencyIndex);
+          $transparencyIndex = imagecolorallocate($newImage, $transparentColorRGBA['red'], $transparentColorRGBA['green'], $transparentColorRGBA['blue']);
+          imagefill($newImage, 0, 0, $transparencyIndex);
+          imagecolortransparent($newImage, $transparencyIndex);
+      }
+
+      // 1bit transparent gif seems to have wrong alpha channel detection
+      // when using `imagecolorsforindex()`
+      if ($this->bits == 1) {
+        $transparentColor = imagecolorallocatealpha($newImage, 0, 0, 0, 127);
+        imagecolortransparent($newImage, $transparencyIndex);
+        imagefill($newImage, 0, 0, $transparentColor);
+      }
+
+      imagecopyresampled(
+        $newImage,
+        $this->image,
+        0, 0, $x, $y,
+        $width,
+        $height,
+        $width,
+        $height
+      );
+
+      // Swap out the new image
+      $this->image = $newImage;
+
+    } else {
+
       // Crop it
       $this->image = imagecrop($this->image, [
         'x' => min($x1, $x2),
@@ -618,7 +629,7 @@ class SimpleImage {
         'width' => abs($x2 - $x1),
         'height' => abs($y2 - $y1)
       ]);
-    
+
     }
 
     return $this;
@@ -840,8 +851,8 @@ class SimpleImage {
     // We can't use imagescale because it doesn't seem to preserve transparency properly. The
     // workaround is to create a new truecolor image, allocate a transparent color, and copy the
     // image over to it using imagecopyresampled.
-    
-    if ($this->mimeType == 'image/png') {
+
+    if($this->mimeType == 'image/png') {
 
       $newImage = imagecreatetruecolor($width, $height);
       $transparentColor = imagecolorallocatealpha($newImage, 0, 0, 0, 127);
@@ -859,24 +870,29 @@ class SimpleImage {
 
       // Swap out the new image
       $this->image = $newImage;
-    }
-    elseif ($this->mimeType == 'image/gif'){
+
+    } elseif($this->mimeType == 'image/gif') {
+
       $newImage = imagecreatetruecolor($width, $height);
-      
-      $trnprt_indx = imagecolortransparent($this->image);
-      if ($trnprt_indx >= 0) {
-          $trnprt_color = imagecolorsforindex($this->image, $trnprt_indx);
-          $trnprt_indx = imagecolorallocate($newImage, $trnprt_color['red'], $trnprt_color['green'], $trnprt_color['blue']);
-          imagefill($newImage, 0, 0, $trnprt_indx);
-          imagecolortransparent($newImage, $trnprt_indx);
+
+      // `imagecolorallocatealpha` seems to fail for 8bit gif and leads to artefacts
+      // The alpha channel detection works with RGBA indexes and `imagecolorsforindex()`
+      $transparencyIndex = imagecolortransparent($this->image);
+      if ($transparencyIndex >= 0) {
+          $transparentColorRGBA = imagecolorsforindex($this->image, $transparencyIndex);
+          $transparencyIndex = imagecolorallocate($newImage, $transparentColorRGBA['red'], $transparentColorRGBA['green'], $transparentColorRGBA['blue']);
+          imagefill($newImage, 0, 0, $transparencyIndex);
+          imagecolortransparent($newImage, $transparencyIndex);
       }
-      
+
+      // 1bit transparent gif seems to have wrong alpha channel detection
+      // when using `imagecolorsforindex()`
       if ($this->bits == 1) {
         $transparentColor = imagecolorallocatealpha($newImage, 0, 0, 0, 127);
         imagecolortransparent($newImage, $transparentColor);
         imagefill($newImage, 0, 0, $transparentColor);
       }
-      
+
       imagecopyresampled(
         $newImage,
         $this->image,
@@ -886,12 +902,12 @@ class SimpleImage {
         $this->getWidth(),
         $this->getHeight()
       );
-      
+
       // Swap out the new image
       $this->image = $newImage;
-    }
-    else {
-      imagescale($this->image, $width, $height);
+
+    } else { // imagescale works for non-transparent images
+      $this->image = imagescale($this->image, $width, $height);
     }
 
     return $this;
@@ -910,44 +926,12 @@ class SimpleImage {
     // Rotate the image on a canvas with the desired background color
     $backgroundColor = $this->allocateColor($backgroundColor);
 
-    if ($this->mimeType == 'image/gif' && GD_BUNDLED === 1 && $this->bits == 8){
-        
-      $trnprt_indx = imagecolortransparent($this->image);
-      if ($trnprt_indx >= 0) {
-          $trnprt_color = imagecolorsforindex($this->image, $trnprt_indx);
-          $trnprt_indx = imagecolorallocate($this->image, $trnprt_color['red'], $trnprt_color['green'], $trnprt_color['blue']);
-          imagefill($this->image, 0, 0, $trnprt_indx);
-          imagecolortransparent($this->image, $trnprt_indx);
-      }
-      
-      $transparentColor = imagecolorallocatealpha($this->image, 0, 0, 0, 127);
-      
-      $this->image = imagerotate(
-        $this->image,
-        -(self::keepWithin($angle, -360, 360)),
-        $transparentColor
-      );
-      
-      imagefill($this->image, 0, 0, $trnprt_indx);
-      imagecolortransparent($this->image, $trnprt_indx);
-      
-      imagefill($this->image, 0, 0, $transparentColor);
-      imagecolortransparent($this->image, $transparentColor);
-      
-      imagefill($this->image, 0, 0, $backgroundColor);
-      
-    }
-    
-    else {
-      
-      $this->image = imagerotate(
-        $this->image,
-        -(self::keepWithin($angle, -360, 360)),
-        $backgroundColor
-      );
-      imagecolortransparent($this->image, imagecolorallocatealpha($this->image, 0, 0, 0, 127));
-      
-    }
+    $this->image = imagerotate(
+      $this->image,
+      -(self::keepWithin($angle, -360, 360)),
+      $backgroundColor
+    );
+    imagecolortransparent($this->image, imagecolorallocatealpha($this->image, 0, 0, 0, 127));
 
     return $this;
   }
