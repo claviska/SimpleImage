@@ -30,7 +30,7 @@ class SimpleImage {
     ERR_WEBP_NOT_ENABLED = 10,
     ERR_WRITE = 11;
 
-  protected $image, $mimeType, $exif, $bits;
+  protected $image, $mimeType, $exif;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // Magic methods
@@ -126,23 +126,24 @@ class SimpleImage {
       throw new \Exception("Invalid image file: $file", self::ERR_INVALID_IMAGE);
     }
     $this->mimeType = $info['mime'];
-    $this->bits = $info['bits'];
 
     // Create image object from file
     switch($this->mimeType) {
     case 'image/gif':
       // Load the gif
       $gif = imagecreatefromgif($file);
-      if($gif) {
-        // Copy the gif over to a true color image to preserve its transparency. This is a
-        // workaround to prevent imagepalettetruecolor() from borking transparency.
+      if(imagecolortransparent($gif) == -1) { // gif is not transparent
+        $this->image = $gif;
+      } else { // gif is transparent
         $width = imagesx($gif);
         $height = imagesy($gif);
         $this->image = imagecreatetruecolor($width, $height);
         $transparentColor = imagecolorallocatealpha($this->image, 0, 0, 0, 127);
-        imagecolortransparent($this->image, $transparentColor);
-        imagefill($this->image, 0, 0, $transparentColor);
+        $transparentColorOrig = imagecolorallocatealpha($gif, 0, 0, 0, 127);
+        imagecolortransparent($this->image, $transparentColorOrig);
+        imagefill($this->image, 0, 0, $transparentColorOrig); // imagecrop works
         imagecopy($this->image, $gif, 0, 0, 0, 0, $width, $height);
+        
         imagedestroy($gif);
       }
       break;
@@ -585,52 +586,46 @@ class SimpleImage {
       // Swap out the new image
       $this->image = $newImage;
 
-    } elseif($this->mimeType == 'image/gif' && GD_BUNDLED === 0){
+      return $this;
 
-      $newImage = imagecreatetruecolor($width, $height);
+    } elseif($this->mimeType == 'image/gif' && GD_BUNDLED === 0) {
 
-      // `imagecolorallocatealpha` seems to fail for 8bit gif and leads to artefacts
-      // The alpha channel detection works with RGBA indexes and `imagecolorsforindex()`
-      $transparencyIndex = imagecolortransparent($this->image);
-      if ($transparencyIndex >= 0) {
-          $transparentColorRGBA = imagecolorsforindex($this->image, $transparencyIndex);
-          $transparencyIndex = imagecolorallocate($newImage, $transparentColorRGBA['red'], $transparentColorRGBA['green'], $transparentColorRGBA['blue']);
-          imagefill($newImage, 0, 0, $transparencyIndex);
-          imagecolortransparent($newImage, $transparencyIndex);
+      $transparentColorOrig = imagecolortransparent($this->image);
+
+      if ($transparentColorOrig > -1) { // gif is transparent
+
+        $newImage = imagecreatetruecolor($width, $height);
+
+        imagecopyresampled(
+          $newImage,
+          $this->image,
+          0, 0, $x, $y,
+          $width,
+          $height,
+          $width,
+          $height
+        );
+
+        // Swap out the new image
+        $this->image = $newImage;
+
+        imagecolortransparent($this->image, $transparentColorOrig);
+
+        return $this;
+
+      } else {
+        // don't do special gif code and continue with imagecrop below
       }
 
-      // 1bit transparent gif seems to have wrong alpha channel detection
-      // when using `imagecolorsforindex()`
-      if ($this->bits == 1) {
-        $transparentColor = imagecolorallocatealpha($newImage, 0, 0, 0, 127);
-        imagecolortransparent($newImage, $transparencyIndex);
-        imagefill($newImage, 0, 0, $transparentColor);
-      }
+    } // end of transparency check
 
-      imagecopyresampled(
-        $newImage,
-        $this->image,
-        0, 0, $x, $y,
-        $width,
-        $height,
-        $width,
-        $height
-      );
-
-      // Swap out the new image
-      $this->image = $newImage;
-
-    } else {
-
-      // Crop it
-      $this->image = imagecrop($this->image, [
-        'x' => min($x1, $x2),
-        'y' => min($y1, $y2),
-        'width' => abs($x2 - $x1),
-        'height' => abs($y2 - $y1)
-      ]);
-
-    }
+    // Crop it
+    $this->image = imagecrop($this->image, [
+      'x' => min($x1, $x2),
+      'y' => min($y1, $y2),
+      'width' => abs($x2 - $x1),
+      'height' => abs($y2 - $y1)
+    ]);
 
     return $this;
   }
@@ -871,44 +866,44 @@ class SimpleImage {
       // Swap out the new image
       $this->image = $newImage;
 
+      return $this;
+
     } elseif($this->mimeType == 'image/gif') {
 
-      $newImage = imagecreatetruecolor($width, $height);
+      $transparentColorOrig = imagecolortransparent($this->image);
 
-      // `imagecolorallocatealpha` seems to fail for 8bit gif and leads to artefacts
-      // The alpha channel detection works with RGBA indexes and `imagecolorsforindex()`
-      $transparencyIndex = imagecolortransparent($this->image);
-      if ($transparencyIndex >= 0) {
-          $transparentColorRGBA = imagecolorsforindex($this->image, $transparencyIndex);
-          $transparencyIndex = imagecolorallocate($newImage, $transparentColorRGBA['red'], $transparentColorRGBA['green'], $transparentColorRGBA['blue']);
-          imagefill($newImage, 0, 0, $transparencyIndex);
-          imagecolortransparent($newImage, $transparencyIndex);
+      if ($transparentColorOrig > -1) { // gif is transparent
+
+        $newImage = imagecreatetruecolor($width, $height);
+
+        imagecolortransparent($newImage, $transparentColorOrig);
+        imagefill($newImage, 0, 0, $transparentColorOrig);
+
+        imagecopyresized(
+          $newImage,
+          $this->image,
+          0, 0, 0, 0,
+          $width,
+          $height,
+          $this->getWidth(),
+          $this->getHeight()
+        );
+
+        // Swap out the new image
+        $this->image = $newImage;
+
+        imagefill($this->image, 0, 0, $transparentColorOrig);
+        imagecolortransparent($this->image, $transparentColorOrig);
+
+        return $this;
+
+      } else {
+        // don't do special gif code and continue with imagescale below
       }
 
-      // 1bit transparent gif seems to have wrong alpha channel detection
-      // when using `imagecolorsforindex()`
-      if ($this->bits == 1) {
-        $transparentColor = imagecolorallocatealpha($newImage, 0, 0, 0, 127);
-        imagecolortransparent($newImage, $transparentColor);
-        imagefill($newImage, 0, 0, $transparentColor);
-      }
+    } // end of transparency check
 
-      imagecopyresampled(
-        $newImage,
-        $this->image,
-        0, 0, 0, 0,
-        $width,
-        $height,
-        $this->getWidth(),
-        $this->getHeight()
-      );
-
-      // Swap out the new image
-      $this->image = $newImage;
-
-    } else { // imagescale works for non-transparent images
-      $this->image = imagescale($this->image, $width, $height);
-    }
+    $this->image = imagescale($this->image, $width, $height);
 
     return $this;
   }
