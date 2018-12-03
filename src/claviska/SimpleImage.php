@@ -135,15 +135,32 @@ class SimpleImage {
       if(imagecolortransparent($gif) == -1) { // gif is not transparent
         $this->image = $gif;
       } else { // gif is transparent
+
+        // Copy the gif over to a true color image to preserve its transparency. This is a
+        // workaround to prevent imagepalettetruecolor() from borking transparency.
+
         $width = imagesx($gif);
         $height = imagesy($gif);
+
         $this->image = imagecreatetruecolor($width, $height);
+
         $transparentColor = imagecolorallocatealpha($this->image, 0, 0, 0, 127);
         $transparentColorOrig = imagecolorallocatealpha($gif, 0, 0, 0, 127);
-        imagecolortransparent($this->image, $transparentColorOrig);
-        imagefill($this->image, 0, 0, $transparentColorOrig); // imagecrop works
+
+        if(GD_BUNDLED == 0) {
+          // gif has correct transparency with imagecrop, but 
+          // it loses transparency with filters like sepia/brighten etc.
+          imagecolortransparent($this->image, $transparentColorOrig);
+          imagefill($this->image, 0, 0, $transparentColorOrig);
+        } else {
+          // gif has correct transparency with filters
+          // imagecrop is correct in bundled gd version
+          imagecolortransparent($this->image, $transparentColor);
+          imagefill($this->image, 0, 0, $transparentColor);
+        }
+
         imagecopy($this->image, $gif, 0, 0, 0, 0, $width, $height);
-        
+
         imagedestroy($gif);
       }
       break;
