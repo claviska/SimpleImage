@@ -969,6 +969,25 @@ class SimpleImage {
         $text
       );
     }
+    
+    if(is_array($options['border'])) {
+        $thickness = $options['border']['thickness'];
+        
+        for($c1 = ($x-abs($thickness)); $c1 <= ($x+abs($thickness)); $c1++) {
+            for($c2 = ($y-abs($thickness)); $c2 <= ($y+abs($thickness)); $c2++) {
+                imagettftext(
+                    $this->image,
+                    $size,
+                    $angle,
+                    $c1,
+                    $c2 - $descenderHeight,
+                    $this->allocateColor($options['border']['color']),
+                    $fontFile,
+                    $text
+                );
+            }
+        }
+    }
 
     // Draw the text
     imagettftext($this->image, $size, $angle, $x, $y - $descenderHeight, $color, $fontFile, $text);
