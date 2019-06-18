@@ -802,6 +802,24 @@ class SimpleImage {
   }
 
   //
+  // Sets an image's resolution, as per https://www.php.net/manual/en/function.imageresolution.php
+  //
+  // $res_x* (int) - The horizontal resolution in DPI
+  // $res_y  (int) - The vertical resolution in DPI
+  //
+  // Returns a SimpleImage object.
+  //
+  public function resolution($res_x, $res_y = null) {
+    if(is_null($res_y)) {
+      imageresolution($this->image, $res_x);
+    } else {
+      imageresolution($this->image, $res_x, $res_y);
+    }
+
+    return $this;
+  }
+
+  //
   // Rotates the image.
   //
   // $angle* (int) - The angle of rotation (-360 - 360).

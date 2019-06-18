@@ -310,6 +310,15 @@ Resize an image to the specified dimensions. If only one dimension is specified,
 
 Returns a SimpleImage object.
 
+#### `resolution($resolution_x, $resolution_y)`
+
+Changes the resolution (DPI) of an image.
+
+- `$resolution_x`* (int) - The horizontal resolution, in DPI.
+- `$resolution_y` (int) - The vertical resolution, in DPI.
+
+Returns a SimpleImage object.
+
 #### `rotate($angle, $backgroundColor)`
 
 Rotates the image.
