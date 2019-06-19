@@ -219,6 +219,12 @@ Gets the image's current orientation.
 
 Returns a string: 'landscape', 'portrait', or 'square'
 
+#### `getResolution()`
+
+Gets the image's current resolution in DPI.
+
+Returns an array of integers: [0 => 96, 1 => 96]
+
 #### `getWidth()`
 
 Gets the image's current width.

@@ -429,6 +429,15 @@ class SimpleImage {
   }
 
   //
+  // Gets the resolution of the image
+  //
+  // Returns the resolution as an array of integers: [96, 96]
+  //
+  public function getResolution() {
+    return imageresolution($this->image);
+  }
+
+  //
   // Gets the image's current width.
   //
   // Returns the width as an integer.
