@@ -161,7 +161,7 @@ class SimpleImage {
       break;
     }
     if(!$this->image) {
-      throw new \Exception("Unsupported image: $file", self::ERR_UNSUPPORTED_FORMAT);
+      throw new \Exception("Unsupported format: " . $this->mimeType, self::ERR_UNSUPPORTED_FORMAT);
     }
 
     // Convert pallete images to true color images
