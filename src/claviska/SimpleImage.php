@@ -154,9 +154,14 @@ class SimpleImage {
     case 'image/webp':
       $this->image = imagecreatefromwebp($file);
       break;
+    case 'image/bmp':
+    case 'image/x-ms-bmp':
+    case 'image/x-windows-bmp':
+      $this->image = imagecreatefrombmp($file);
+      break;
     }
     if(!$this->image) {
-      throw new \Exception("Unsupported image: $file", self::ERR_UNSUPPORTED_FORMAT);
+      throw new \Exception("Unsupported format: " . $this->mimeType, self::ERR_UNSUPPORTED_FORMAT);
     }
 
     // Convert pallete images to true color images
@@ -253,6 +258,12 @@ class SimpleImage {
       imagesavealpha($this->image, true);
       imagewebp($this->image, null, $quality);
       break;
+    case 'image/bmp':
+    case 'image/x-ms-bmp':
+    case 'image/x-windows-bmp':
+      imageinterlace($this->image, true);
+      imagebmp($this->image, null, $quality);
+    break;
     default:
       throw new \Exception('Unsupported format: ' . $mimeType, self::ERR_UNSUPPORTED_FORMAT);
     }
