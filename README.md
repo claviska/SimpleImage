@@ -219,6 +219,12 @@ Gets the image's current orientation.
 
 Returns a string: 'landscape', 'portrait', or 'square'
 
+#### `getResolution()`
+
+Gets the image's current resolution in DPI.
+
+Returns an array of integers: [0 => 96, 1 => 96]
+
 #### `getWidth()`
 
 Gets the image's current width.
@@ -307,6 +313,15 @@ Resize an image to the specified dimensions. If only one dimension is specified,
 
 - `$width`* (int) - The new image width.
 - `$height`* (int) - The new image height.
+
+Returns a SimpleImage object.
+
+#### `resolution($res_x, $res_y)`
+
+Changes the resolution (DPI) of an image.
+
+- `$res_x`* (int) - The horizontal resolution, in DPI.
+- `$res_y` (int) - The vertical resolution, in DPI.
 
 Returns a SimpleImage object.
 
