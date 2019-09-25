@@ -222,7 +222,7 @@ class SimpleImage {
   //
   // Returns an array containing the image data and mime type.
   //
-  private function generate($mimeType = null, $quality = 100) {
+  protected function generate($mimeType = null, $quality = 100) {
     // Format defaults to the original mime type
     $mimeType = $mimeType ?: $this->mimeType;
 
@@ -383,7 +383,7 @@ class SimpleImage {
   //
   // Returns an int|float value.
   //
-  private static function keepWithin($value, $min, $max) {
+  protected static function keepWithin($value, $min, $max) {
     if($value < $min) return $min;
     if($value > $max) return $max;
     return $value;
@@ -464,7 +464,7 @@ class SimpleImage {
   //
   // Same as PHP's imagecopymerge, but works with transparent images. Used internally for overlay.
   //
-  private static function imageCopyMergeAlpha($dstIm, $srcIm, $dstX, $dstY, $srcX, $srcY, $srcW, $srcH, $pct) {
+  protected static function imageCopyMergeAlpha($dstIm, $srcIm, $dstX, $dstY, $srcX, $srcY, $srcW, $srcH, $pct) {
     // Are we merging with transparency?
     if($pct < 100) {
       // Disable alpha blending and "colorize" the image using a transparent color
@@ -1577,7 +1577,7 @@ class SimpleImage {
   //
   // Returns a color identifier.
   //
-  private function allocateColor($color) {
+  protected function allocateColor($color) {
     $color = self::normalizeColor($color);
 
     // Was this color already allocated?
