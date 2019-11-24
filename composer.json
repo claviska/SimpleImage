@@ -7,6 +7,12 @@
     "minimum-stability" : "stable",
     "authors"           : [
         {
+            "name"     : "SmetDenis",
+            "email"    : "denis@jbzoo.com",
+            "homepage" : "http://jbzoo.com/",
+            "role"     : "Developer"
+        },
+        {
             "name"     : "Cory LaViska",
             "homepage" : "http://www.abeautifulsite.net/",
             "role"     : "Developer"
@@ -16,35 +22,30 @@
             "email"    : "nazar@mokrynskyi.com",
             "homepage" : "http://cleverstyle.org/",
             "role"     : "Developer"
-        },
-        {
-            "name"     : "SmetDenis",
-            "email"    : "denis@jbzoo.com",
-            "homepage" : "http://jbzoo.com/",
-            "role"     : "Developer"
         }
     ],
+
     "require"           : {
-        "php"         : ">=5.3.10",
+        "php"         : ">=7.1",
         "ext-gd"      : "*",
-        "jbzoo/utils" : "^1.4|^2.2"
+        "jbzoo/utils" : "^3.0",
+        "jbzoo/data"  : "^3.0"
     },
+
     "require-dev"       : {
-        "jbzoo/phpunit" : "^1.7"
+        "jbzoo/phpunit" : "^3.0"
     },
+
     "autoload"          : {
         "psr-4" : {
             "JBZoo\\Image\\" : "src"
         }
     },
-    "extra"             : {
-        "branch-alias" : {
-            "dev-master" : "3.x-dev"
-        }
-    },
+
     "config"            : {
         "optimize-autoloader" : true
     },
+
     "support"           : {
         "issues" : "https://github.com/JBZoo/Image/issues"
     }

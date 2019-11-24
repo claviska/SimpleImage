@@ -6,10 +6,10 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package   Image
- * @license   MIT
- * @copyright Copyright (C) JBZoo.com,  All rights reserved.
- * @link      https://github.com/JBZoo/Image
+ * @package    Image
+ * @license    MIT
+ * @copyright  Copyright (C) JBZoo.com, All rights reserved.
+ * @link       https://github.com/JBZoo/Image
  */
 
 namespace JBZoo\Image;
@@ -23,7 +23,7 @@ use JBZoo\Utils\Image as Helper;
  */
 class Text
 {
-    protected static $_default = array(
+    protected static $_default = [
         'position'       => 'bottom',
         'angle'          => 0,
         'font-size'      => 32,
@@ -33,7 +33,7 @@ class Text
         'stroke-color'   => '#222',
         'stroke-size'    => 2,
         'stroke-spacing' => 3,
-    );
+    ];
 
     /**
      * Add text to an image
@@ -45,29 +45,29 @@ class Text
      *
      * @throws Exception
      */
-    public static function render($image, $text, $fFile, array $params = array())
+    public static function render($image, $text, $fFile, array $params = [])
     {
         // Set vars
-        $params        = array_merge(self::$_default, $params);
-        $angle         = Helper::rotate($params['angle']);
-        $position      = Helper::position($params['position']);
-        $fSize         = $params['font-size'];
-        $color         = $params['color'];
-        $offsetX       = $params['offset-x'];
-        $offsetY       = $params['offset-y'];
-        $strokeColor   = $params['stroke-color'];
-        $strokeSize    = $params['stroke-size'];
+        $params = array_merge(self::$_default, $params);
+        $angle = Helper::rotate($params['angle']);
+        $position = Helper::position($params['position']);
+        $fSize = $params['font-size'];
+        $color = $params['color'];
+        $offsetX = $params['offset-x'];
+        $offsetY = $params['offset-y'];
+        $strokeColor = $params['stroke-color'];
+        $strokeSize = $params['stroke-size'];
         $strokeSpacing = $params['stroke-spacing'];
-        $imageWidth    = imagesx($image);
-        $imageHeight   = imagesy($image);
+        $imageWidth = imagesx($image);
+        $imageHeight = imagesy($image);
 
         $colorArr = self::_getColor($image, $color);
         list($textWidth, $textHeight) = self::_getTextboxSize($fSize, $angle, $fFile, $text);
         list($textX, $textY) = Helper::getInnerCoords(
             $position,
-            array($imageWidth, $imageHeight),
-            array($textWidth, $textHeight),
-            array($offsetX, $offsetY)
+            [$imageWidth, $imageHeight],
+            [$textWidth, $textHeight],
+            [$offsetX, $offsetY]
         );
 
         if ($strokeColor && $strokeSize) {
@@ -75,7 +75,7 @@ class Text
 
                 // Multi colored text and/or multi colored stroke
                 $strokeColor = self::_getColor($image, $strokeColor);
-                $chars       = str_split($text, 1);
+                $chars = str_split($text, 1);
 
                 foreach ($chars as $key => $char) {
 
@@ -91,9 +91,9 @@ class Text
                     self::_renderStroke(
                         $image,
                         $char,
-                        array($fFile, $fSize, current($colorArr), $angle),
-                        array($textX, $textY),
-                        array($strokeSize, current($strokeColor))
+                        [$fFile, $fSize, current($colorArr), $angle],
+                        [$textX, $textY],
+                        [$strokeSize, current($strokeColor)]
                     );
 
                     // #000 is 0, black will reset the array so we write it this way
@@ -108,14 +108,14 @@ class Text
                 }
 
             } else {
-                $rgba        = Helper::normalizeColor($strokeColor);
+                $rgba = Helper::normalizeColor($strokeColor);
                 $strokeColor = imagecolorallocatealpha($image, $rgba[0], $rgba[1], $rgba[2], $rgba[3]);
                 self::_renderStroke(
                     $image,
                     $text,
-                    array($fFile, $fSize, current($colorArr), $angle),
-                    array($textX, $textY),
-                    array($strokeSize, $strokeColor)
+                    [$fFile, $fSize, current($colorArr), $angle],
+                    [$textX, $textY],
+                    [$strokeSize, $strokeColor]
                 );
             }
 
@@ -132,8 +132,8 @@ class Text
                         continue;
                     }
 
-                    $fontInfo = array($fFile, $fSize, current($colorArr), $angle);
-                    self::_render($image, $char, $fontInfo, array($textX, $textY));
+                    $fontInfo = [$fFile, $fSize, current($colorArr), $angle];
+                    self::_render($image, $char, $fontInfo, [$textX, $textY]);
 
                     // #000 is 0, black will reset the array so we write it this way
                     if (next($colorArr) === false) {
@@ -142,7 +142,7 @@ class Text
                 }
 
             } else {
-                self::_render($image, $text, array($fFile, $fSize, $colorArr[0], $angle), array($textX, $textY));
+                self::_render($image, $text, [$fFile, $fSize, $colorArr[0], $angle], [$textX, $textY]);
             }
         }
     }
@@ -159,9 +159,9 @@ class Text
     {
         $colors = (array)$colors;
 
-        $result = array();
+        $result = [];
         foreach ($colors as $color) {
-            $rgba     = Helper::normalizeColor($color);
+            $rgba = Helper::normalizeColor($color);
             $result[] = imagecolorallocatealpha($image, $rgba[0], $rgba[1], $rgba[2], $rgba[3]);
         }
 
@@ -190,19 +190,19 @@ class Text
 
         $box = imagettfbbox($fontSize, $angle, $fontFile, $text);
 
-        $boxWidth  = abs($box[6] - $box[2]);
+        $boxWidth = abs($box[6] - $box[2]);
         $boxHeight = abs($box[7] - $box[1]);
 
-        return array($boxWidth, $boxHeight);
+        return [$boxWidth, $boxHeight];
     }
 
     /**
      * Compact args for imagettftext()
      *
-     * @param  mixed  $image  A GD image object
-     * @param  string $text   The text to output
-     * @param  array  $font   [$fontfile, $fontsize, $color, $angle]
-     * @param  array  $coords [X,Y] Coordinate of the starting position
+     * @param mixed  $image  A GD image object
+     * @param string $text   The text to output
+     * @param array  $font   [$fontfile, $fontsize, $color, $angle]
+     * @param array  $coords [X,Y] Coordinate of the starting position
      *
      * @return array
      */
@@ -217,11 +217,11 @@ class Text
     /**
      *  Same as imagettftext(), but allows for a stroke color and size
      *
-     * @param  mixed  $image  A GD image object
-     * @param  string $text   The text to output
-     * @param  array  $font   [$fontfile, $fontsize, $color, $angle]
-     * @param  array  $coords [X,Y] Coordinate of the starting position
-     * @param  array  $stroke [$strokeSize, $strokeColor]
+     * @param mixed  $image  A GD image object
+     * @param string $text   The text to output
+     * @param array  $font   [$fontfile, $fontsize, $color, $angle]
+     * @param array  $coords [X,Y] Coordinate of the starting position
+     * @param array  $stroke [$strokeSize, $strokeColor]
      *
      * @return array
      */

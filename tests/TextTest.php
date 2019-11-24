@@ -6,16 +6,16 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package   Image
- * @license   MIT
- * @copyright Copyright (C) JBZoo.com,  All rights reserved.
- * @link      https://github.com/JBZoo/Image
+ * @package    Image
+ * @license    MIT
+ * @copyright  Copyright (C) JBZoo.com, All rights reserved.
+ * @link       https://github.com/JBZoo/Image
  */
 
 namespace JBZoo\PHPUnit;
 
-use JBZoo\Utils\Image as ImageHelper;
 use JBZoo\Image\Image;
+use JBZoo\Utils\Image as ImageHelper;
 
 /**
  * Class TextTest
@@ -27,9 +27,9 @@ class TextTest extends PHPUnit
     public function testText()
     {
         $excepted = Helper::getExpected(__FUNCTION__ . '.jpg');
-        $actual   = Helper::getActual(__FUNCTION__ . '.jpg');
+        $actual = Helper::getActual(__FUNCTION__ . '.jpg');
         $original = Helper::getOrig('butterfly.jpg');
-        $font     = Helper::getOrig('font.ttf');
+        $font = Helper::getOrig('font.ttf');
 
         $img = new Image($original);
         $img->addFilter('text', 'Смет.Денис =)', $font)
@@ -41,14 +41,14 @@ class TextTest extends PHPUnit
     public function testTextColorRed()
     {
         $excepted = Helper::getExpected(__FUNCTION__ . '.jpg');
-        $actual   = Helper::getActual(__FUNCTION__ . '.jpg');
+        $actual = Helper::getActual(__FUNCTION__ . '.jpg');
         $original = Helper::getOrig('butterfly.jpg');
-        $font     = Helper::getOrig('font.ttf');
+        $font = Helper::getOrig('font.ttf');
 
         $img = new Image($original);
-        $img->addFilter('text', 'Nice Butterfly', $font, array(
+        $img->addFilter('text', 'Nice Butterfly', $font, [
             'color' => 'f00',
-        ))
+        ])
             ->saveAs($actual);
 
         Helper::isFileEq($actual, $excepted);
@@ -57,17 +57,17 @@ class TextTest extends PHPUnit
     public function testTextPosition()
     {
         $excepted = Helper::getExpected(__FUNCTION__ . '.jpg');
-        $actual   = Helper::getActual(__FUNCTION__ . '.jpg');
+        $actual = Helper::getActual(__FUNCTION__ . '.jpg');
         $original = Helper::getOrig('butterfly.jpg');
-        $font     = Helper::getOrig('font.ttf');
+        $font = Helper::getOrig('font.ttf');
 
         $img = new Image($original);
         $img->addFilter('text', 'Nice Butterfly', $font,
-            array(
+            [
                 'position' => ImageHelper::TOP_LEFT,
                 'offset-x' => 150,
                 'offset-y' => 100,
-            ))
+            ])
             ->saveAs($actual);
 
         Helper::isFileEq($actual, $excepted);
@@ -76,15 +76,15 @@ class TextTest extends PHPUnit
     public function testTextColorMultiple()
     {
         $excepted = Helper::getExpected(__FUNCTION__ . '.jpg');
-        $actual   = Helper::getActual(__FUNCTION__ . '.jpg');
+        $actual = Helper::getActual(__FUNCTION__ . '.jpg');
         $original = Helper::getOrig('butterfly.jpg');
-        $font     = Helper::getOrig('font.ttf');
+        $font = Helper::getOrig('font.ttf');
 
         $img = new Image($original);
         $img->addFilter('text', 'Nice Butterfly', $font,
-            array(
-                'color' => array('#f00', '#ff7f00', '#ff0', '#0f0', '#0ff', '#f0f'),
-            ))
+            [
+                'color' => ['#f00', '#ff7f00', '#ff0', '#0f0', '#0ff', '#f0f'],
+            ])
             ->saveAs($actual);
 
         Helper::isFileEq($actual, $excepted);
@@ -93,16 +93,16 @@ class TextTest extends PHPUnit
     public function testTextStroke()
     {
         $excepted = Helper::getExpected(__FUNCTION__ . '.jpg');
-        $actual   = Helper::getActual(__FUNCTION__ . '.jpg');
+        $actual = Helper::getActual(__FUNCTION__ . '.jpg');
         $original = Helper::getOrig('butterfly.jpg');
-        $font     = Helper::getOrig('font.ttf');
+        $font = Helper::getOrig('font.ttf');
 
         $img = new Image($original);
         $img->addFilter('text', 'Nice Butterfly', $font,
-            array(
+            [
                 'stroke-color' => '#0dd',
                 'stroke-size'  => 5,
-            ))
+            ])
             ->saveAs($actual);
 
         Helper::isFileEq($actual, $excepted);
@@ -111,16 +111,16 @@ class TextTest extends PHPUnit
     public function testTextStrokeMultiple()
     {
         $excepted = Helper::getExpected(__FUNCTION__ . '.jpg');
-        $actual   = Helper::getActual(__FUNCTION__ . '.jpg');
+        $actual = Helper::getActual(__FUNCTION__ . '.jpg');
         $original = Helper::getOrig('butterfly.jpg');
-        $font     = Helper::getOrig('font.ttf');
+        $font = Helper::getOrig('font.ttf');
 
         $img = new Image($original);
         $img->addFilter('text', 'Nice Butterfly', $font,
-            array(
-                'stroke-color' => array('#f00', '#ff7f00', '#ff0', '#0f0', '#0ff', '#f0f'),
+            [
+                'stroke-color' => ['#f00', '#ff7f00', '#ff0', '#0f0', '#0ff', '#f0f'],
                 'stroke-size'  => 2,
-            ))
+            ])
             ->saveAs($actual);
 
         Helper::isFileEq($actual, $excepted);
@@ -129,15 +129,15 @@ class TextTest extends PHPUnit
     public function testTextAll()
     {
         $excepted = Helper::getExpected(__FUNCTION__ . '.jpg');
-        $actual   = Helper::getActual(__FUNCTION__ . '.jpg');
+        $actual = Helper::getActual(__FUNCTION__ . '.jpg');
         $original = Helper::getOrig('butterfly.jpg');
-        $font     = Helper::getOrig('font.ttf');
+        $font = Helper::getOrig('font.ttf');
 
         $img = new Image($original);
         $img->addFilter('text', 'Nice Butterfly', $font,
-            array(
-                'stroke-color'   => array('#f00', '#ff7f00', '#ff0', '#0f0', '#0ff', '#f0f'),
-                'color'          => array('#0ff', '#f0f', '#0f0', '#ff0', '#ff7f00', '#f00'),
+            [
+                'stroke-color'   => ['#f00', '#ff7f00', '#ff0', '#0f0', '#0ff', '#f0f'],
+                'color'          => ['#0ff', '#f0f', '#0f0', '#ff0', '#ff7f00', '#f00'],
                 'stroke-spacing' => 5,
                 'font-size'      => 48,
                 'stroke-size'    => 5,
@@ -145,7 +145,7 @@ class TextTest extends PHPUnit
                 'offset-y'       => 100,
                 'position'       => 't',
                 'angle'          => -10,
-            ))
+            ])
             ->saveAs($actual);
 
         Helper::isFileEq($actual, $excepted);
@@ -154,16 +154,16 @@ class TextTest extends PHPUnit
     public function testTextStrokeDisable()
     {
         $excepted = Helper::getExpected(__FUNCTION__ . '.jpg');
-        $actual   = Helper::getActual(__FUNCTION__ . '.jpg');
+        $actual = Helper::getActual(__FUNCTION__ . '.jpg');
         $original = Helper::getOrig('butterfly.jpg');
-        $font     = Helper::getOrig('font.ttf');
+        $font = Helper::getOrig('font.ttf');
 
         $img = new Image($original);
         $img->addFilter('text', 'Nice Butterfly', $font,
-            array(
+            [
                 'stroke-size'  => null,
                 'stroke-color' => null,
-            ))
+            ])
             ->saveAs($actual);
 
         Helper::isFileEq($actual, $excepted);
@@ -172,27 +172,26 @@ class TextTest extends PHPUnit
     public function testTextStrokeDisableColors()
     {
         $excepted = Helper::getExpected(__FUNCTION__ . '.jpg');
-        $actual   = Helper::getActual(__FUNCTION__ . '.jpg');
+        $actual = Helper::getActual(__FUNCTION__ . '.jpg');
         $original = Helper::getOrig('butterfly.jpg');
-        $font     = Helper::getOrig('font.ttf');
+        $font = Helper::getOrig('font.ttf');
 
         $img = new Image($original);
         $img->addFilter('text', 'Nice Butterfly', $font,
-            array(
+            [
                 'stroke-size'  => null,
                 'stroke-color' => null,
-                'color'        => array('#f00', '#ff7f00', '#ff0', '#0f0', '#0ff', '#f0f'),
-            ))
+                'color'        => ['#f00', '#ff7f00', '#ff0', '#0f0', '#0ff', '#f0f'],
+            ])
             ->saveAs($actual);
 
         Helper::isFileEq($actual, $excepted);
     }
 
-    /**
-     * @expectedException \JBZoo\Image\Exception
-     */
     public function testTextUndefinedFontFile()
     {
+        $this->expectException(\JBZoo\Image\Exception::class);
+
         $original = Helper::getOrig('butterfly.jpg');
 
         $img = new Image($original);

@@ -8,7 +8,7 @@
 
     @package    Image
     @license    MIT
-    @copyright  Copyright (C) JBZoo.com,  All rights reserved.
+    @copyright  Copyright (C) JBZoo.com, All rights reserved.
     @link       https://github.com/JBZoo/Image
 -->
 <phpunit bootstrap="tests/autoload.php"
@@ -17,14 +17,13 @@
          convertNoticesToExceptions="true"
          convertWarningsToExceptions="true"
          processIsolation="false"
-         syntaxCheck="true"
          stopOnError="false"
          stopOnFailure="false"
          stopOnIncomplete="false"
          stopOnSkipped="false"
          stopOnRisky="false"
          verbose="false"
-        >
+>
 
     <testsuites>
         <testsuite name="General">

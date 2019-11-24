@@ -6,10 +6,10 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package   Image
- * @license   MIT
- * @copyright Copyright (C) JBZoo.com,  All rights reserved.
- * @link      https://github.com/JBZoo/Image
+ * @package    Image
+ * @license    MIT
+ * @copyright  Copyright (C) JBZoo.com, All rights reserved.
+ * @link       https://github.com/JBZoo/Image
  */
 
 namespace JBZoo\PHPUnit;
@@ -25,7 +25,7 @@ class TransformsTest extends PHPUnit
     public function testFlipX()
     {
         $excepted = Helper::getExpected(__FUNCTION__ . '.jpg');
-        $actual   = Helper::getActual(__FUNCTION__ . '.jpg');
+        $actual = Helper::getActual(__FUNCTION__ . '.jpg');
         $original = Helper::getOrig('butterfly.jpg');
 
         $img = new Image();
@@ -39,7 +39,7 @@ class TransformsTest extends PHPUnit
     public function testFlipY()
     {
         $excepted = Helper::getExpected(__FUNCTION__ . '.jpg');
-        $actual   = Helper::getActual(__FUNCTION__ . '.jpg');
+        $actual = Helper::getActual(__FUNCTION__ . '.jpg');
         $original = Helper::getOrig('butterfly.jpg');
 
         $img = new Image();
@@ -53,7 +53,7 @@ class TransformsTest extends PHPUnit
     public function testFlipXY()
     {
         $excepted = Helper::getExpected(__FUNCTION__ . '.jpg');
-        $actual   = Helper::getActual(__FUNCTION__ . '.jpg');
+        $actual = Helper::getActual(__FUNCTION__ . '.jpg');
         $original = Helper::getOrig('butterfly.jpg');
 
         $img = new Image();
@@ -67,7 +67,7 @@ class TransformsTest extends PHPUnit
     public function testFlipYX()
     {
         $excepted = Helper::getExpected(__FUNCTION__ . '.jpg');
-        $actual   = Helper::getActual(__FUNCTION__ . '.jpg');
+        $actual = Helper::getActual(__FUNCTION__ . '.jpg');
         $original = Helper::getOrig('butterfly.jpg');
 
         $img = new Image();
@@ -81,7 +81,7 @@ class TransformsTest extends PHPUnit
     public function testAutoOrient()
     {
         $excepted = Helper::getExpected(__FUNCTION__ . '.jpg');
-        $actual   = Helper::getActual(__FUNCTION__ . '.jpg');
+        $actual = Helper::getActual(__FUNCTION__ . '.jpg');
         $original = Helper::getOrig('butterfly.jpg');
 
         $img = new Image();

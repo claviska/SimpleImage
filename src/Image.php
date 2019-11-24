@@ -6,20 +6,20 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package   Image
- * @license   MIT
- * @copyright Copyright (C) JBZoo.com,  All rights reserved.
- * @link      https://github.com/JBZoo/Image
+ * @package    Image
+ * @license    MIT
+ * @copyright  Copyright (C) JBZoo.com, All rights reserved.
+ * @link       https://github.com/JBZoo/Image
  */
 
 namespace JBZoo\Image;
 
 use JBZoo\Utils\Arr;
+use JBZoo\Utils\Filter as VarFilter;
 use JBZoo\Utils\FS;
+use JBZoo\Utils\Image as Helper;
 use JBZoo\Utils\Sys;
 use JBZoo\Utils\Url;
-use JBZoo\Utils\Filter as VarFilter;
-use JBZoo\Utils\Image as Helper;
 
 /**
  * Class Image
@@ -51,7 +51,7 @@ class Image
     /**
      * @var array
      */
-    protected $_exif = array();
+    protected $_exif = [];
 
     /**
      * @var int
@@ -77,7 +77,7 @@ class Image
      * Constructor
      *
      * @param string|null $filename
-     * @param bool|null $strict
+     * @param bool|null   $strict
      *
      * @throws Exception
      * @throws \JBZoo\Utils\Exception
@@ -110,7 +110,7 @@ class Image
      */
     public function getInfo()
     {
-        return array(
+        return [
             'filename' => $this->_filename,
             'width'    => $this->_width,
             'height'   => $this->_height,
@@ -118,7 +118,7 @@ class Image
             'quality'  => $this->_quality,
             'exif'     => $this->_exif,
             'orient'   => $this->_orient,
-        );
+        ];
     }
 
     /**
@@ -351,7 +351,7 @@ class Image
     /**
      * Load an image
      *
-     * @param string $imageString Binary images
+     * @param string    $imageString Binary images
      * @param bool|null $strict
      * @return $this
      *
@@ -393,7 +393,7 @@ class Image
      * Get meta data of image or base64 string
      *
      * @param null|string $image
-     * @param bool|null $strict
+     * @param bool|null   $strict
      *
      * @return $this
      * @throws Exception
@@ -402,16 +402,16 @@ class Image
     {
         // Gather meta data
         if (null === $image && $this->_filename) {
-            $imageInfo    = getimagesize($this->_filename);
+            $imageInfo = getimagesize($this->_filename);
             $this->_image = $this->_imageCreate($imageInfo['mime']);
 
         } elseif (Helper::isGdRes($image)) {
             $this->_image = $image;
-            $imageInfo    = array(
+            $imageInfo = [
                 '0'    => imagesx($this->_image),
                 '1'    => imagesy($this->_image),
                 'mime' => 'image/png',
-            );
+            ];
 
         } else {
             if (!Sys::isFunc('getimagesizefromstring')) {
@@ -425,16 +425,16 @@ class Image
                 }
             }
 
-            $image        = Helper::strToBin($image);
-            $imageInfo    = getimagesizefromstring($image);
+            $image = Helper::strToBin($image);
+            $imageInfo = getimagesizefromstring($image);
             $this->_image = imagecreatefromstring($image);
         }
 
         // Set internal state
-        $this->_mime   = $imageInfo['mime'];
-        $this->_width  = $imageInfo['0'];
+        $this->_mime = $imageInfo['mime'];
+        $this->_width = $imageInfo['0'];
         $this->_height = $imageInfo['1'];
-        $this->_exif   = $this->_getExif();
+        $this->_exif = $this->_getExif();
         $this->_orient = $this->_getOrientation();
 
         // Prepare alpha chanel
@@ -451,11 +451,11 @@ class Image
     {
         $this->_filename = null;
 
-        $this->_mime    = null;
-        $this->_width   = null;
-        $this->_height  = null;
-        $this->_exif    = array();
-        $this->_orient  = null;
+        $this->_mime = null;
+        $this->_width = null;
+        $this->_height = null;
+        $this->_exif = [];
+        $this->_orient = null;
         $this->_quality = self::QUALITY;
 
         $this->_destroyImage();
@@ -479,7 +479,7 @@ class Image
      */
     protected function _getExif()
     {
-        $result = array();
+        $result = [];
 
         if ($this->_filename && Sys::isFunc('exif_read_data') && Helper::isJpeg($this->_mime)) {
             $result = exif_read_data($this->_filename);
@@ -571,11 +571,11 @@ class Image
 
         $height = $height ?: $width;
 
-        $this->_width  = VarFilter::int($width);
+        $this->_width = VarFilter::int($width);
         $this->_height = VarFilter::int($height);
-        $this->_image  = imagecreatetruecolor($this->_width, $this->_height);
-        $this->_mime   = 'image/png';
-        $this->_exif   = array();
+        $this->_image = imagecreatetruecolor($this->_width, $this->_height);
+        $this->_mime = 'image/png';
+        $this->_exif = [];
 
         $this->_orient = $this->_getOrientation();
 
@@ -595,7 +595,7 @@ class Image
      */
     public function resize($width, $height)
     {
-        $width  = VarFilter::int($width);
+        $width = VarFilter::int($width);
         $height = VarFilter::int($height);
 
         // Generate new GD image
@@ -609,9 +609,9 @@ class Image
             if ($transIndex >= 0 && $transIndex < $palletsize) {
                 $trColor = imagecolorsforindex($this->_image, $transIndex);
 
-                $red   = VarFilter::int($trColor['red']);
+                $red = VarFilter::int($trColor['red']);
                 $green = VarFilter::int($trColor['green']);
-                $blue  = VarFilter::int($trColor['blue']);
+                $blue = VarFilter::int($trColor['blue']);
 
                 $transIndex = imagecolorallocate($newImage, $red, $green, $blue);
 
@@ -629,7 +629,7 @@ class Image
 
         // Update meta data
         $this->_replaceImage($newImage);
-        $this->_width  = $width;
+        $this->_width = $width;
         $this->_height = $height;
 
         return $this;
@@ -653,19 +653,19 @@ class Image
         // Determine aspect ratio
         $aspectRatio = $this->_height / $this->_width;
 
-        $width  = $this->_width;
+        $width = $this->_width;
         $height = $this->_height;
 
         // Make width fit into new dimensions
         if ($this->_width > $maxWidth) {
-            $width  = $maxWidth;
+            $width = $maxWidth;
             $height = $width * $aspectRatio;
         }
 
         // Make height fit into new dimensions
         if ($height > $maxHeight) {
             $height = $maxHeight;
-            $width  = $height / $aspectRatio;
+            $width = $height / $aspectRatio;
         }
 
         return $this->resize($width, $height);
@@ -684,7 +684,7 @@ class Image
      */
     public function thumbnail($width, $height = null, $topIsZero = false)
     {
-        $width  = VarFilter::int($width);
+        $width = VarFilter::int($width);
         $height = VarFilter::int($height);
 
         // Determine height
@@ -692,7 +692,7 @@ class Image
 
         // Determine aspect ratios
         $currentAspectRatio = $this->_height / $this->_width;
-        $newAspectRatio     = $height / $width;
+        $newAspectRatio = $height / $width;
 
         // Fit to height/width
         if ($newAspectRatio > $currentAspectRatio) {
@@ -702,10 +702,10 @@ class Image
         }
 
         $left = floor(($this->_width / 2) - ($width / 2));
-        $top  = floor(($this->_height / 2) - ($height / 2));
+        $top = floor(($this->_height / 2) - ($height / 2));
 
         // Return trimmed image
-        $right  = $width + $left;
+        $right = $width + $left;
         $bottom = $height + $top;
 
         if ($topIsZero) {
@@ -725,7 +725,7 @@ class Image
     public function fitToHeight($height)
     {
         $height = VarFilter::int($height);
-        $width  = $height / ($this->_height / $this->_width);
+        $width = $height / ($this->_height / $this->_width);
 
         return $this->resize($width, $height);
     }
@@ -738,7 +738,7 @@ class Image
      */
     public function fitToWidth($width)
     {
-        $width  = VarFilter::int($width);
+        $width = VarFilter::int($width);
         $height = $width * ($this->_height / $this->_width);
 
         return $this->resize($width, $height);
@@ -756,18 +756,18 @@ class Image
      */
     public function crop($left, $top, $right, $bottom)
     {
-        $left   = VarFilter::int($left);
-        $top    = VarFilter::int($top);
-        $right  = VarFilter::int($right);
+        $left = VarFilter::int($left);
+        $top = VarFilter::int($top);
+        $right = VarFilter::int($right);
         $bottom = VarFilter::int($bottom);
 
         // Determine crop size
         if ($right < $left) {
-            list($left, $right) = array($right, $left);
+            list($left, $right) = [$right, $left];
         }
 
         if ($bottom < $top) {
-            list($top, $bottom) = array($bottom, $top);
+            list($top, $bottom) = [$bottom, $top];
         }
 
         $cropedW = $right - $left;
@@ -780,7 +780,7 @@ class Image
 
         // Update meta data
         $this->_replaceImage($newImage);
-        $this->_width  = $cropedW;
+        $this->_width = $cropedW;
         $this->_height = $cropedH;
 
         return $this;
@@ -793,8 +793,8 @@ class Image
     {
         $this->_destroyImage();
 
-        $this->_image  = $newImage;
-        $this->_width  = imagesx($this->_image);
+        $this->_image = $newImage;
+        $this->_width = imagesx($this->_image);
         $this->_height = imagesy($this->_image);
     }
 
@@ -860,25 +860,25 @@ class Image
         }
 
         // Convert opacity
-        $opacity     = Helper::opacity($opacity);
+        $opacity = Helper::opacity($opacity);
         $globOffsetX = VarFilter::int($globOffsetX);
         $globOffsetY = VarFilter::int($globOffsetY);
 
         // Determine position
         list($xOffset, $yOffset) = Helper::getInnerCoords(
             $position,
-            array($this->_width, $this->_height),
-            array($overlay->getWidth(), $overlay->getHeight()),
-            array($globOffsetX, $globOffsetY)
+            [$this->_width, $this->_height],
+            [$overlay->getWidth(), $overlay->getHeight()],
+            [$globOffsetX, $globOffsetY]
         );
 
         // Perform the overlay
         Helper::imageCopyMergeAlpha(
             $this->_image,
             $overlay->getImage(),
-            array($xOffset, $yOffset),
-            array(0, 0),
-            array($overlay->getWidth(), $overlay->getHeight()),
+            [$xOffset, $yOffset],
+            [0, 0],
+            [$overlay->getWidth(), $overlay->getHeight()],
             $opacity
         );
 
@@ -895,7 +895,7 @@ class Image
      */
     public function addFilter($filter)
     {
-        $args    = func_get_args();
+        $args = func_get_args();
         $args[0] = $this->_image;
 
         $newImage = null;
@@ -905,7 +905,7 @@ class Image
             $filterClass = __NAMESPACE__ . '\Filter';
 
             if (method_exists($filterClass, $filter)) {
-                $newImage = call_user_func_array(array($filterClass, $filter), $args);
+                $newImage = call_user_func_array([$filterClass, $filter], $args);
             } else {
                 throw new Exception('Undefined Image Filter: ' . $filter);
             }
@@ -973,11 +973,11 @@ class Image
         }
 
         ob_start();
-        $mimeType  = $this->_renderImageByFormat($format, null, $quality);
+        $mimeType = $this->_renderImageByFormat($format, null, $quality);
         $imageData = ob_get_contents();
         ob_end_clean();
 
-        return array($mimeType, $imageData);
+        return [$mimeType, $imageData];
     }
 
     /**

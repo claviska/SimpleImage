@@ -6,10 +6,10 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package   Image
- * @license   MIT
- * @copyright Copyright (C) JBZoo.com,  All rights reserved.
- * @link      https://github.com/JBZoo/Image
+ * @package    Image
+ * @license    MIT
+ * @copyright  Copyright (C) JBZoo.com, All rights reserved.
+ * @link       https://github.com/JBZoo/Image
  */
 
 namespace JBZoo\PHPUnit;
@@ -25,9 +25,9 @@ class WatermarkTest extends PHPUnit
     public function testWatermarkTopLeft()
     {
         $excepted = Helper::getExpected(__FUNCTION__ . '.png');
-        $actual   = Helper::getActual(__FUNCTION__ . '.png');
+        $actual = Helper::getActual(__FUNCTION__ . '.png');
         $original = Helper::getOrig('butterfly.jpg');
-        $overlay  = Helper::getOrig('overlay.png');
+        $overlay = Helper::getOrig('overlay.png');
 
         $img = new Image();
         $img->loadFile($original)
@@ -40,9 +40,9 @@ class WatermarkTest extends PHPUnit
     public function testWatermarkTopRight()
     {
         $excepted = Helper::getExpected(__FUNCTION__ . '.png');
-        $actual   = Helper::getActual(__FUNCTION__ . '.png');
+        $actual = Helper::getActual(__FUNCTION__ . '.png');
         $original = Helper::getOrig('butterfly.jpg');
-        $overlay  = Helper::getOrig('overlay.png');
+        $overlay = Helper::getOrig('overlay.png');
 
         $img = new Image();
         $img->loadFile($original)
@@ -55,9 +55,9 @@ class WatermarkTest extends PHPUnit
     public function testWatermarkTop()
     {
         $excepted = Helper::getExpected(__FUNCTION__ . '.png');
-        $actual   = Helper::getActual(__FUNCTION__ . '.png');
+        $actual = Helper::getActual(__FUNCTION__ . '.png');
         $original = Helper::getOrig('butterfly.jpg');
-        $overlay  = Helper::getOrig('overlay.png');
+        $overlay = Helper::getOrig('overlay.png');
 
         $img = new Image();
         $img->loadFile($original)
@@ -70,9 +70,9 @@ class WatermarkTest extends PHPUnit
     public function testWatermarkBottomLeft()
     {
         $excepted = Helper::getExpected(__FUNCTION__ . '.png');
-        $actual   = Helper::getActual(__FUNCTION__ . '.png');
+        $actual = Helper::getActual(__FUNCTION__ . '.png');
         $original = Helper::getOrig('butterfly.jpg');
-        $overlay  = Helper::getOrig('overlay.png');
+        $overlay = Helper::getOrig('overlay.png');
 
         $img = new Image();
         $img->loadFile($original)
@@ -85,9 +85,9 @@ class WatermarkTest extends PHPUnit
     public function testWatermarkBottomRight()
     {
         $excepted = Helper::getExpected(__FUNCTION__ . '.png');
-        $actual   = Helper::getActual(__FUNCTION__ . '.png');
+        $actual = Helper::getActual(__FUNCTION__ . '.png');
         $original = Helper::getOrig('butterfly.jpg');
-        $overlay  = Helper::getOrig('overlay.png');
+        $overlay = Helper::getOrig('overlay.png');
 
         $img = new Image();
         $img->loadFile($original)
@@ -100,9 +100,9 @@ class WatermarkTest extends PHPUnit
     public function testWatermarkBottom()
     {
         $excepted = Helper::getExpected(__FUNCTION__ . '.png');
-        $actual   = Helper::getActual(__FUNCTION__ . '.png');
+        $actual = Helper::getActual(__FUNCTION__ . '.png');
         $original = Helper::getOrig('butterfly.jpg');
-        $overlay  = Helper::getOrig('overlay.png');
+        $overlay = Helper::getOrig('overlay.png');
 
         $img = new Image();
         $img->loadFile($original)
@@ -115,9 +115,9 @@ class WatermarkTest extends PHPUnit
     public function testWatermarkLeft()
     {
         $excepted = Helper::getExpected(__FUNCTION__ . '.png');
-        $actual   = Helper::getActual(__FUNCTION__ . '.png');
+        $actual = Helper::getActual(__FUNCTION__ . '.png');
         $original = Helper::getOrig('butterfly.jpg');
-        $overlay  = Helper::getOrig('overlay.png');
+        $overlay = Helper::getOrig('overlay.png');
 
         $img = new Image();
         $img->loadFile($original)
@@ -130,9 +130,9 @@ class WatermarkTest extends PHPUnit
     public function testWatermarkRight()
     {
         $excepted = Helper::getExpected(__FUNCTION__ . '.png');
-        $actual   = Helper::getActual(__FUNCTION__ . '.png');
+        $actual = Helper::getActual(__FUNCTION__ . '.png');
         $original = Helper::getOrig('butterfly.jpg');
-        $overlay  = Helper::getOrig('overlay.png');
+        $overlay = Helper::getOrig('overlay.png');
 
         $img = new Image();
         $img->loadFile($original)
@@ -145,9 +145,9 @@ class WatermarkTest extends PHPUnit
     public function testWatermarkCenter()
     {
         $excepted = Helper::getExpected(__FUNCTION__ . '.png');
-        $actual   = Helper::getActual(__FUNCTION__ . '.png');
+        $actual = Helper::getActual(__FUNCTION__ . '.png');
         $original = Helper::getOrig('butterfly.jpg');
-        $overlay  = Helper::getOrig('overlay.png');
+        $overlay = Helper::getOrig('overlay.png');
 
         $img = new Image();
         $img->loadFile($original)
@@ -160,9 +160,9 @@ class WatermarkTest extends PHPUnit
     public function testWatermarkOpacity()
     {
         $excepted = Helper::getExpected(__FUNCTION__ . '.png');
-        $actual   = Helper::getActual(__FUNCTION__ . '.png');
+        $actual = Helper::getActual(__FUNCTION__ . '.png');
         $original = Helper::getOrig('butterfly.jpg');
-        $overlay  = Helper::getOrig('overlay.png');
+        $overlay = Helper::getOrig('overlay.png');
 
         $img = new Image();
         $img->loadFile($original)
@@ -175,9 +175,9 @@ class WatermarkTest extends PHPUnit
     public function testWatermark()
     {
         $excepted = Helper::getExpected(__FUNCTION__ . '.png');
-        $actual   = Helper::getActual(__FUNCTION__ . '.png');
+        $actual = Helper::getActual(__FUNCTION__ . '.png');
         $original = Helper::getOrig('butterfly.jpg');
-        $overlay  = Helper::getOrig('overlay.png');
+        $overlay = Helper::getOrig('overlay.png');
 
         $img = new Image();
         $img->loadFile($original)

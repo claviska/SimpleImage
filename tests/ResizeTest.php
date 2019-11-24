@@ -6,10 +6,10 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package   Image
- * @license   MIT
- * @copyright Copyright (C) JBZoo.com,  All rights reserved.
- * @link      https://github.com/JBZoo/Image
+ * @package    Image
+ * @license    MIT
+ * @copyright  Copyright (C) JBZoo.com, All rights reserved.
+ * @link       https://github.com/JBZoo/Image
  */
 
 namespace JBZoo\PHPUnit;
@@ -25,7 +25,7 @@ class ResizeTest extends PHPUnit
     public function testResizeJpeg()
     {
         $excepted = Helper::getExpected(__FUNCTION__ . '.jpg');
-        $actual   = Helper::getActual(__FUNCTION__ . '_320_239.jpg');
+        $actual = Helper::getActual(__FUNCTION__ . '_320_239.jpg');
         $original = Helper::getOrig('butterfly.png');
 
         $img = new Image($original);
@@ -38,7 +38,7 @@ class ResizeTest extends PHPUnit
     public function testResizeGif()
     {
         $excepted = Helper::getExpected(__FUNCTION__ . '.gif');
-        $actual   = Helper::getActual(__FUNCTION__ . '_320_239.gif');
+        $actual = Helper::getActual(__FUNCTION__ . '_320_239.gif');
         $original = Helper::getOrig('butterfly.gif');
 
         $img = new Image($original);
@@ -51,7 +51,7 @@ class ResizeTest extends PHPUnit
     public function testResizeTransparent()
     {
         $excepted = Helper::getExpected(__FUNCTION__ . '.gif');
-        $actual   = Helper::getActual(__FUNCTION__ . '.gif');
+        $actual = Helper::getActual(__FUNCTION__ . '.gif');
         $original = Helper::getOrig('1x1.gif');
 
         $img = new Image($original);
@@ -64,7 +64,7 @@ class ResizeTest extends PHPUnit
     public function testCrop()
     {
         $excepted = Helper::getExpected(__FUNCTION__ . '.jpg');
-        $actual   = Helper::getActual(__FUNCTION__ . '.jpg');
+        $actual = Helper::getActual(__FUNCTION__ . '.jpg');
         $original = Helper::getOrig('butterfly.jpg');
 
         $img = new Image();
@@ -78,7 +78,7 @@ class ResizeTest extends PHPUnit
     public function testCropWrongCoord()
     {
         $excepted = Helper::getExpected(__FUNCTION__ . '.jpg');
-        $actual   = Helper::getActual(__FUNCTION__ . '.jpg');
+        $actual = Helper::getActual(__FUNCTION__ . '.jpg');
         $original = Helper::getOrig('butterfly.jpg');
 
         $img = new Image();
@@ -92,7 +92,7 @@ class ResizeTest extends PHPUnit
     public function testFitToWidth()
     {
         $excepted = Helper::getExpected(__FUNCTION__ . '.jpg');
-        $actual   = Helper::getActual(__FUNCTION__ . '.jpg');
+        $actual = Helper::getActual(__FUNCTION__ . '.jpg');
         $original = Helper::getOrig('butterfly.jpg');
 
         $img = new Image();
@@ -106,7 +106,7 @@ class ResizeTest extends PHPUnit
     public function testFitToHeight()
     {
         $excepted = Helper::getExpected(__FUNCTION__ . '.jpg');
-        $actual   = Helper::getActual(__FUNCTION__ . '.jpg');
+        $actual = Helper::getActual(__FUNCTION__ . '.jpg');
         $original = Helper::getOrig('butterfly.jpg');
 
         $img = new Image();
@@ -120,7 +120,7 @@ class ResizeTest extends PHPUnit
     public function testThumbnailHeight()
     {
         $excepted = Helper::getExpected(__FUNCTION__ . '.jpg');
-        $actual   = Helper::getActual(__FUNCTION__ . '.jpg');
+        $actual = Helper::getActual(__FUNCTION__ . '.jpg');
         $original = Helper::getOrig('butterfly.jpg');
 
         $img = new Image();
@@ -134,7 +134,7 @@ class ResizeTest extends PHPUnit
     public function testThumbnailWidth()
     {
         $excepted = Helper::getExpected(__FUNCTION__ . '.jpg');
-        $actual   = Helper::getActual(__FUNCTION__ . '.jpg');
+        $actual = Helper::getActual(__FUNCTION__ . '.jpg');
         $original = Helper::getOrig('butterfly.gif');
 
         $img = new Image();
@@ -148,7 +148,7 @@ class ResizeTest extends PHPUnit
     public function testThumbnailCropTop()
     {
         $excepted = Helper::getExpected(__FUNCTION__ . '.jpg');
-        $actual   = Helper::getActual(__FUNCTION__ . '.jpg');
+        $actual = Helper::getActual(__FUNCTION__ . '.jpg');
         $original = Helper::getOrig('butterfly.png');
 
         $img = new Image();
@@ -162,7 +162,7 @@ class ResizeTest extends PHPUnit
     public function testBestFitWidth()
     {
         $excepted = Helper::getExpected(__FUNCTION__ . '.png');
-        $actual   = Helper::getActual(__FUNCTION__ . '.png');
+        $actual = Helper::getActual(__FUNCTION__ . '.png');
         $original = Helper::getOrig('butterfly.jpg');
 
         $img = new Image();
@@ -176,7 +176,7 @@ class ResizeTest extends PHPUnit
     public function testBestFitHeight()
     {
         $excepted = Helper::getExpected(__FUNCTION__ . '.png');
-        $actual   = Helper::getActual(__FUNCTION__ . '.png');
+        $actual = Helper::getActual(__FUNCTION__ . '.png');
         $original = Helper::getOrig('butterfly.jpg');
 
         $img = new Image();
@@ -190,7 +190,7 @@ class ResizeTest extends PHPUnit
     public function testBestFitNoChange()
     {
         $excepted = Helper::getExpected(__FUNCTION__ . '.png');
-        $actual   = Helper::getActual(__FUNCTION__ . '.png');
+        $actual = Helper::getActual(__FUNCTION__ . '.png');
         $original = Helper::getOrig('butterfly.jpg');
 
         $img = new Image();

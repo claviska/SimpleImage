@@ -6,10 +6,10 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package   Image
- * @license   MIT
- * @copyright Copyright (C) JBZoo.com,  All rights reserved.
- * @link      https://github.com/JBZoo/Image
+ * @package    Image
+ * @license    MIT
+ * @copyright  Copyright (C) JBZoo.com, All rights reserved.
+ * @link       https://github.com/JBZoo/Image
  */
 
 namespace JBZoo\Image;
@@ -145,12 +145,12 @@ class Filter
      */
     public static function colorize($image, $color, $opacity)
     {
-        $rgba  = Helper::normalizeColor($color);
+        $rgba = Helper::normalizeColor($color);
         $alpha = Helper::opacity2Alpha($opacity);
 
-        $red   = Helper::color($rgba[0]);
+        $red = Helper::color($rgba[0]);
         $green = Helper::color($rgba[1]);
-        $blue  = Helper::color($rgba[2]);
+        $blue = Helper::color($rgba[2]);
 
         imagefilter($image, IMG_FILTER_COLORIZE, $red, $green, $blue, $alpha);
     }
@@ -187,8 +187,8 @@ class Filter
     {
         // Determine percentage
         $percent = Helper::percent($percent);
-        $width   = imagesx($image);
-        $height  = imagesy($image);
+        $width = imagesx($image);
+        $height = imagesy($image);
 
         if ($percent === 100) {
             self::grayscale($image);
@@ -204,9 +204,9 @@ class Filter
             Helper::imageCopyMergeAlpha(
                 $image,
                 $newImage,
-                array(0, 0),
-                array(0, 0),
-                array($width, $height),
+                [0, 0],
+                [0, 0],
+                [$width, $height],
                 $percent
             );
 
@@ -229,7 +229,7 @@ class Filter
         // Determine opacity
         $opacity = Helper::opacity($opacity);
 
-        $width  = imagesx($image);
+        $width = imagesx($image);
         $height = imagesy($image);
 
         $newImage = imagecreatetruecolor($width, $height);
@@ -242,9 +242,9 @@ class Filter
         Helper::imageCopyMergeAlpha(
             $newImage,
             $image,
-            array(0, 0),
-            array(0, 0),
-            array($width, $height),
+            [0, 0],
+            [0, 0],
+            [$width, $height],
             $opacity
         );
 
@@ -267,9 +267,9 @@ class Filter
     {
         // Perform the rotation
         $angle = Helper::rotate($angle);
-        $rgba  = Helper::normalizeColor($bgColor);
+        $rgba = Helper::normalizeColor($bgColor);
 
-        $bgColor  = imagecolorallocatealpha($image, $rgba[0], $rgba[1], $rgba[2], $rgba[3]);
+        $bgColor = imagecolorallocatealpha($image, $rgba[0], $rgba[1], $rgba[2], $rgba[3]);
         $newImage = imagerotate($image, -($angle), $bgColor);
 
         Helper::addAlpha($newImage);
@@ -286,8 +286,8 @@ class Filter
      */
     public static function flip($image, $dir)
     {
-        $dir    = Helper::direction($dir);
-        $width  = imagesx($image);
+        $dir = Helper::direction($dir);
+        $width = imagesx($image);
         $height = imagesy($image);
 
         $newImage = imagecreatetruecolor($width, $height);
@@ -321,10 +321,10 @@ class Filter
      */
     public static function fill($image, $color = '#000000')
     {
-        $width  = imagesx($image);
+        $width = imagesx($image);
         $height = imagesy($image);
 
-        $rgba      = Helper::normalizeColor($color);
+        $rgba = Helper::normalizeColor($color);
         $fillColor = imagecolorallocatealpha($image, $rgba[0], $rgba[1], $rgba[2], $rgba[3]);
 
         Helper::addAlpha($image, false);
@@ -340,7 +340,7 @@ class Filter
      * @param array  $params
      * @throws \JBZoo\Image\Exception
      */
-    public static function text($image, $text, $fontFile, $params = array())
+    public static function text($image, $text, $fontFile, $params = [])
     {
         Text::render($image, $text, $fontFile, $params);
     }
@@ -353,16 +353,16 @@ class Filter
      * @return resource
      * @throws \JBZoo\Utils\Exception
      */
-    public static function border($image, array $params = array())
+    public static function border($image, array $params = [])
     {
-        $params = array_merge(array(
+        $params = array_merge([
             'color' => '#333',
             'size'  => 1,
-        ), $params);
+        ], $params);
 
-        $size   = Helper::range($params['size'], 1, 1000);
-        $rgba   = Helper::normalizeColor($params['color']);
-        $width  = imagesx($image);
+        $size = Helper::range($params['size'], 1, 1000);
+        $rgba = Helper::normalizeColor($params['color']);
+        $width = imagesx($image);
         $height = imagesy($image);
 
         $x1 = 0;

@@ -6,10 +6,10 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package   Image
- * @license   MIT
- * @copyright Copyright (C) JBZoo.com,  All rights reserved.
- * @link      https://github.com/JBZoo/Image
+ * @package    Image
+ * @license    MIT
+ * @copyright  Copyright (C) JBZoo.com, All rights reserved.
+ * @link       https://github.com/JBZoo/Image
  */
 
 namespace JBZoo\PHPUnit;
@@ -18,8 +18,7 @@ namespace JBZoo\PHPUnit;
  * Class CodestyleTest
  * @package JBZoo\PHPUnit
  */
-class CodestyleTest extends Codestyle
+class ImageCodestyleTest extends Codestyle
 {
-    protected $_packageName = "Image";
-
+    protected $_packageName = 'Image';
 }
