@@ -1852,4 +1852,28 @@ class SimpleImage {
     throw new \Exception("Invalid color value: $color", self::ERR_INVALID_COLOR);
   }
 
+  /**
+   * Create an image from scratch
+   *
+   * @param int         $width    Image width
+   * @param int|null    $height   If omitted - assumed equal to $width
+   * @param null|string $color    Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
+   *                              Where red, green, blue - integers 0-255, alpha - integer 0-127
+   *
+   * @return SimpleImage
+   *
+   */
+  public function create($width, $height = null, $color = null)
+  {
+    $height         = $height ?: $width;
+    $this->mimeType = 'image/jpeg';
+    $this->image    = imagecreatetruecolor($width, $height);
+
+    if ($color) {
+      $this->fill($color);
+    }
+
+    return $this;
+  }
+
 }
