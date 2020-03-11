@@ -256,6 +256,15 @@ class Image
     }
 
     /**
+     * @param string $filename
+     * @return bool
+     */
+    protected function _saveWebP($filename)
+    {
+        return imagewebp($this->_image, $filename);
+    }
+
+    /**
      * Save image to file
      *
      * @param string $filename
@@ -317,6 +326,11 @@ class Image
         } elseif (Helper::isGif($format)) {
             if ($this->_saveGif($filename)) {
                 $result = 'image/gif';
+            }
+
+        } elseif (Helper::isWebp($format)) {
+            if ($this->_saveWebP($filename)) {
+                $result = 'image/webp';
             }
 
         } else {
@@ -506,6 +520,9 @@ class Image
 
         } elseif (Helper::isGif($format)) {
             $result = imagecreatefromgif($this->_filename);
+            
+        } elseif (Helper::isWebp($format)) {
+            $result = imagecreatefromwebp($this->_filename);
 
         } else {
             throw new Exception('Invalid image: ' . $this->_filename); // @codeCoverageIgnore
