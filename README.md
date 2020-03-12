@@ -35,7 +35,7 @@ With this class, you can effortlessly:
  * Desaturate, colorize, pixelate, blur, etc.
  * Overlay one image onto another (watermarking)
  * Add text using a font of your choice
- * Convert between GIF, JPEG, and PNG formats
+ * Convert between GIF, JPEG, PNG and WEBP formats
  * Strip EXIF data (Just save it!)
 
 
@@ -68,7 +68,7 @@ try { // Error handling
         // Save as new file
         ->saveAs('./some-path/new-image.jpg')     // Alternatively, you can specify a new filename
         ->saveAs('./some-path/new-image.jpg', 90) // You can specify quality as a second parameter in percents within range 0-100
-        ->saveAs('./some-path/new-image.png')     // Or convert it into another format by extention (gif|jpeg|png)
+        ->saveAs('./some-path/new-image.png')     // Or convert it into another format by extention (gif|jpeg|png|webp)
 
         // Resizing
         ->resize(320, 200)          // Resize the image to 320x200
