@@ -46,8 +46,8 @@ This class requires PHP 5.3 and PHP GD library. Recommended PHP 5.4 and above
 ### Install
 Just use the composer
 ```sh
-composer require jbzoo/image:"3.x-dev"  # Last dev
-composer require jbzoo/image:"^3.0"     # Last stable
+composer require jbzoo/image:"4.x-dev"  # Last dev
+composer require jbzoo/image:"^4.0"     # Last stable
 ```
 
 ### How to use
