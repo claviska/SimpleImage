@@ -261,25 +261,23 @@ class ImageTest extends PHPUnit
 
     public function testGetBase64()
     {
-        if (!Sys::isPHP('7.2')) {
-            skip('Test works only with PHP v7.2');
-        }
-
         $original = TestHelper::getOrig('smile.gif');
 
         $img = new Image($original);
-        isContain('data:image/gif;base64,R0lGODlhEAAQAMYAAHB', $img->getBase64());
-        isContain('data:image/gif;base64,R0lGODlhEAAQAMYAAHB', $img->getBase64(null));
-        isContain('data:image/gif;base64,R0lGODlhEAAQAMYAAHB', $img->getBase64('gif'));
-        isContain('data:image/png;base64,iVBORw0KGgoAAAANSUh', $img->getBase64('png'));
-        isContain('data:image/jpeg;base64,/9j/4AAQSkZJRgABAQ', $img->getBase64('jpeg'));
-        isContain('data:image/jpeg;base64,/9j/4AAQSkZJRgABAQ', $img->getBase64('jpg'));
+        isContain('data:image/gif;base64,', $img->getBase64());
+        isContain('data:image/gif;base64,', $img->getBase64(null));
+        isContain('data:image/gif;base64,', $img->getBase64('gif'));
+        isContain('data:image/png;base64,', $img->getBase64('png'));
+        isContain('data:image/jpeg;base64,', $img->getBase64('jpeg'));
+        isContain('data:image/jpeg;base64,', $img->getBase64('jpg'));
 
-        isContain('R0lGODlhEAAQAMYAAHB', $img->getBase64(null, null, false));
-        isContain('R0lGODlhEAAQAMYAAHB', $img->getBase64('gif', null, false));
-        isContain('iVBORw0KGgoAAAANSUh', $img->getBase64('png', null, false));
-        isContain('/9j/4AAQSkZJRgABAQ', $img->getBase64('jpeg', null, false));
-        isContain('/9j/4AAQSkZJRgABAQ', $img->getBase64('jpg', null, false));
+        if (Sys::isPHP('7.2')) {
+            isContain('R0lGODlhEAAQAMYAAHB', $img->getBase64(null, null, false));
+            isContain('R0lGODlhEAAQAMYAAHB', $img->getBase64('gif', null, false));
+            isContain('iVBORw0KGgoAAAANSUh', $img->getBase64('png', null, false));
+            isContain('/9j/4AAQSkZJRgABAQ', $img->getBase64('jpeg', null, false));
+            isContain('/9j/4AAQSkZJRgABAQ', $img->getBase64('jpg', null, false));
+        }
     }
 
     public function testGetBinary()
