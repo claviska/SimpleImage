@@ -1,8 +1,9 @@
 <?php
+
 /**
- * JBZoo Image
+ * JBZoo Toolbox - Image
  *
- * This file is part of the JBZoo CCK package.
+ * This file is part of the JBZoo Toolbox project.
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
@@ -23,25 +24,25 @@ use JBZoo\Image\Image;
  */
 class ImageTest extends PHPUnit
 {
-    protected $_class = '\JBZoo\Image\Image';
+    protected $class = Image::class;
 
     public function testCreateInstance()
     {
         $img = new Image();
-        isClass($this->_class, $img);
+        isClass($this->class, $img);
     }
 
     public function testOpen()
     {
-        $original = Helper::getOrig('butterfly.jpg');
+        $original = TestHelper::getOrig('butterfly.jpg');
 
         $img = new Image($original);
-        isClass($this->_class, $img->loadFile($original));
+        isClass($this->class, $img->loadFile($original));
     }
 
     public function testOpenUndefined()
     {
-        $this->expectException(\JBZoo\Image\Exception::class);
+        $this->expectException(Exception::class);
 
         $img = new Image();
         $img->loadFile('undefined.jpg');
@@ -49,10 +50,10 @@ class ImageTest extends PHPUnit
 
     public function testCleanup()
     {
-        $original = Helper::getOrig('butterfly.jpg');
+        $original = TestHelper::getOrig('butterfly.jpg');
 
         $img = new Image($original);
-        isClass($this->_class, $img->loadFile($original));
+        isClass($this->class, $img->loadFile($original));
 
         $img->cleanup();
         isCount(1, array_filter($img->getInfo()));
@@ -60,7 +61,7 @@ class ImageTest extends PHPUnit
 
     public function testGetInfoJpeg()
     {
-        $original = Helper::getOrig('butterfly.jpg');
+        $original = TestHelper::getOrig('butterfly.jpg');
 
         $img = new Image($original);
         $info = $img->getInfo();
@@ -75,7 +76,7 @@ class ImageTest extends PHPUnit
 
     public function testGetInfoPng()
     {
-        $original = Helper::getOrig('butterfly.png');
+        $original = TestHelper::getOrig('butterfly.png');
 
         $img = new Image($original);
         $info = $img->getInfo();
@@ -90,7 +91,7 @@ class ImageTest extends PHPUnit
 
     public function testGetInfoGif()
     {
-        $original = Helper::getOrig('butterfly.gif');
+        $original = TestHelper::getOrig('butterfly.gif');
 
         $img = new Image($original);
         $info = $img->getInfo();
@@ -106,21 +107,21 @@ class ImageTest extends PHPUnit
 
     public function testOrientation()
     {
-        $img = new Image(Helper::getOrig('butterfly.gif'));
+        $img = new Image(TestHelper::getOrig('butterfly.gif'));
         isTrue($img->isPortrait());
 
-        $img = new Image(Helper::getOrig('butterfly.jpg'));
+        $img = new Image(TestHelper::getOrig('butterfly.jpg'));
         isTrue($img->isLandscape());
 
-        $img = new Image(Helper::getOrig('basketball.gif'));
+        $img = new Image(TestHelper::getOrig('basketball.gif'));
         isTrue($img->isSquare());
     }
 
     public function testSave()
     {
-        $excepted = Helper::getExpected(__FUNCTION__ . '.jpg');
-        $actual = Helper::getActual(__FUNCTION__ . '.jpg');
-        $original = Helper::getOrig('butterfly.jpg');
+        $excepted = TestHelper::getExpected(__FUNCTION__ . '.jpg');
+        $actual = TestHelper::getActual(__FUNCTION__ . '.jpg');
+        $original = TestHelper::getOrig('butterfly.jpg');
 
         if (copy($original, $actual)) {
             $img = new Image($actual);
@@ -130,61 +131,76 @@ class ImageTest extends PHPUnit
             is(1, $info['quality']);
             is($actual, $info['filename']);
             //isNotEmpty($info['exif']);
-            Helper::isFileEq($actual, $excepted);
+            TestHelper::isFileEq($actual, $excepted);
 
         } else {
-            isTrue(false, 'Can\'t copy original file!');
+            isTrue(false, "Can't copy original file!");
         }
     }
 
     public function testConvertToGif()
     {
-        $original = Helper::getOrig('butterfly.jpg');
-        $actual = Helper::getActual(__FUNCTION__ . '.gif');
-        $excepted = Helper::getExpected(__FUNCTION__ . '.gif');
+        $original = TestHelper::getOrig('butterfly.jpg');
+        $actual = TestHelper::getActual(__FUNCTION__ . '.gif');
+        $excepted = TestHelper::getExpected(__FUNCTION__ . '.gif');
 
         $img = new Image();
         $img->loadFile($original)
             ->saveAs($actual);
 
-        Helper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($actual, $excepted);
     }
 
     public function testConvertToJpg()
     {
-        $original = Helper::getOrig('butterfly.jpg');
-        $excepted = Helper::getExpected(__FUNCTION__ . '.jpg');
-        $actualJpg = Helper::getActual(__FUNCTION__ . '.jpg');
-        $actualJpeg = Helper::getActual(__FUNCTION__ . '.jpeg');
+        $original = TestHelper::getOrig('butterfly.jpg');
+        $excepted = TestHelper::getExpected(__FUNCTION__ . '.jpg');
+        $actualJpg = TestHelper::getActual(__FUNCTION__ . '.jpg');
+        $actualJpeg = TestHelper::getActual(__FUNCTION__ . '.jpeg');
 
         $img = new Image();
         $img->loadFile($original)
             ->saveAs($actualJpg);
 
-        Helper::isFileEq($actualJpg, $excepted);
+        TestHelper::isFileEq($actualJpg, $excepted);
 
         $img = new Image();
         $img->loadFile($original)->saveAs($actualJpeg)->setQuality(100);
-        Helper::isFileEq($actualJpeg, $excepted);
+        TestHelper::isFileEq($actualJpeg, $excepted);
     }
 
     public function testConvertToPng()
     {
-        $original = Helper::getOrig('butterfly.jpg');
-        $excepted = Helper::getExpected(__FUNCTION__ . '.png');
-        $actual = Helper::getActual(__FUNCTION__ . '.png');
+        $original = TestHelper::getOrig('butterfly.jpg');
+        $excepted = TestHelper::getExpected(__FUNCTION__ . '.png');
+        $actual = TestHelper::getActual(__FUNCTION__ . '.png');
 
         $img = new Image();
         $img->loadFile($original)
             ->saveAs($actual);
 
-        Helper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($actual, $excepted);
+    }
+
+    public function testConvertToWebp()
+    {
+        $original = TestHelper::getOrig('butterfly.jpg');
+        $excepted = TestHelper::getExpected(__FUNCTION__ . '.webp');
+        $actual = TestHelper::getActual(__FUNCTION__ . '.webp');
+
+        $img = new Image();
+        $img->loadFile($original)
+            ->saveAs($actual);
+
+        isTrue($img->isWebp());
+
+        TestHelper::isFileEq($actual, $excepted);
     }
 
     public function testConvertToUndefinedFormat()
     {
-        $original = Helper::getOrig('butterfly.jpg');
-        $actual = Helper::getActual(__FUNCTION__ . '.qwerty');
+        $original = TestHelper::getOrig('butterfly.jpg');
+        $actual = TestHelper::getActual(__FUNCTION__ . '.qwerty');
 
         $img = new Image();
         isTrue($img->loadFile($original)->saveAs($actual));
@@ -192,10 +208,10 @@ class ImageTest extends PHPUnit
 
     public function testConvertToUndefinedPath()
     {
-        $this->expectException(\JBZoo\Image\Exception::class);
+        $this->expectException(Exception::class);
 
-        $original = Helper::getOrig('butterfly.jpg');
-        $actual = Helper::getActual('qwerty/' . __FUNCTION__ . '.png');
+        $original = TestHelper::getOrig('butterfly.jpg');
+        $actual = TestHelper::getActual('qwerty/' . __FUNCTION__ . '.png');
 
         $img = new Image();
         $img->loadFile($original)
@@ -204,43 +220,43 @@ class ImageTest extends PHPUnit
 
     public function testCreateFromScratchOnlyWidth()
     {
-        $actual = Helper::getActual(__FUNCTION__ . '.png');
-        $excepted = Helper::getExpected(__FUNCTION__ . '.png');
+        $actual = TestHelper::getActual(__FUNCTION__ . '.png');
+        $excepted = TestHelper::getExpected(__FUNCTION__ . '.png');
 
         $img = new Image();
         $img->create(200)
             ->saveAs($actual);
 
-        Helper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($actual, $excepted);
     }
 
     public function testCreateFromScratchWidthAndHeight()
     {
-        $actual = Helper::getActual(__FUNCTION__ . '.png');
-        $excepted = Helper::getExpected(__FUNCTION__ . '.png');
+        $actual = TestHelper::getActual(__FUNCTION__ . '.png');
+        $excepted = TestHelper::getExpected(__FUNCTION__ . '.png');
 
         $img = new Image();
         $img->create(200, 100)
             ->saveAs($actual);
 
-        Helper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($actual, $excepted);
     }
 
     public function testCreateFromScratchFull()
     {
-        $actual = Helper::getActual(__FUNCTION__ . '.png');
-        $excepted = Helper::getExpected(__FUNCTION__ . '.png');
+        $actual = TestHelper::getActual(__FUNCTION__ . '.png');
+        $excepted = TestHelper::getExpected(__FUNCTION__ . '.png');
 
         $img = new Image();
         $img->create(200, 100, [0, 136, 204, 64])
             ->saveAs($actual);
 
-        Helper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($actual, $excepted);
     }
 
     public function testGetBase64()
     {
-        $original = Helper::getOrig('smile.gif');
+        $original = TestHelper::getOrig('smile.gif');
 
         $img = new Image($original);
         isContain('data:image/gif;base64,R0lGODlhEAAQAMYAAHB', $img->getBase64());
@@ -259,7 +275,7 @@ class ImageTest extends PHPUnit
 
     public function testGetBinary()
     {
-        $original = Helper::getOrig('smile.gif');
+        $original = TestHelper::getOrig('smile.gif');
 
         $img = new Image($original);
 
@@ -273,7 +289,7 @@ class ImageTest extends PHPUnit
 
     public function testSaveUndefined()
     {
-        $this->expectException(\JBZoo\Image\Exception::class);
+        $this->expectException(Exception::class);
 
         $img = new Image();
         $img->save();
@@ -281,7 +297,7 @@ class ImageTest extends PHPUnit
 
     public function testToBase64Undefined()
     {
-        $this->expectException(\JBZoo\Image\Exception::class);
+        $this->expectException(Exception::class);
 
         $img = new Image();
         $img->getBase64();
@@ -289,7 +305,7 @@ class ImageTest extends PHPUnit
 
     public function testSaveAsUndefined()
     {
-        $this->expectException(\JBZoo\Image\Exception::class);
+        $this->expectException(Exception::class);
 
         $img = new Image();
         $img->saveAs('');
@@ -304,7 +320,7 @@ class ImageTest extends PHPUnit
         $_SERVER['QUERY_STRING'] = 'foo=bar';
         $_SERVER['PHP_SELF'] = '/test.php';
 
-        $original = Helper::getOrig('butterfly.jpg');
+        $original = TestHelper::getOrig('butterfly.jpg');
 
         $img = new Image($original);
         isSame('resources/butterfly.jpg', $img->getPath());
@@ -313,7 +329,7 @@ class ImageTest extends PHPUnit
 
     public function testGetPathUndefined()
     {
-        $this->expectException(\JBZoo\Image\Exception::class);
+        $this->expectException(Exception::class);
 
         $_SERVER['DOCUMENT_ROOT'] = __DIR__;
         $_SERVER['HTTP_HOST'] = 'test.dev';
@@ -403,38 +419,38 @@ class ImageTest extends PHPUnit
 
         $bin = base64_decode($imgStr, true);
 
-        $actualClean = Helper::getActual(__FUNCTION__ . '_clean.gif');
-        $actualBase64Gif = Helper::getActual(__FUNCTION__ . '_base64.gif');
-        $actualBase64Jpeg = Helper::getActual(__FUNCTION__ . '_base64.jpg');
-        $actualBin = Helper::getActual(__FUNCTION__ . '_bin.gif');
-        $excepted = Helper::getExpected(__FUNCTION__ . '.gif');
+        $actualClean = TestHelper::getActual(__FUNCTION__ . '_clean.gif');
+        $actualBase64Gif = TestHelper::getActual(__FUNCTION__ . '_base64.gif');
+        $actualBase64Jpeg = TestHelper::getActual(__FUNCTION__ . '_base64.jpg');
+        $actualBin = TestHelper::getActual(__FUNCTION__ . '_bin.gif');
+        $excepted = TestHelper::getExpected(__FUNCTION__ . '.gif');
 
         $img = new Image($imgStr);
         $img->saveAs($actualClean);
-        Helper::isFileEq($actualClean, $excepted);
+        TestHelper::isFileEq($actualClean, $excepted);
 
         $img = new Image($base64Gif);
         $img->saveAs($actualBase64Gif);
-        Helper::isFileEq($actualBase64Gif, $excepted);
+        TestHelper::isFileEq($actualBase64Gif, $excepted);
 
         $img = new Image($base64Gif, true);
         $img->saveAs($actualBase64Gif);
-        Helper::isFileEq($actualBase64Gif, $excepted);
+        TestHelper::isFileEq($actualBase64Gif, $excepted);
 
         $img = new Image($base64Jpeg, true);
         $img->saveAs($actualBase64Jpeg);
-        Helper::isFileEq($actualBase64Jpeg, $excepted);
+        TestHelper::isFileEq($actualBase64Jpeg, $excepted);
 
         $img = new Image($bin);
         $img->saveAs($actualBin);
-        Helper::isFileEq($actualBin, $excepted);
+        TestHelper::isFileEq($actualBin, $excepted);
     }
 
     public function testUnsupportedFormat()
     {
-        $excepted = Helper::getExpected(__FUNCTION__ . '.png');
-        $actual = Helper::getActual(__FUNCTION__ . '.tmp');
-        $original = Helper::getOrig('1x1.tmp');
+        $excepted = TestHelper::getExpected(__FUNCTION__ . '.png');
+        $actual = TestHelper::getActual(__FUNCTION__ . '.tmp');
+        $original = TestHelper::getOrig('1x1.tmp');
 
         if (copy($original, $actual)) {
             $img = new Image($actual);
@@ -447,7 +463,7 @@ class ImageTest extends PHPUnit
             is(100, $info['width']);
             is(200, $info['height']);
 
-            Helper::isFileEq($actual, $excepted);
+            TestHelper::isFileEq($actual, $excepted);
 
         } else {
             fail('Can\'t copy original file!');
@@ -456,21 +472,21 @@ class ImageTest extends PHPUnit
 
     public function testOpenImageResource()
     {
-        $original = Helper::getOrig('butterfly.jpg');
-        $actual = Helper::getActual(__FUNCTION__ . '.jpg');
-        $excepted = Helper::getExpected(__FUNCTION__ . '.jpg');
+        $original = TestHelper::getOrig('butterfly.jpg');
+        $actual = TestHelper::getActual(__FUNCTION__ . '.jpg');
+        $excepted = TestHelper::getExpected(__FUNCTION__ . '.jpg');
 
         $imgRes = imagecreatefromjpeg($original);
 
         $img = new Image($imgRes);
         $img->saveAs($actual);
 
-        Helper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($actual, $excepted);
     }
 
     public function testLoadStringUndefined()
     {
-        $this->expectException(\JBZoo\Image\Exception::class);
+        $this->expectException(Exception::class);
 
         $img = new Image();
         $img->loadString('');
@@ -478,7 +494,7 @@ class ImageTest extends PHPUnit
 
     public function testLoadResourceUndefined()
     {
-        $this->expectException(\JBZoo\Image\Exception::class);
+        $this->expectException(Exception::class);
 
         $img = new Image();
         $img->loadResource('');
@@ -505,11 +521,11 @@ class ImageTest extends PHPUnit
 
     public function testGetWidthAndHeight()
     {
-        $original = Helper::getOrig('butterfly.png');
+        $original = TestHelper::getOrig('butterfly.png');
 
         $img = new Image($original);
 
-        is(640, $img->getWidth());
-        is(478, $img->getHeight());
+        isSame(640, $img->getWidth());
+        isSame(478, $img->getHeight());
     }
 }

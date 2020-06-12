@@ -1,8 +1,9 @@
 <?php
+
 /**
- * JBZoo Image
+ * JBZoo Toolbox - Image
  *
- * This file is part of the JBZoo CCK package.
+ * This file is part of the JBZoo Toolbox project.
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
@@ -16,22 +17,26 @@ namespace JBZoo\Image;
 
 use JBZoo\Utils\Filter as VarFilter;
 use JBZoo\Utils\Image as Helper;
+use JBZoo\Utils\Vars;
 
 /**
  * Class Helper
  * @package JBZoo\Image
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
  */
 class Filter
 {
-    const BLUR_SEL  = 0;
-    const BLUR_GAUS = 1;
+    public const BLUR_SEL  = 0;
+    public const BLUR_GAUS = 1;
+
+    private const MAX_PERCENT = 100;
 
     /**
      * Add sepia effect (emulation)
      *
      * @param resource $image Image GD resource
      */
-    public static function sepia($image)
+    public static function sepia($image): void
     {
         self::grayscale($image);
         imagefilter($image, IMG_FILTER_COLORIZE, 100, 50, 0);
@@ -42,7 +47,7 @@ class Filter
      *
      * @param resource $image Image GD resource
      */
-    public static function grayscale($image)
+    public static function grayscale($image): void
     {
         imagefilter($image, IMG_FILTER_GRAYSCALE);
     }
@@ -53,10 +58,10 @@ class Filter
      * @param resource $image     Image GD resource
      * @param int      $blockSize Size in pixels of each resulting block
      */
-    public static function pixelate($image, $blockSize = 10)
+    public static function pixelate($image, $blockSize = 10): void
     {
         $blockSize = VarFilter::int($blockSize);
-        imagefilter($image, IMG_FILTER_PIXELATE, $blockSize, true);
+        imagefilter($image, IMG_FILTER_PIXELATE, $blockSize, 1);
     }
 
     /**
@@ -64,7 +69,7 @@ class Filter
      *
      * @param resource $image Image GD resource
      */
-    public static function edges($image)
+    public static function edges($image): void
     {
         imagefilter($image, IMG_FILTER_EDGEDETECT);
     }
@@ -74,7 +79,7 @@ class Filter
      *
      * @param resource $image Image GD resource
      */
-    public static function emboss($image)
+    public static function emboss($image): void
     {
         imagefilter($image, IMG_FILTER_EMBOSS);
     }
@@ -84,7 +89,7 @@ class Filter
      *
      * @param resource $image Image GD resource
      */
-    public static function invert($image)
+    public static function invert($image): void
     {
         imagefilter($image, IMG_FILTER_NEGATE);
     }
@@ -96,7 +101,7 @@ class Filter
      * @param int      $type   BLUR_SEL|BLUR_GAUS
      * @param int      $passes Number of times to apply the filter
      */
-    public static function blur($image, $passes = 1, $type = self::BLUR_SEL)
+    public static function blur($image, $passes = 1, $type = self::BLUR_SEL): void
     {
         $passes = Helper::blur($passes);
 
@@ -116,7 +121,7 @@ class Filter
      * @param resource $image Image GD resource
      * @param int      $level Darkest = -255, lightest = 255
      */
-    public static function brightness($image, $level)
+    public static function brightness($image, $level): void
     {
         imagefilter($image, IMG_FILTER_BRIGHTNESS, Helper::brightness($level));
     }
@@ -127,7 +132,7 @@ class Filter
      * @param resource $image Image GD resource
      * @param int      $level Min = -100, max = 100
      */
-    public static function contrast($image, $level)
+    public static function contrast($image, $level): void
     {
         imagefilter($image, IMG_FILTER_CONTRAST, Helper::contrast($level));
     }
@@ -139,11 +144,10 @@ class Filter
      * @param string    $color      Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
      *                              Where red, green, blue - integers 0-255, alpha - integer 0-127
      * @param float|int $opacity    0-100
-     * @return $this
      *
      * @throws \JBZoo\Utils\Exception
      */
-    public static function colorize($image, $color, $opacity)
+    public static function colorize($image, $color, $opacity): void
     {
         $rgba = Helper::normalizeColor($color);
         $alpha = Helper::opacity2Alpha($opacity);
@@ -160,7 +164,7 @@ class Filter
      *
      * @param resource $image Image GD resource
      */
-    public static function meanRemove($image)
+    public static function meanRemove($image): void
     {
         imagefilter($image, IMG_FILTER_MEAN_REMOVAL);
     }
@@ -171,7 +175,7 @@ class Filter
      * @param resource $image  Image GD resource
      * @param int      $passes Number of times to apply the filter (1 - 2048)
      */
-    public static function smooth($image, $passes = 1)
+    public static function smooth($image, $passes = 1): void
     {
         imagefilter($image, IMG_FILTER_SMOOTH, Helper::smooth($passes));
     }
@@ -181,7 +185,7 @@ class Filter
      *
      * @param resource $image   Image GD resource
      * @param int      $percent Level of desaturization.
-     * @return resource|null
+     * @return resource
      */
     public static function desaturate($image, $percent = 100)
     {
@@ -190,12 +194,9 @@ class Filter
         $width = imagesx($image);
         $height = imagesy($image);
 
-        if ($percent === 100) {
+        if ($percent === self::MAX_PERCENT) {
             self::grayscale($image);
-
-        } else {
-            // Make a desaturated copy of the image
-            $newImage = imagecreatetruecolor($width, $height);
+        } elseif ($newImage = imagecreatetruecolor($width, $height)) { // Make a desaturated copy of the image
             imagealphablending($newImage, false);
             imagecopy($newImage, $image, 0, 0, 0, 0, $width, $height);
             imagefilter($newImage, IMG_FILTER_GRAYSCALE);
@@ -209,11 +210,12 @@ class Filter
                 [$width, $height],
                 $percent
             );
-
             return $newImage;
+        } else {
+            throw new Exception("Can't handle image resource by 'imagecreatetruecolor'");
         }
 
-        return null;
+        return $image;
     }
 
     /**
@@ -232,25 +234,27 @@ class Filter
         $width = imagesx($image);
         $height = imagesy($image);
 
-        $newImage = imagecreatetruecolor($width, $height);
+        if ($newImage = imagecreatetruecolor($width, $height)) {
+            // Set a White & Transparent Background Color
+            $background = imagecolorallocatealpha($newImage, 0, 0, 0, 127);
+            imagefill($newImage, 0, 0, $background);
 
-        // Set a White & Transparent Background Color
-        $bg = imagecolorallocatealpha($newImage, 0, 0, 0, 127);
-        imagefill($newImage, 0, 0, $bg);
+            // Copy and merge
+            Helper::imageCopyMergeAlpha(
+                $newImage,
+                $image,
+                [0, 0],
+                [0, 0],
+                [$width, $height],
+                $opacity
+            );
 
-        // Copy and merge
-        Helper::imageCopyMergeAlpha(
-            $newImage,
-            $image,
-            [0, 0],
-            [0, 0],
-            [$width, $height],
-            $opacity
-        );
+            imagedestroy($image);
 
-        imagedestroy($image);
+            return $newImage;
+        }
 
-        return $newImage;
+        throw new Exception("Image resourced can't be handle by \"imagecreatetruecolor\"");
     }
 
     /**
@@ -290,25 +294,26 @@ class Filter
         $width = imagesx($image);
         $height = imagesy($image);
 
-        $newImage = imagecreatetruecolor($width, $height);
-        Helper::addAlpha($newImage);
+        if ($newImage = imagecreatetruecolor($width, $height)) {
+            Helper::addAlpha($newImage);
 
-        if ($dir === 'y') {
-            for ($y = 0; $y < $height; $y++) {
-                imagecopy($newImage, $image, 0, $y, 0, $height - $y - 1, $width, 1);
+            if ($dir === 'y') {
+                for ($y = 0; $y < $height; $y++) {
+                    imagecopy($newImage, $image, 0, $y, 0, $height - $y - 1, $width, 1);
+                }
+            } elseif ($dir === 'x') {
+                for ($x = 0; $x < $width; $x++) {
+                    imagecopy($newImage, $image, $x, 0, $width - $x - 1, 0, 1, $height);
+                }
+            } elseif ($dir === 'xy' || $dir === 'yx') {
+                $newImage = self::flip($image, 'x');
+                $newImage = self::flip($newImage, 'y');
             }
 
-        } elseif ($dir === 'x') {
-            for ($x = 0; $x < $width; $x++) {
-                imagecopy($newImage, $image, $x, 0, $width - $x - 1, 0, 1, $height);
-            }
-
-        } elseif ($dir === 'xy' || $dir === 'yx') {
-            $newImage = self::flip($image, 'x');
-            $newImage = self::flip($newImage, 'y');
+            return $newImage;
         }
 
-        return $newImage;
+        throw new Exception("Image resource can't be handle by \"imagecreatetruecolor\"");
     }
 
     /**
@@ -319,7 +324,7 @@ class Filter
      *                          Where red, green, blue - integers 0-255, alpha - integer 0-127
      * @throws \JBZoo\Utils\Exception
      */
-    public static function fill($image, $color = '#000000')
+    public static function fill($image, $color = '#000000'): void
     {
         $width = imagesx($image);
         $height = imagesy($image);
@@ -338,9 +343,10 @@ class Filter
      * @param string $text     Some text to output on image as watermark
      * @param string $fontFile TTF font file path
      * @param array  $params
-     * @throws \JBZoo\Image\Exception
+     * @throws Exception
+     * @throws \JBZoo\Utils\Exception
      */
-    public static function text($image, $text, $fontFile, $params = [])
+    public static function text($image, $text, $fontFile, $params = []): void
     {
         Text::render($image, $text, $fontFile, $params);
     }
@@ -350,30 +356,29 @@ class Filter
      *
      * @param resource $image  Image GD resource
      * @param array    $params Some
-     * @return resource
      * @throws \JBZoo\Utils\Exception
      */
-    public static function border($image, array $params = [])
+    public static function border($image, array $params = []): void
     {
         $params = array_merge([
             'color' => '#333',
             'size'  => 1,
         ], $params);
 
-        $size = Helper::range($params['size'], 1, 1000);
+        $size = Vars::range($params['size'], 1, 1000);
         $rgba = Helper::normalizeColor($params['color']);
         $width = imagesx($image);
         $height = imagesy($image);
 
-        $x1 = 0;
-        $y1 = 0;
-        $x2 = $width - 1;
-        $y2 = $height - 1;
+        $posX1 = 0;
+        $posY1 = 0;
+        $posX2 = $width - 1;
+        $posY2 = $height - 1;
 
         $color = imagecolorallocatealpha($image, $rgba[0], $rgba[1], $rgba[2], $rgba[3]);
 
         for ($i = 0; $i < $size; $i++) {
-            imagerectangle($image, $x1++, $y1++, $x2--, $y2--, $color);
+            imagerectangle($image, $posX1++, $posY1++, $posX2--, $posY2--, $color);
         }
     }
 }

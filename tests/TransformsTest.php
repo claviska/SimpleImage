@@ -1,8 +1,9 @@
 <?php
+
 /**
- * JBZoo Image
+ * JBZoo Toolbox - Image
  *
- * This file is part of the JBZoo CCK package.
+ * This file is part of the JBZoo Toolbox project.
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
@@ -24,71 +25,71 @@ class TransformsTest extends PHPUnit
 {
     public function testFlipX()
     {
-        $excepted = Helper::getExpected(__FUNCTION__ . '.jpg');
-        $actual = Helper::getActual(__FUNCTION__ . '.jpg');
-        $original = Helper::getOrig('butterfly.jpg');
+        $excepted = TestHelper::getExpected(__FUNCTION__ . '.jpg');
+        $actual = TestHelper::getActual(__FUNCTION__ . '.jpg');
+        $original = TestHelper::getOrig('butterfly.jpg');
 
         $img = new Image();
         $img->loadFile($original)
             ->addFilter('flip', 'x')
             ->saveAs($actual);
 
-        Helper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($actual, $excepted);
     }
 
     public function testFlipY()
     {
-        $excepted = Helper::getExpected(__FUNCTION__ . '.jpg');
-        $actual = Helper::getActual(__FUNCTION__ . '.jpg');
-        $original = Helper::getOrig('butterfly.jpg');
+        $excepted = TestHelper::getExpected(__FUNCTION__ . '.jpg');
+        $actual = TestHelper::getActual(__FUNCTION__ . '.jpg');
+        $original = TestHelper::getOrig('butterfly.jpg');
 
         $img = new Image();
         $img->loadFile($original)
             ->addFilter('flip', 'y')
             ->saveAs($actual);
 
-        Helper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($actual, $excepted);
     }
 
     public function testFlipXY()
     {
-        $excepted = Helper::getExpected(__FUNCTION__ . '.jpg');
-        $actual = Helper::getActual(__FUNCTION__ . '.jpg');
-        $original = Helper::getOrig('butterfly.jpg');
+        $excepted = TestHelper::getExpected(__FUNCTION__ . '.jpg');
+        $actual = TestHelper::getActual(__FUNCTION__ . '.jpg');
+        $original = TestHelper::getOrig('butterfly.jpg');
 
         $img = new Image();
         $img->loadFile($original)
             ->addFilter('flip', 'xy')
             ->saveAs($actual);
 
-        Helper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($actual, $excepted);
     }
 
     public function testFlipYX()
     {
-        $excepted = Helper::getExpected(__FUNCTION__ . '.jpg');
-        $actual = Helper::getActual(__FUNCTION__ . '.jpg');
-        $original = Helper::getOrig('butterfly.jpg');
+        $excepted = TestHelper::getExpected(__FUNCTION__ . '.jpg');
+        $actual = TestHelper::getActual(__FUNCTION__ . '.jpg');
+        $original = TestHelper::getOrig('butterfly.jpg');
 
         $img = new Image();
         $img->loadFile($original)
             ->addFilter('flip', 'yx')
             ->saveAs($actual);
 
-        Helper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($actual, $excepted);
     }
 
     public function testAutoOrient()
     {
-        $excepted = Helper::getExpected(__FUNCTION__ . '.jpg');
-        $actual = Helper::getActual(__FUNCTION__ . '.jpg');
-        $original = Helper::getOrig('butterfly.jpg');
+        $excepted = TestHelper::getExpected(__FUNCTION__ . '.jpg');
+        $actual = TestHelper::getActual(__FUNCTION__ . '.jpg');
+        $original = TestHelper::getOrig('butterfly.jpg');
 
         $img = new Image();
         $img->loadFile($original)
             ->autoOrient()
             ->saveAs($actual);
 
-        Helper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($actual, $excepted);
     }
 }

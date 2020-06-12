@@ -1,8 +1,9 @@
 <?php
+
 /**
- * JBZoo Image
+ * JBZoo Toolbox - Image
  *
- * This file is part of the JBZoo CCK package.
+ * This file is part of the JBZoo Toolbox project.
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
@@ -17,10 +18,10 @@ namespace JBZoo\PHPUnit;
 use JBZoo\Utils\FS;
 
 /**
- * Class Helper
+ * Class TestHelper
  * @package JBZoo\PHPUnit
  */
-class Helper
+class TestHelper
 {
     /**
      * @param $filename
@@ -29,7 +30,7 @@ class Helper
     public static function getActual($filename)
     {
         $filename = self::camelCase2Human($filename);
-        return FS::clean(PROJECT_ROOT . '/build/images/' . $filename);
+        return FS::clean(__DIR__ . "/../build/images/{$filename}");
     }
 
     /**
@@ -39,7 +40,7 @@ class Helper
     public static function getExpected($filename)
     {
         $filename = self::camelCase2Human($filename);
-        return FS::clean(PROJECT_TESTS . '/expected/' . $filename);
+        return FS::clean(__DIR__ . "/expected/{$filename}");
     }
 
     /**
@@ -48,7 +49,7 @@ class Helper
      */
     public static function getOrig($filename)
     {
-        return FS::clean(PROJECT_TESTS . '/resources/' . $filename);
+        return FS::clean(__DIR__ . "/resources/{$filename}");
     }
 
     /**
@@ -61,21 +62,20 @@ class Helper
         clearstatcache(false, $actual);
         clearstatcache(false, $expected);
 
-        isTrue(file_exists($actual), 'File not found: ' . $actual);
-        isTrue(file_exists($expected), 'File not found: ' . $expected);
+        isTrue(file_exists($actual), "File not found: {$actual}");
+        isTrue(file_exists($expected), "File not found: {$expected}");
 
         $actualSize = filesize($actual);
         $expectedSize = filesize($expected);
 
         $diff = abs($actualSize - $expectedSize);
 
-        if ($diff !== 0) {
-            $message = $actual . '; ' . $actualSize . ' <> ' . $expectedSize . "\t\t(" . $diff . ')';
-            //is(0, $diff, $message);
-            cliMessage($message);
-        } else {
-            is(0, $diff);
-        }
+        //if ($diff !== 0) {
+        //    $message = "{$actual}; {$actualSize} <> {$expectedSize}; Diff:{$diff}";
+        //    \JBZoo\Utils\Cli::out($message);
+        //} else {
+        //    is(0, $diff);
+        //}
     }
 
     /**

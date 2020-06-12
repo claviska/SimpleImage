@@ -1,8 +1,9 @@
 <?php
+
 /**
- * JBZoo Image
+ * JBZoo Toolbox - Image
  *
- * This file is part of the JBZoo CCK package.
+ * This file is part of the JBZoo Toolbox project.
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
@@ -24,24 +25,24 @@ class IssuesTest extends PHPUnit
 {
     public function testIssue7()
     {
-        $excepted = Helper::getExpected(__FUNCTION__ . '.png');
-        $actual = Helper::getActual(__FUNCTION__ . '.png');
-        $base = Helper::getOrig('issue-7/back.png');
-        $overlay = Helper::getOrig('issue-7/overlay.png');
+        $excepted = TestHelper::getExpected(__FUNCTION__ . '.png');
+        $actual = TestHelper::getActual(__FUNCTION__ . '.png');
+        $base = TestHelper::getOrig('issue-7/back.png');
+        $overlay = TestHelper::getOrig('issue-7/overlay.png');
 
         $image = new Image($base);
         $image
             ->overlay($overlay)
             ->saveAs($actual);
 
-        Helper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($actual, $excepted);
     }
 
     public function testIssue8()
     {
-        $excepted = Helper::getExpected(__FUNCTION__ . '.png');
-        $actual = Helper::getActual(__FUNCTION__ . '.png');
-        $base = Helper::getOrig('issue-8/original.png');
+        $excepted = TestHelper::getExpected(__FUNCTION__ . '.png');
+        $actual = TestHelper::getActual(__FUNCTION__ . '.png');
+        $base = TestHelper::getOrig('issue-8/original.png');
 
         $img = new Image($base);
 
@@ -59,6 +60,6 @@ class IssuesTest extends PHPUnit
 
         $img->saveAs($actual);
 
-        Helper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($actual, $excepted);
     }
 }

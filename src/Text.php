@@ -1,8 +1,9 @@
 <?php
+
 /**
- * JBZoo Image
+ * JBZoo Toolbox - Image
  *
- * This file is part of the JBZoo CCK package.
+ * This file is part of the JBZoo Toolbox project.
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
@@ -23,7 +24,10 @@ use JBZoo\Utils\Image as Helper;
  */
 class Text
 {
-    protected static $_default = [
+    /**
+     * @var array
+     */
+    protected static $default = [
         'position'       => 'bottom',
         'angle'          => 0,
         'font-size'      => 32,
@@ -44,11 +48,13 @@ class Text
      * @param array  $params Additional render params
      *
      * @throws Exception
+     * @throws \JBZoo\Utils\Exception
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      */
-    public static function render($image, $text, $fFile, array $params = [])
+    public static function render($image, $text, $fFile, array $params = []): void
     {
         // Set vars
-        $params = array_merge(self::$_default, $params);
+        $params = array_merge(self::$default, $params);
         $angle = Helper::rotate($params['angle']);
         $position = Helper::position($params['position']);
         $fSize = $params['font-size'];
@@ -61,9 +67,9 @@ class Text
         $imageWidth = imagesx($image);
         $imageHeight = imagesy($image);
 
-        $colorArr = self::_getColor($image, $color);
-        list($textWidth, $textHeight) = self::_getTextboxSize($fSize, $angle, $fFile, $text);
-        list($textX, $textY) = Helper::getInnerCoords(
+        $colorArr = self::getColor($image, $color);
+        [$textWidth, $textHeight] = self::getTextBoxSize($fSize, $angle, $fFile, $text);
+        [$textX, $textY] = Helper::getInnerCoords(
             $position,
             [$imageWidth, $imageHeight],
             [$textWidth, $textHeight],
@@ -72,15 +78,13 @@ class Text
 
         if ($strokeColor && $strokeSize) {
             if (is_array($color) || is_array($strokeColor)) {
-
                 // Multi colored text and/or multi colored stroke
-                $strokeColor = self::_getColor($image, $strokeColor);
+                $strokeColor = self::getColor($image, $strokeColor);
                 $chars = str_split($text, 1);
 
                 foreach ($chars as $key => $char) {
-
                     if ($key > 0) {
-                        $textX = self::_getStrokeX($fSize, $angle, $fFile, $chars, $key, $strokeSpacing, $textX);
+                        $textX = self::getStrokeX($fSize, $angle, $fFile, $chars, $key, $strokeSpacing, $textX);
                     }
 
                     // If the next letter is empty, we just move forward to the next letter
@@ -88,7 +92,7 @@ class Text
                         continue;
                     }
 
-                    self::_renderStroke(
+                    self::renderStroke(
                         $image,
                         $char,
                         [$fFile, $fSize, current($colorArr), $angle],
@@ -106,11 +110,10 @@ class Text
                         reset($strokeColor);
                     }
                 }
-
             } else {
                 $rgba = Helper::normalizeColor($strokeColor);
                 $strokeColor = imagecolorallocatealpha($image, $rgba[0], $rgba[1], $rgba[2], $rgba[3]);
-                self::_renderStroke(
+                self::renderStroke(
                     $image,
                     $text,
                     [$fFile, $fSize, current($colorArr), $angle],
@@ -118,32 +121,28 @@ class Text
                     [$strokeSize, $strokeColor]
                 );
             }
-
-        } else {
-            if (is_array($color)) { // Multi colored text
-                $chars = str_split($text, 1);
-                foreach ($chars as $key => $char) {
-                    if ($key > 0) {
-                        $textX = self::_getStrokeX($fSize, $angle, $fFile, $chars, $key, $strokeSpacing, $textX);
-                    }
-
-                    // If the next letter is empty, we just move forward to the next letter
-                    if ($char === ' ') {
-                        continue;
-                    }
-
-                    $fontInfo = [$fFile, $fSize, current($colorArr), $angle];
-                    self::_render($image, $char, $fontInfo, [$textX, $textY]);
-
-                    // #000 is 0, black will reset the array so we write it this way
-                    if (next($colorArr) === false) {
-                        reset($colorArr);
-                    }
+        } elseif (is_array($color)) { // Multi colored text
+            $chars = str_split($text, 1);
+            foreach ($chars as $key => $char) {
+                if ($key > 0) {
+                    $textX = self::getStrokeX($fSize, $angle, $fFile, $chars, $key, $strokeSpacing, $textX);
                 }
 
-            } else {
-                self::_render($image, $text, [$fFile, $fSize, $colorArr[0], $angle], [$textX, $textY]);
+                // If the next letter is empty, we just move forward to the next letter
+                if ($char === ' ') {
+                    continue;
+                }
+
+                $fontInfo = [$fFile, $fSize, current($colorArr), $angle];
+                self::internalRender($image, $char, $fontInfo, [$textX, $textY]);
+
+                // #000 is 0, black will reset the array so we write it this way
+                if (next($colorArr) === false) {
+                    reset($colorArr);
+                }
             }
+        } else {
+            self::internalRender($image, $text, [$fFile, $fSize, $colorArr[0], $angle], [$textX, $textY]);
         }
     }
 
@@ -153,9 +152,9 @@ class Text
      * @param mixed        $image GD resource
      * @param string|array $colors
      * @return array
-     * @throws Exception
+     * @throws \JBZoo\Utils\Exception
      */
-    protected static function _getColor($image, $colors)
+    protected static function getColor($image, $colors)
     {
         $colors = (array)$colors;
 
@@ -179,7 +178,7 @@ class Text
      *
      * @throws Exception
      */
-    protected static function _getTextboxSize($fontSize, $angle, $fontFile, $text)
+    protected static function getTextBoxSize($fontSize, $angle, $fontFile, $text)
     {
         // Determine textbox size
         $fontPath = FS::clean($fontFile);
@@ -188,7 +187,7 @@ class Text
             throw new Exception('Unable to load font: ' . $fontFile);
         }
 
-        $box = imagettfbbox($fontSize, $angle, $fontFile, $text);
+        $box = imagettfbbox((float)$fontSize, $angle, $fontFile, $text);
 
         $boxWidth = abs($box[6] - $box[2]);
         $boxHeight = abs($box[7] - $box[1]);
@@ -206,10 +205,10 @@ class Text
      *
      * @return array
      */
-    protected static function _render($image, $text, array $font, array $coords)
+    protected static function internalRender($image, $text, array $font, array $coords)
     {
-        list($coordX, $coordY) = $coords;
-        list($file, $size, $color, $angle) = $font;
+        [$coordX, $coordY] = $coords;
+        [$file, $size, $color, $angle] = $font;
 
         return imagettftext($image, $size, $angle, $coordX, $coordY, $color, $file, $text);
     }
@@ -225,15 +224,15 @@ class Text
      *
      * @return array
      */
-    protected static function _renderStroke($image, $text, array $font, array $coords, array $stroke)
+    protected static function renderStroke($image, $text, array $font, array $coords, array $stroke)
     {
-        list($coordX, $coordY) = $coords;
-        list($file, $size, $color, $angle) = $font;
-        list($strokeSize, $strokeColor) = $stroke;
+        [$coordX, $coordY] = $coords;
+        [$file, $size, $color, $angle] = $font;
+        [$strokeSize, $strokeColor] = $stroke;
 
         for ($x = ($coordX - abs($strokeSize)); $x <= ($coordX + abs($strokeSize)); $x++) {
             for ($y = ($coordY - abs($strokeSize)); $y <= ($coordY + abs($strokeSize)); $y++) {
-                imagettftext($image, $size, $angle, $x, $y, $strokeColor, $file, $text);
+                imagettftext($image, $size, $angle, (int)$x, (int)$y, $strokeColor, $file, $text);
             }
         }
 
@@ -243,20 +242,20 @@ class Text
     /**
      * Get X offset for stroke rendering mode
      *
-     * @param string $fontSize
-     * @param int    $angle
-     * @param string $fontFile
-     * @param array  $letters
-     * @param string $charKey
-     * @param int    $strokeSpacing
-     * @param int    $textX
+     * @param string|float $fontSize
+     * @param int          $angle
+     * @param string       $fontFile
+     * @param array        $letters
+     * @param int          $charKey
+     * @param int          $strokeSpacing
+     * @param int          $textX
      * @return int
      */
-    protected static function _getStrokeX($fontSize, $angle, $fontFile, $letters, $charKey, $strokeSpacing, $textX)
+    protected static function getStrokeX($fontSize, $angle, $fontFile, $letters, $charKey, $strokeSpacing, $textX): int
     {
-        $charSize = imagettfbbox($fontSize, $angle, $fontFile, $letters[$charKey - 1]);
+        $charSize = imagettfbbox((float)$fontSize, $angle, $fontFile, $letters[$charKey - 1]);
         $textX += abs($charSize[4] - $charSize[0]) + $strokeSpacing;
 
-        return $textX;
+        return (int)$textX;
     }
 }

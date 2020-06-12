@@ -1,16 +1,14 @@
 {
     "name"              : "jbzoo/image",
     "type"              : "library",
-    "description"       : "A PHP class that simplifies working with images (fork abeautifulsite/simpleimage)",
+    "description"       : "A PHP class that simplifies working with images",
     "license"           : "MIT",
     "keywords"          : ["image", "resize", "images", "jbzoo", "crop", "filters", "thumbnail", "watermark", "gd"],
-    "minimum-stability" : "stable",
     "authors"           : [
         {
-            "name"     : "SmetDenis",
-            "email"    : "denis@jbzoo.com",
-            "homepage" : "http://jbzoo.com/",
-            "role"     : "Developer"
+            "name"  : "Denis Smetannikov",
+            "email" : "denis@jbzoo.com",
+            "role"  : "Lead"
         },
         {
             "name"     : "Cory LaViska",
@@ -26,14 +24,18 @@
     ],
 
     "require"           : {
-        "php"         : ">=7.1",
+        "php"         : ">=7.2",
         "ext-gd"      : "*",
-        "jbzoo/utils" : "^3.0",
-        "jbzoo/data"  : "^3.0"
+        "ext-exif"    : "*",
+        "ext-ctype"   : "*",
+
+        "jbzoo/utils" : "4.0.x-dev",
+        "jbzoo/data"  : "4.0.x-dev"
     },
 
     "require-dev"       : {
-        "jbzoo/phpunit" : "^3.0"
+        "jbzoo/toolbox-dev" : "1.1.x-dev",
+        "codedungeon/phpunit-result-printer": "^0.27.0"
     },
 
     "autoload"          : {
@@ -42,11 +44,20 @@
         }
     },
 
+    "minimum-stability" : "dev",
+    "prefer-stable"     : true,
+
+    "autoload-dev"      : {
+        "classmap" : ["tests"]
+    },
+
     "config"            : {
         "optimize-autoloader" : true
     },
 
-    "support"           : {
-        "issues" : "https://github.com/JBZoo/Image/issues"
+    "extra"             : {
+        "branch-alias" : {
+            "dev-master" : "4.0.x-dev"
+        }
     }
 }

@@ -1,25 +1,36 @@
+#
+# JBZoo Toolbox - Image
+#
+# This file is part of the JBZoo Toolbox project.
+# For the full copyright and license information, please view the LICENSE
+# file that was distributed with this source code.
+#
+# @package    Image
+# @license    MIT
+# @copyright  Copyright (C) JBZoo.com, All rights reserved.
+# @link       https://github.com/JBZoo/Image
+#
+
 language: php
+os: linux
+dist: xenial
 
 php:
-  - 7.1
   - 7.2
   - 7.3
-  - 7.4snapshot
+  - 7.4
 
-matrix:
-  fast_finish: true
-  allow_failures:
-    - php: 7.4snapshot
-  include:
-    - php: 7.2
-      env: XDEBUG_OFF="yes"
+env:
+  matrix:
+    - JBZOO_COMPOSER_UPDATE_FLAGS="--prefer-lowest --prefer-stable"
+    - JBZOO_COMPOSER_UPDATE_FLAGS=""
 
 before_script:
-  - if [[ $XDEBUG_OFF = yes ]]; then phpenv config-rm xdebug.ini; fi;
+  - composer self-update
 
 script:
-  - make
-  - make test-all
+  - make update   --no-print-directory
+  - make test-all --no-print-directory
 
-after_success:
-  - make coveralls
+after_script:
+  - make report-coveralls

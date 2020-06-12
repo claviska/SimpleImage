@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!--
-    JBZoo Image
+    JBZoo Toolbox - Image
 
-    This file is part of the JBZoo CCK package.
+    This file is part of the JBZoo Toolbox project.
     For the full copyright and license information, please view the LICENSE
     file that was distributed with this source code.
 
@@ -23,11 +23,12 @@
          stopOnSkipped="false"
          stopOnRisky="false"
          verbose="false"
+         printerClass="Codedungeon\PHPUnitPrettyResultPrinter\Printer"
 >
 
     <testsuites>
-        <testsuite name="General">
-            <directory suffix="Test.php">./tests</directory>
+        <testsuite name="All">
+            <directory suffix="Test.php">tests</directory>
         </testsuite>
     </testsuites>
 
@@ -38,7 +39,9 @@
     </filter>
 
     <logging>
-        <log type="coverage-clover" target="build/logs/clover.xml"/>
+        <log type="coverage-clover" target="build/coverage_xml/main.xml"/>
+        <log type="coverage-php" target="build/coverage_cov/main.cov"/>
+        <log type="junit" target="build/coverage_junit/main.xml"/>
         <log type="coverage-text" target="php://stdout" showUncoveredFiles="false" showOnlySummary="true"/>
     </logging>
 

@@ -13,14 +13,12 @@
  * @link       https://github.com/JBZoo/Image
  */
 
-if (!defined('ROOT_PATH')) { // for PHPUnit process isolation
-    define('ROOT_PATH', realpath('.'));
-}
+$default = include __DIR__ . '/../vendor/jbzoo/codestyle/src/phan/default.php';
 
-// main autoload
-if ($autoload = realpath('./vendor/autoload.php')) {
-    require_once $autoload;
-} else {
-    echo 'Please execute "composer update" !' . PHP_EOL;
-    exit(1);
-}
+return array_merge($default, [
+    'directory_list' => [
+        'src',
+
+        'vendor/jbzoo/utils',
+    ]
+]);
