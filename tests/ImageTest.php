@@ -186,20 +186,20 @@ class ImageTest extends PHPUnit
     public function testConvertToWebp()
     {
         if (!Sys::isFunc('imagewebp')) {
-            skip('function imagewebp() is not available');
+            $this->expectException(\JBZoo\Image\Exception::class);
+        } else {
+            $original = TestHelper::getOrig('butterfly.jpg');
+            $excepted = TestHelper::getExpected(__FUNCTION__ . '.webp');
+            $actual = TestHelper::getActual(__FUNCTION__ . '.webp');
+
+            $img = new Image();
+            $img->loadFile($original)
+                ->saveAs($actual);
+
+            isTrue($img->isWebp());
+
+            TestHelper::isFileEq($excepted, $actual);
         }
-
-        $original = TestHelper::getOrig('butterfly.jpg');
-        $excepted = TestHelper::getExpected(__FUNCTION__ . '.webp');
-        $actual = TestHelper::getActual(__FUNCTION__ . '.webp');
-
-        $img = new Image();
-        $img->loadFile($original)
-            ->saveAs($actual);
-
-        isTrue($img->isWebp());
-
-        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testConvertToUndefinedFormat()

@@ -59,7 +59,7 @@ class Filter
      * @param resource $image     Image GD resource
      * @param int      $blockSize Size in pixels of each resulting block
      */
-    public static function pixelate($image, $blockSize = 10): void
+    public static function pixelate($image, int $blockSize = 10): void
     {
         $blockSize = VarFilter::int($blockSize);
         imagefilter($image, IMG_FILTER_PIXELATE, $blockSize, 1);
@@ -102,7 +102,7 @@ class Filter
      * @param int      $passes Number of times to apply the filter
      * @param int      $type   BLUR_SEL|BLUR_GAUS
      */
-    public static function blur($image, $passes = 1, $type = self::BLUR_SEL): void
+    public static function blur($image, int $passes = 1, int $type = self::BLUR_SEL): void
     {
         $passes = Helper::blur($passes);
 
@@ -122,7 +122,7 @@ class Filter
      * @param resource $image Image GD resource
      * @param int      $level Darkest = -255, lightest = 255
      */
-    public static function brightness($image, $level): void
+    public static function brightness($image, int $level): void
     {
         imagefilter($image, IMG_FILTER_BRIGHTNESS, Helper::brightness($level));
     }
@@ -133,7 +133,7 @@ class Filter
      * @param resource $image Image GD resource
      * @param int      $level Min = -100, max = 100
      */
-    public static function contrast($image, $level): void
+    public static function contrast($image, int $level): void
     {
         imagefilter($image, IMG_FILTER_CONTRAST, Helper::contrast($level));
     }
@@ -141,14 +141,14 @@ class Filter
     /**
      * Set colorize
      *
-     * @param resource  $image      Image GD resource
-     * @param string    $color      Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
+     * @param resource $image       Image GD resource
+     * @param string   $color       Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
      *                              Where red, green, blue - integers 0-255, alpha - integer 0-127
-     * @param float|int $opacity    0-100
+     * @param float    $opacity     0-100
      *
      * @throws \JBZoo\Utils\Exception
      */
-    public static function colorize($image, $color, $opacity): void
+    public static function colorize($image, string $color, float $opacity): void
     {
         $rgba = Helper::normalizeColor($color);
         $alpha = Helper::opacity2Alpha($opacity);
@@ -176,7 +176,7 @@ class Filter
      * @param resource $image  Image GD resource
      * @param int      $passes Number of times to apply the filter (1 - 2048)
      */
-    public static function smooth($image, $passes = 1): void
+    public static function smooth($image, int $passes = 1): void
     {
         imagefilter($image, IMG_FILTER_SMOOTH, Helper::smooth($passes));
     }
@@ -188,7 +188,7 @@ class Filter
      * @param int      $percent Level of desaturization.
      * @return resource
      */
-    public static function desaturate($image, $percent = 100)
+    public static function desaturate($image, int $percent = 100)
     {
         // Determine percentage
         $percent = Helper::percent($percent);
@@ -225,7 +225,7 @@ class Filter
      * @param resource  $image   Image GD resource
      * @param float|int $opacity 0-1 or 0-100
      *
-     * @return mixed
+     * @return resource|false
      */
     public static function opacity($image, $opacity)
     {
@@ -271,7 +271,7 @@ class Filter
      * @return resource|false
      * @throws \JBZoo\Utils\Exception
      */
-    public static function rotate($image, $angle, $bgColor = self::DEFAULT_BACKGROUND)
+    public static function rotate($image, int $angle, $bgColor = self::DEFAULT_BACKGROUND)
     {
         // Perform the rotation
         $angle = Helper::rotate($angle);
@@ -288,28 +288,28 @@ class Filter
     /**
      * Flip an image horizontally or vertically
      *
-     * @param mixed  $image GD resource
-     * @param string $dir   Direction of fliping - x|y|yx|xy
+     * @param resource $image     GD resource
+     * @param string   $direction Direction of flipping - x|y|yx|xy
      * @return resource
      */
-    public static function flip($image, $dir)
+    public static function flip($image, string $direction)
     {
-        $dir = Helper::direction($dir);
+        $direction = Helper::direction($direction);
         $width = (int)imagesx($image);
         $height = (int)imagesy($image);
 
         if ($newImage = imagecreatetruecolor($width, $height)) {
             Helper::addAlpha($newImage);
 
-            if ($dir === 'y') {
+            if ($direction === 'y') {
                 for ($y = 0; $y < $height; $y++) {
                     imagecopy($newImage, $image, 0, $y, 0, $height - $y - 1, $width, 1);
                 }
-            } elseif ($dir === 'x') {
+            } elseif ($direction === 'x') {
                 for ($x = 0; $x < $width; $x++) {
                     imagecopy($newImage, $image, $x, 0, $width - $x - 1, 0, 1, $height);
                 }
-            } elseif ($dir === 'xy' || $dir === 'yx') {
+            } elseif ($direction === 'xy' || $direction === 'yx') {
                 $newImage = self::flip($image, 'x');
                 $newImage = self::flip($newImage, 'y');
             }
@@ -323,9 +323,9 @@ class Filter
     /**
      * Fill image with color
      *
-     * @param mixed  $image     GD resource
-     * @param string $color     Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
-     *                          Where red, green, blue - integers 0-255, alpha - integer 0-127
+     * @param resource     $image GD resource
+     * @param array|string $color Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
+     *                            Where red, green, blue - integers 0-255, alpha - integer 0-127
      * @throws \JBZoo\Utils\Exception
      */
     public static function fill($image, $color = self::DEFAULT_BACKGROUND): void
@@ -343,14 +343,14 @@ class Filter
     /**
      * Add text to an image
      *
-     * @param mixed  $image    GD resource
-     * @param string $text     Some text to output on image as watermark
-     * @param string $fontFile TTF font file path
-     * @param array  $params
+     * @param resource $image    GD resource
+     * @param string   $text     Some text to output on image as watermark
+     * @param string   $fontFile TTF font file path
+     * @param array    $params
      * @throws Exception
      * @throws \JBZoo\Utils\Exception
      */
-    public static function text($image, $text, $fontFile, $params = []): void
+    public static function text($image, string $text, string $fontFile, array $params = []): void
     {
         Text::render($image, $text, $fontFile, $params);
     }

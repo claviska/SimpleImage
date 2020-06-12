@@ -34,7 +34,6 @@ class Image
     public const LANDSCAPE = 'landscape';
     public const PORTRAIT  = 'portrait';
     public const SQUARE    = 'square';
-    public const QUALITY   = 95;
 
     public const FLIP_HORIZONTAL                           = 2;
     public const FLIP_180_COUNTERCLOCKWISE                 = 3;
@@ -44,7 +43,8 @@ class Image
     public const FLIP_ROTATE_90_CLOCKWISE_AND_HORIZONTALLY = 7;
     public const FLIP_ROTATE_90_COUNTERCLOCKWISE           = 8;
 
-    public const DEFAULT_MIME = 'image/png';
+    public const DEFAULT_QUALITY = 95;
+    public const DEFAULT_MIME    = 'image/png';
 
     /**
      * GD Resource or bin data
@@ -55,7 +55,7 @@ class Image
     /**
      * @var int
      */
-    protected $quality = self::QUALITY;
+    protected $quality = self::DEFAULT_QUALITY;
 
     /**
      * @var string|null
@@ -100,11 +100,16 @@ class Image
     {
         Helper::checkGD();
 
-        if ($filename && is_string($filename) && ctype_print($filename) && FS::isFile($filename)) {
+        if (
+            $filename
+            && is_string($filename)
+            && ctype_print($filename)
+            && FS::isFile($filename)
+        ) {
             $this->loadFile($filename);
-        } elseif (Helper::isGdRes($filename)) {
+        } elseif (is_resource($filename) && Helper::isGdRes($filename)) {
             $this->loadResource($filename);
-        } elseif (is_string($filename) && $filename) {
+        } elseif ($filename && is_string($filename)) {
             $this->loadString($filename, $strict);
         }
     }
@@ -120,7 +125,7 @@ class Image
     /**
      * @return array
      */
-    public function getInfo()
+    public function getInfo(): array
     {
         return [
             'filename' => $this->filename,
@@ -137,7 +142,7 @@ class Image
      * Get the current width
      * @return int
      */
-    public function getWidth()
+    public function getWidth(): int
     {
         return $this->width;
     }
@@ -146,14 +151,14 @@ class Image
      * Get the current height
      * @return int
      */
-    public function getHeight()
+    public function getHeight(): int
     {
         return $this->height;
     }
 
     /**
      * Get the current image resource
-     * @return mixed
+     * @return resource|null
      */
     public function getImage()
     {
@@ -164,7 +169,7 @@ class Image
      * @param int $newQuality
      * @return $this
      */
-    public function setQuality($newQuality)
+    public function setQuality(int $newQuality): self
     {
         $this->quality = Helper::quality($newQuality);
         return $this;
@@ -178,7 +183,7 @@ class Image
      * @return $this
      * @throws Exception
      */
-    public function save(?int $quality = null): Image
+    public function save(?int $quality = null): self
     {
         $quality = $quality ?: $this->quality;
 
@@ -200,13 +205,13 @@ class Image
      *
      * @throws Exception
      */
-    public function saveAs($filename, $quality = null)
+    public function saveAs(string $filename, ?int $quality = null): self
     {
         if (!$filename) {
             throw new Exception('Empty filename to save image');
         }
 
-        $dir = FS::dirname($filename);
+        $dir = FS::dirName($filename);
         if (is_dir($dir)) {
             $this->internalSave($filename, $quality);
         } else {
@@ -253,7 +258,7 @@ class Image
      * @param int    $quality
      * @return bool
      */
-    protected function savePng($filename, $quality)
+    protected function savePng(string $filename, int $quality = self::DEFAULT_QUALITY)
     {
         if ($this->image) {
             return imagepng($this->image, $filename ?: null, (int)round(9 * $quality / 100));
@@ -267,7 +272,7 @@ class Image
      * @param int    $quality
      * @return bool
      */
-    protected function saveJpeg($filename, $quality)
+    protected function saveJpeg(string $filename, int $quality = self::DEFAULT_QUALITY)
     {
         if ($this->image) {
             imageinterlace($this->image, 1);
@@ -281,7 +286,7 @@ class Image
      * @param string $filename
      * @return bool
      */
-    protected function saveGif($filename)
+    protected function saveGif(string $filename)
     {
         if ($this->image) {
             return imagegif($this->image, $filename ?: null);
@@ -294,8 +299,12 @@ class Image
      * @param string $filename
      * @return bool
      */
-    protected function saveWebP($filename)
+    protected function saveWebP(string $filename)
     {
+        if (!Sys::isFunc('imagewebp')) {
+            throw new Exception('function imagewebp() is not available');
+        }
+
         if ($this->image) {
             return imagewebp($this->image, $filename ?: null);
         }
@@ -340,20 +349,23 @@ class Image
      * @param string|null $format
      * @param string      $filename
      * @param int         $quality
-     * @return bool|string
+     * @return string|null
      *
      * @throws Exception
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      */
-    protected function renderImageByFormat(?string $format, $filename, $quality)
-    {
+    protected function renderImageByFormat(
+        ?string $format,
+        string $filename,
+        int $quality = self::DEFAULT_QUALITY
+    ): ?string {
         if (!$this->image) {
             throw new Exception('Image resource not defined');
         }
 
         $format = $format ?: $this->mime;
 
-        $result = false;
+        $result = null;
         if (Helper::isJpeg($format)) {
             if ($this->saveJpeg($filename, $quality)) {
                 $result = 'image/jpeg';
@@ -385,7 +397,7 @@ class Image
      *
      * @throws Exception
      */
-    public function loadFile($filename)
+    public function loadFile(string $filename): self
     {
         $cleanFilename = FS::clean($filename);
         if (!FS::isFile($cleanFilename)) {
@@ -408,7 +420,7 @@ class Image
      *
      * @throws Exception
      */
-    public function loadString(?string $imageString, bool $strict = false)
+    public function loadString(?string $imageString, bool $strict = false): self
     {
         if (!$imageString) {
             throw new Exception('Image string is empty!');
@@ -423,12 +435,12 @@ class Image
     /**
      * Load image resource
      *
-     * @param mixed $imageRes Image GD Resource
+     * @param resource|null $imageRes Image GD Resource
      * @return $this
      *
      * @throws Exception
      */
-    public function loadResource($imageRes)
+    public function loadResource($imageRes): self
     {
         if (!Helper::isGdRes($imageRes)) {
             throw new Exception('Image is not GD resource!');
@@ -450,7 +462,7 @@ class Image
      * @throws Exception
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      */
-    protected function loadMeta($image = null, $strict = false)
+    protected function loadMeta($image = null, $strict = false): self
     {
         // Gather meta data
         if (null === $image && $this->filename) {
@@ -498,7 +510,7 @@ class Image
      * Clean whole image object
      * @return $this
      */
-    public function cleanup()
+    public function cleanup(): self
     {
         $this->filename = null;
 
@@ -507,7 +519,7 @@ class Image
         $this->height = 0;
         $this->exif = [];
         $this->orient = null;
-        $this->quality = self::QUALITY;
+        $this->quality = self::DEFAULT_QUALITY;
 
         $this->destroyImage();
 
@@ -574,9 +586,9 @@ class Image
 
     /**
      * Get the current orientation
-     * @return string   portrait|landscape|square
+     * @return string
      */
-    protected function getOrientation()
+    protected function getOrientation(): string
     {
         if ($this->width > $this->height) {
             return self::LANDSCAPE;
@@ -616,14 +628,14 @@ class Image
     /**
      * Create an image from scratch
      *
-     * @param int         $width  Image width
-     * @param int|null    $height If omitted - assumed equal to $width
-     * @param null|string $color  Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
-     *                            Where red, green, blue - integers 0-255, alpha - integer 0-127
+     * @param int               $width  Image width
+     * @param int|null          $height If omitted - assumed equal to $width
+     * @param array|string|null $color  Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
+     *                                  Where red, green, blue - integers 0-255, alpha - integer 0-127
      * @return $this
      * @throws Exception
      */
-    public function create($width, $height = null, $color = null)
+    public function create(int $width, ?int $height = null, $color = null): self
     {
         $this->cleanup();
 
@@ -656,7 +668,7 @@ class Image
      * @param float $height
      * @return $this
      */
-    public function resize(float $width, float $height)
+    public function resize(float $width, float $height): self
     {
         $width = VarFilter::int($width);
         $height = VarFilter::int($height);
@@ -711,7 +723,7 @@ class Image
      * @param int $maxHeight
      * @return $this
      */
-    public function bestFit($maxWidth, $maxHeight)
+    public function bestFit(int $maxWidth, int $maxHeight): self
     {
         // If it already fits, there's nothing to do
         if ($this->width <= $maxWidth && $this->height <= $maxHeight) {
@@ -750,7 +762,7 @@ class Image
      *
      * @return $this
      */
-    public function thumbnail($width, $height = null, $topIsZero = false)
+    public function thumbnail(int $width, ?int $height = null, bool $topIsZero = false): self
     {
         $width = VarFilter::int($width);
         $height = VarFilter::int($height);
@@ -790,7 +802,7 @@ class Image
      * @param int $height
      * @return $this
      */
-    public function fitToHeight($height)
+    public function fitToHeight(int $height): self
     {
         $height = VarFilter::int($height);
         $width = $height / ($this->height / $this->width);
@@ -804,7 +816,7 @@ class Image
      * @param int $width
      * @return $this
      */
-    public function fitToWidth($width)
+    public function fitToWidth(int $width): self
     {
         $width = VarFilter::int($width);
         $height = $width * ($this->height / $this->width);
@@ -822,7 +834,7 @@ class Image
      *
      * @return $this
      */
-    public function crop($left, $top, $right, $bottom)
+    public function crop(int $left, int $top, int $right, int $bottom): self
     {
         $left = VarFilter::int($left);
         $top = VarFilter::int($top);
@@ -879,7 +891,7 @@ class Image
      * @return $this
      * @throws Exception
      */
-    public function autoOrient()
+    public function autoOrient(): self
     {
         if (!array_key_exists('Orientation', $this->exif)) {
             return $this;
@@ -913,15 +925,20 @@ class Image
      *
      * @param string|Image $overlay     An image filename or a Image object
      * @param string       $position    center|top|left|bottom|right|top left|top right|bottom left|bottom right
-     * @param float|int    $opacity     Overlay opacity 0-1 or 0-100
+     * @param float        $opacity     Overlay opacity 0-1 or 0-100
      * @param int          $globOffsetX Horizontal offset in pixels
      * @param int          $globOffsetY Vertical offset in pixels
      *
      * @return $this
      * @throws Exception
      */
-    public function overlay($overlay, $position = 'bottom right', $opacity = .4, $globOffsetX = 0, $globOffsetY = 0)
-    {
+    public function overlay(
+        $overlay,
+        string $position = 'bottom right',
+        float $opacity = .4,
+        int $globOffsetX = 0,
+        int $globOffsetY = 0
+    ): self {
         // Load overlay image
         if (!($overlay instanceof self)) {
             $overlay = new self($overlay);
@@ -962,7 +979,7 @@ class Image
      * @param mixed $filter
      * @return $this
      */
-    public function addFilter($filter)
+    public function addFilter($filter): self
     {
         $args = func_get_args();
         $args[0] = $this->image;
@@ -998,7 +1015,7 @@ class Image
      *
      * @throws Exception
      */
-    public function getBase64(?string $format = 'gif', ?int $quality = null, bool $addMime = true)
+    public function getBase64(?string $format = 'gif', ?int $quality = null, bool $addMime = true): string
     {
         [$mimeType, $binaryData] = $this->renderBinary($format, $quality);
 
@@ -1014,13 +1031,13 @@ class Image
     /**
      * Outputs image as binary data
      *
-     * @param null|string $format  If omitted or null - format of original file will be used, may be gif|jpg|png
+     * @param string|null $format  If omitted or null - format of original file will be used, may be gif|jpg|png
      * @param int|null    $quality Output image quality in percents 0-100
      * @return string
      *
      * @throws Exception
      */
-    public function getBinary($format = null, $quality = null)
+    public function getBinary(?string $format = null, ?int $quality = null): string
     {
         $result = $this->renderBinary($format, $quality);
 
@@ -1033,7 +1050,7 @@ class Image
      * @return array
      * @throws Exception
      */
-    protected function renderBinary(?string $format, ?int $quality)
+    protected function renderBinary(?string $format, ?int $quality): array
     {
         if (!$this->image) {
             throw new Exception('Image resource not defined');
@@ -1052,7 +1069,7 @@ class Image
      * @return string
      * @throws Exception
      */
-    public function getPath()
+    public function getPath(): string
     {
         if (!$this->filename) {
             throw new Exception('File not find!');
@@ -1067,7 +1084,7 @@ class Image
      * @return string
      * @throws Exception
      */
-    public function getUrl()
+    public function getUrl(): string
     {
         return Url::root() . '/' . $this->getPath();
     }

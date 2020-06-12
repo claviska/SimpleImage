@@ -42,17 +42,17 @@ class Text
     /**
      * Add text to an image
      *
-     * @param mixed  $image  GD resource
-     * @param string $text   Some text to output on image as watermark
-     * @param string $fFile  TTF font file path
-     * @param array  $params Additional render params
+     * @param resource $image    GD resource
+     * @param string   $text     Some text to output on image as watermark
+     * @param string   $fontFile TTF font file path
+     * @param array    $params   Additional render params
      *
      * @throws Exception
      * @throws \JBZoo\Utils\Exception
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
-    public static function render($image, $text, $fFile, array $params = []): void
+    public static function render($image, string $text, string $fontFile, array $params = []): void
     {
         // Set vars
         $params = array_merge(self::$default, $params);
@@ -76,7 +76,7 @@ class Text
             : (array)$params['stroke-color'];
 
         $colorArr = self::getColor($image, $color);
-        [$textWidth, $textHeight] = self::getTextBoxSize($fSize, $angle, $fFile, $text);
+        [$textWidth, $textHeight] = self::getTextBoxSize($fSize, $angle, $fontFile, $text);
         $textCoords = Helper::getInnerCoords(
             $position,
             [$imageWidth, $imageHeight],
@@ -95,7 +95,7 @@ class Text
 
                 foreach ($chars as $key => $char) {
                     if ($key > 0) {
-                        $textX = self::getStrokeX($fSize, $angle, $fFile, $chars, $key, $strokeSpacing, $textX);
+                        $textX = self::getStrokeX($fSize, $angle, $fontFile, $chars, $key, $strokeSpacing, $textX);
                     }
 
                     // If the next letter is empty, we just move forward to the next letter
@@ -106,7 +106,7 @@ class Text
                     self::renderStroke(
                         $image,
                         $char,
-                        [$fFile, $fSize, current($colorArr), $angle],
+                        [$fontFile, $fSize, current($colorArr), $angle],
                         [$textX, $textY],
                         [$strokeSize, current($strokeColor)]
                     );
@@ -127,7 +127,7 @@ class Text
                 self::renderStroke(
                     $image,
                     $text,
-                    [$fFile, $fSize, current($colorArr), $angle],
+                    [$fontFile, $fSize, current($colorArr), $angle],
                     [$textX, $textY],
                     [$strokeSize, $strokeColor]
                 );
@@ -136,7 +136,7 @@ class Text
             $chars = str_split($text, 1);
             foreach ($chars as $key => $char) {
                 if ($key > 0) {
-                    $textX = self::getStrokeX($fSize, $angle, $fFile, $chars, $key, $strokeSpacing, $textX);
+                    $textX = self::getStrokeX($fSize, $angle, $fontFile, $chars, $key, $strokeSpacing, $textX);
                 }
 
                 // If the next letter is empty, we just move forward to the next letter
@@ -144,7 +144,7 @@ class Text
                     continue;
                 }
 
-                $fontInfo = [$fFile, $fSize, current($colorArr), $angle];
+                $fontInfo = [$fontFile, $fSize, current($colorArr), $angle];
                 self::internalRender($image, $char, $fontInfo, [$textX, $textY]);
 
                 // #000 is 0, black will reset the array so we write it this way
@@ -153,7 +153,7 @@ class Text
                 }
             }
         } else {
-            self::internalRender($image, $text, [$fFile, $fSize, $colorArr[0], $angle], [$textX, $textY]);
+            self::internalRender($image, $text, [$fontFile, $fSize, $colorArr[0], $angle], [$textX, $textY]);
         }
     }
 
@@ -165,7 +165,7 @@ class Text
      * @return array
      * @throws \JBZoo\Utils\Exception
      */
-    protected static function getColor($image, $colors)
+    protected static function getColor($image, $colors): array
     {
         $colors = (array)$colors;
 
@@ -189,7 +189,7 @@ class Text
      *
      * @throws Exception
      */
-    protected static function getTextBoxSize(int $fontSize, $angle, $fontFile, $text): array
+    protected static function getTextBoxSize(int $fontSize, int $angle, string $fontFile, string $text): array
     {
         // Determine textbox size
         $fontPath = FS::clean($fontFile);
@@ -225,11 +225,11 @@ class Text
     /**
      *  Same as imagettftext(), but allows for a stroke color and size
      *
-     * @param mixed  $image  A GD image object
-     * @param string $text   The text to output
-     * @param array  $font   [$fontfile, $fontsize, $color, $angle]
-     * @param array  $coords [X,Y] Coordinate of the starting position
-     * @param array  $stroke [$strokeSize, $strokeColor]
+     * @param resource $image  A GD image object
+     * @param string   $text   The text to output
+     * @param array    $font   [$fontfile, $fontsize, $color, $angle]
+     * @param array    $coords [X,Y] Coordinate of the starting position
+     * @param array    $stroke [$strokeSize, $strokeColor]
      */
     protected static function renderStroke($image, $text, array $font, array $coords, array $stroke): void
     {
@@ -249,19 +249,26 @@ class Text
     /**
      * Get X offset for stroke rendering mode
      *
-     * @param string|float $fontSize
-     * @param int          $angle
-     * @param string       $fontFile
-     * @param array        $letters
-     * @param int          $charKey
-     * @param int          $strokeSpacing
-     * @param int          $textX
+     * @param float  $fontSize
+     * @param int    $angle
+     * @param string $fontFile
+     * @param array  $letters
+     * @param int    $charKey
+     * @param int    $strokeSpacing
+     * @param int    $textX
      * @return int
      * @noinspection PhpTooManyParametersInspection
      */
-    protected static function getStrokeX($fontSize, $angle, $fontFile, $letters, $charKey, $strokeSpacing, $textX): int
-    {
-        $charSize = imagettfbbox((float)$fontSize, $angle, $fontFile, $letters[$charKey - 1]);
+    protected static function getStrokeX(
+        float $fontSize,
+        int $angle,
+        string $fontFile,
+        array $letters,
+        int $charKey,
+        int $strokeSpacing,
+        int $textX
+    ): int {
+        $charSize = imagettfbbox($fontSize, $angle, $fontFile, $letters[$charKey - 1]);
         $textX += abs($charSize[4] - $charSize[0]) + $strokeSpacing;
 
         return (int)$textX;
