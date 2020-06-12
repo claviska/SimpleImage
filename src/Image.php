@@ -301,7 +301,7 @@ class Image
      */
     protected function saveWebP(string $filename)
     {
-        if (!Sys::isFunc('imagewebp')) {
+        if (!function_exists('imagewebp')) {
             throw new Exception('Function imagewebp() is not available. Rebuild your ext-gd for PHP');
         }
 
@@ -571,7 +571,7 @@ class Image
             $result = imagecreatefrompng($this->filename);
         } elseif (Helper::isGif($format)) {
             $result = imagecreatefromgif($this->filename);
-        } elseif (Helper::isWebp($format)) {
+        } elseif (function_exists('imagecreatefromwebp') && Helper::isWebp($format)) {
             $result = imagecreatefromwebp($this->filename);
         } else {
             throw new Exception("Invalid image: {$this->filename}");
