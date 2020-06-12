@@ -35,7 +35,7 @@ class IssuesTest extends PHPUnit
             ->overlay($overlay)
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testIssue8()
@@ -60,6 +60,6 @@ class IssuesTest extends PHPUnit
 
         $img->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 }

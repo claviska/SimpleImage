@@ -53,29 +53,33 @@ class TestHelper
     }
 
     /**
-     * @param string $actual
      * @param string $expected
+     * @param string $actual
      */
-    public static function isFileEq($actual, $expected)
+    public static function isFileEq($expected, $actual)
     {
+        $expected = realpath($expected);
+        $actual = realpath($actual);
+
+        isNotEmpty($expected);
+        isNotEmpty($actual);
+
+        isFile($expected);
+        isFile($actual);
+
         // Because realpath cache is!
         clearstatcache(false, $actual);
         clearstatcache(false, $expected);
 
-        isTrue(file_exists($actual), "File not found: {$actual}");
-        isTrue(file_exists($expected), "File not found: {$expected}");
-
         $actualSize = filesize($actual);
         $expectedSize = filesize($expected);
 
-        $diff = abs($actualSize - $expectedSize);
+        $relPathExpected = FS::getRelative($expected, __DIR__ . '/..');
+        $relPathActual = FS::getRelative($actual, __DIR__ . '/..');
+        $errorMessage = "Expected: ./{$relPathExpected} ($expectedSize);\nActual:   ./{$relPathActual} ({$actualSize})";
 
-        //if ($diff !== 0) {
-        //    $message = "{$actual}; {$actualSize} <> {$expectedSize}; Diff:{$diff}";
-        //    \JBZoo\Utils\Cli::out($message);
-        //} else {
-        //    is(0, $diff);
-        //}
+        //isFileEq($expected, $actual, $errorMessage);
+        //isSame($expectedSize, $actualSize, "Invalid size:\n{$errorMessage}");
     }
 
     /**

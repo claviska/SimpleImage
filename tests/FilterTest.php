@@ -43,7 +43,7 @@ class FilterTest extends PHPUnit
             ->addFilter('sepia')
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testFilterPixelate()
@@ -57,7 +57,7 @@ class FilterTest extends PHPUnit
             ->addFilter('pixelate', 25)
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testFilterCustom()
@@ -73,7 +73,7 @@ class FilterTest extends PHPUnit
             }, 2)
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testFilterEdges()
@@ -87,7 +87,7 @@ class FilterTest extends PHPUnit
             ->addFilter('edges')
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testFilterEmboss()
@@ -101,7 +101,7 @@ class FilterTest extends PHPUnit
             ->addFilter('emboss')
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testFilterInvert()
@@ -115,7 +115,7 @@ class FilterTest extends PHPUnit
             ->addFilter('invert')
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testFilterBlurGaussian()
@@ -129,7 +129,7 @@ class FilterTest extends PHPUnit
             ->addFilter('blur', 10, Filter::BLUR_GAUS)
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testFilterBlurSelective()
@@ -143,7 +143,7 @@ class FilterTest extends PHPUnit
             ->addFilter('blur', 10, Filter::BLUR_SEL)
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testFilterBrightness100()
@@ -157,7 +157,7 @@ class FilterTest extends PHPUnit
             ->addFilter('brightness', 100)
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testFilterBrightnessN100()
@@ -171,7 +171,7 @@ class FilterTest extends PHPUnit
             ->addFilter('brightness', -100)
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testFilterContrast()
@@ -185,7 +185,7 @@ class FilterTest extends PHPUnit
             ->addFilter('contrast', -50)
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testFilterColorize()
@@ -199,7 +199,7 @@ class FilterTest extends PHPUnit
             ->addFilter('colorize', '#08c', .75)
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testFilterMeanRemove()
@@ -213,7 +213,7 @@ class FilterTest extends PHPUnit
             ->addFilter('meanRemove')
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testFilterSmooth()
@@ -227,7 +227,7 @@ class FilterTest extends PHPUnit
             ->addFilter('smooth', 6)
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testFilterDesaturate100()
@@ -241,7 +241,7 @@ class FilterTest extends PHPUnit
             ->addFilter('desaturate', 100)
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testFilterDesaturate50()
@@ -255,7 +255,7 @@ class FilterTest extends PHPUnit
             ->addFilter('desaturate', 50)
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testOpacity_05()
@@ -269,7 +269,7 @@ class FilterTest extends PHPUnit
             ->addFilter('opacity', .5)
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testOpacity_50()
@@ -283,7 +283,7 @@ class FilterTest extends PHPUnit
             ->addFilter('opacity', 30)
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testOpacity_0()
@@ -297,7 +297,7 @@ class FilterTest extends PHPUnit
             ->addFilter('opacity', 0)
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testOpacity_100()
@@ -311,7 +311,7 @@ class FilterTest extends PHPUnit
             ->addFilter('opacity', 150)
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testFlipRorate90()
@@ -325,7 +325,7 @@ class FilterTest extends PHPUnit
             ->addFilter('rotate', 90)
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testFlipRorate45()
@@ -339,7 +339,7 @@ class FilterTest extends PHPUnit
             ->addFilter('rotate', 45)
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testFlipRorateRevert275White()
@@ -353,7 +353,7 @@ class FilterTest extends PHPUnit
             ->addFilter('rotate', -275, [255, 255, 255, 127])
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testBorder()
@@ -367,7 +367,7 @@ class FilterTest extends PHPUnit
             ->addFilter('border')
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testBorderColor()
@@ -381,7 +381,7 @@ class FilterTest extends PHPUnit
             ->addFilter('border', ['color' => 'f00'])
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testBorderSize()
@@ -395,7 +395,7 @@ class FilterTest extends PHPUnit
             ->addFilter('border', ['size' => 5])
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testBorderColorSize()
@@ -412,6 +412,6 @@ class FilterTest extends PHPUnit
             ])
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 }

@@ -25,7 +25,7 @@ class ResizeTest extends PHPUnit
 {
     public function testResizeJpeg()
     {
-        $excepted = TestHelper::getExpected(__FUNCTION__ . '.jpg');
+        $excepted = TestHelper::getExpected(__FUNCTION__ . '_320_239.jpg');
         $actual = TestHelper::getActual(__FUNCTION__ . '_320_239.jpg');
         $original = TestHelper::getOrig('butterfly.png');
 
@@ -33,12 +33,12 @@ class ResizeTest extends PHPUnit
         $img->resize(320, 239)
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testResizeGif()
     {
-        $excepted = TestHelper::getExpected(__FUNCTION__ . '.gif');
+        $excepted = TestHelper::getExpected(__FUNCTION__ . '_320_239.gif');
         $actual = TestHelper::getActual(__FUNCTION__ . '_320_239.gif');
         $original = TestHelper::getOrig('butterfly.gif');
 
@@ -46,7 +46,7 @@ class ResizeTest extends PHPUnit
         $img->resize(320, 239)
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testResizeTransparent()
@@ -59,7 +59,7 @@ class ResizeTest extends PHPUnit
         $img->resize(50, 50)
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testCrop()
@@ -73,7 +73,7 @@ class ResizeTest extends PHPUnit
             ->crop(160, 110, 460, 360)
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testCropWrongCoord()
@@ -87,7 +87,7 @@ class ResizeTest extends PHPUnit
             ->crop(460, 360, 160, 110)
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testFitToWidth()
@@ -101,7 +101,7 @@ class ResizeTest extends PHPUnit
             ->fitToWidth(100)
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testFitToHeight()
@@ -115,7 +115,7 @@ class ResizeTest extends PHPUnit
             ->fitToHeight(100)
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testThumbnailHeight()
@@ -129,7 +129,7 @@ class ResizeTest extends PHPUnit
             ->thumbnail(100, 75)
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testThumbnailWidth()
@@ -143,7 +143,7 @@ class ResizeTest extends PHPUnit
             ->thumbnail(75)
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testThumbnailCropTop()
@@ -157,7 +157,7 @@ class ResizeTest extends PHPUnit
             ->thumbnail(200, 50, true)
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testBestFitWidth()
@@ -171,7 +171,7 @@ class ResizeTest extends PHPUnit
             ->bestFit(100, 400)
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testBestFitHeight()
@@ -185,7 +185,7 @@ class ResizeTest extends PHPUnit
             ->bestFit(100, 40)
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testBestFitNoChange()
@@ -199,6 +199,6 @@ class ResizeTest extends PHPUnit
             ->bestFit(10000, 10000)
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 }

@@ -35,7 +35,7 @@ class WatermarkTest extends PHPUnit
             ->overlay($overlay, 'top left')
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testWatermarkTopRight()
@@ -50,7 +50,7 @@ class WatermarkTest extends PHPUnit
             ->overlay($overlay, 'top right')
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testWatermarkTop()
@@ -65,7 +65,7 @@ class WatermarkTest extends PHPUnit
             ->overlay($overlay, 'top')
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testWatermarkBottomLeft()
@@ -80,7 +80,7 @@ class WatermarkTest extends PHPUnit
             ->overlay($overlay, 'bottom left')
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testWatermarkBottomRight()
@@ -95,7 +95,7 @@ class WatermarkTest extends PHPUnit
             ->overlay($overlay, 'bottom right')
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testWatermarkBottom()
@@ -110,7 +110,7 @@ class WatermarkTest extends PHPUnit
             ->overlay($overlay, 'bottom')
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testWatermarkLeft()
@@ -125,7 +125,7 @@ class WatermarkTest extends PHPUnit
             ->overlay($overlay, 'left')
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testWatermarkRight()
@@ -140,7 +140,7 @@ class WatermarkTest extends PHPUnit
             ->overlay($overlay, 'right')
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testWatermarkCenter()
@@ -155,7 +155,7 @@ class WatermarkTest extends PHPUnit
             ->overlay($overlay, 'center')
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testWatermarkOpacity()
@@ -170,7 +170,7 @@ class WatermarkTest extends PHPUnit
             ->overlay($overlay, 'bottom', 200, 25, 25)
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testWatermark()
@@ -185,7 +185,7 @@ class WatermarkTest extends PHPUnit
             ->overlay($overlay)
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
 }

@@ -35,7 +35,7 @@ class TextTest extends PHPUnit
         $img->addFilter('text', 'Смет.Денис =)', $font)
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testTextColorRed()
@@ -51,7 +51,7 @@ class TextTest extends PHPUnit
         ])
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testTextPosition()
@@ -70,7 +70,7 @@ class TextTest extends PHPUnit
             ])
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testTextColorMultiple()
@@ -87,7 +87,7 @@ class TextTest extends PHPUnit
             ])
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testTextStroke()
@@ -105,7 +105,7 @@ class TextTest extends PHPUnit
             ])
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testTextStrokeMultiple()
@@ -123,7 +123,7 @@ class TextTest extends PHPUnit
             ])
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testTextAll()
@@ -148,7 +148,7 @@ class TextTest extends PHPUnit
             ])
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testTextStrokeDisable()
@@ -166,7 +166,7 @@ class TextTest extends PHPUnit
             ])
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testTextStrokeDisableColors()
@@ -185,7 +185,7 @@ class TextTest extends PHPUnit
             ])
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testTextUndefinedFontFile()

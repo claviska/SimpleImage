@@ -34,7 +34,7 @@ class TransformsTest extends PHPUnit
             ->addFilter('flip', 'x')
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testFlipY()
@@ -48,7 +48,7 @@ class TransformsTest extends PHPUnit
             ->addFilter('flip', 'y')
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testFlipXY()
@@ -62,7 +62,7 @@ class TransformsTest extends PHPUnit
             ->addFilter('flip', 'xy')
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testFlipYX()
@@ -76,7 +76,7 @@ class TransformsTest extends PHPUnit
             ->addFilter('flip', 'yx')
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testAutoOrient()
@@ -90,6 +90,6 @@ class TransformsTest extends PHPUnit
             ->autoOrient()
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 }

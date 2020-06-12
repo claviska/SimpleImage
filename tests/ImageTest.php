@@ -131,7 +131,7 @@ class ImageTest extends PHPUnit
             is(1, $info['quality']);
             is($actual, $info['filename']);
             //isNotEmpty($info['exif']);
-            TestHelper::isFileEq($actual, $excepted);
+            TestHelper::isFileEq($excepted, $actual);
 
         } else {
             isTrue(false, "Can't copy original file!");
@@ -148,7 +148,7 @@ class ImageTest extends PHPUnit
         $img->loadFile($original)
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testConvertToJpg()
@@ -162,11 +162,11 @@ class ImageTest extends PHPUnit
         $img->loadFile($original)
             ->saveAs($actualJpg);
 
-        TestHelper::isFileEq($actualJpg, $excepted);
+        TestHelper::isFileEq($excepted, $actualJpg);
 
         $img = new Image();
         $img->loadFile($original)->saveAs($actualJpeg)->setQuality(100);
-        TestHelper::isFileEq($actualJpeg, $excepted);
+        TestHelper::isFileEq($excepted, $actualJpeg);
     }
 
     public function testConvertToPng()
@@ -179,7 +179,7 @@ class ImageTest extends PHPUnit
         $img->loadFile($original)
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testConvertToWebp()
@@ -194,7 +194,7 @@ class ImageTest extends PHPUnit
 
         isTrue($img->isWebp());
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testConvertToUndefinedFormat()
@@ -227,7 +227,7 @@ class ImageTest extends PHPUnit
         $img->create(200)
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testCreateFromScratchWidthAndHeight()
@@ -239,7 +239,7 @@ class ImageTest extends PHPUnit
         $img->create(200, 100)
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testCreateFromScratchFull()
@@ -251,7 +251,7 @@ class ImageTest extends PHPUnit
         $img->create(200, 100, [0, 136, 204, 64])
             ->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testGetBase64()
@@ -347,7 +347,8 @@ class ImageTest extends PHPUnit
      */
     public function testOpenAsString()
     {
-        $imgStr = 'R0lGODlhEAAQAOZeAHBwcKCgoOraIvDw8Mu9Hi4rBvPFJvTKJpyRF/bXJfPAJ/jeJU5IC0B'
+        $imgStr =
+            'R0lGODlhEAAQAOZeAHBwcKCgoOraIvDw8Mu9Hi4rBvPFJvTKJpyRF/bXJfPAJ/jeJU5IC0B'
             . 'AQOq0J+ewKPnmJffZJVc6FvPCJruuGz46CYyDFPXPJpCQkH10EqugGSYaC+GoKAAAALCwsNicKUlGQvbUJtGaKWBgYODg4LWB'
             . 'JDUnF/jhJa9+JXFgSl4/GUxHQjwpEdadKUxDOEM9NmNdVcaPJ9rLIPbRJtifKUEwGuSsKNmhKV1XDXdPG6p2JXhRG1U5FiMdF'
             . 'lpWU76DJ8DAwMuVKtDQ0GlFFrR8JEQtELF8KO24J3VNGT0zKG1lEIxgHdugKXBNGykbCzw3Mt6kKNOcKfXMJt6mKG5LG2JAFT'
@@ -358,7 +359,8 @@ class ImageTest extends PHPUnit
             . 'MCcBRQwqCCNilcqATw4mEIhwtdBFCQ0QXCBS5GQAwCgISJgQgLFiQw4ECHi0yDAtRY8sHGAyglJPjA2WgAhgZXUmABIKRRIAA7';
 
         $base64Gif = 'data:image/gif;base64,' . $imgStr;
-        $base64Jpeg = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/4QBYRXhpZgAATU0AKgAAAAgAAgESAAMAAAABAAEAAIdpA'
+        $base64Jpeg =
+            'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/4QBYRXhpZgAATU0AKgAAAAgAAgESAAMAAAABAAEAAIdpA'
             . 'AQAAAABAAAAJgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAEKADAAQAAAABAAAAEAAAAAD/7QA4UGhvdG9zaG9wIDMuMA'
             . 'A4QklNBAQAAAAAAAA4QklNBCUAAAAAABDUHYzZjwCyBOmACZjs+EJ+/+IMWElDQ19QUk9GSUxFAAEBAAAMSExpbm8CEAAAbW50'
             . 'clJHQiBYWVogB84AAgAJAAYAMQAAYWNzcE1TRlQAAAAASUVDIHNSR0IAAAAAAAAAAAAAAAAAAPbWAAEAAAAA0y1IUCAgAAAAAA'
@@ -424,26 +426,27 @@ class ImageTest extends PHPUnit
         $actualBase64Jpeg = TestHelper::getActual(__FUNCTION__ . '_base64.jpg');
         $actualBin = TestHelper::getActual(__FUNCTION__ . '_bin.gif');
         $excepted = TestHelper::getExpected(__FUNCTION__ . '.gif');
+        $exceptedBase64Jpeg = TestHelper::getExpected(__FUNCTION__ . '_base64.jpg');
 
         $img = new Image($imgStr);
         $img->saveAs($actualClean);
-        TestHelper::isFileEq($actualClean, $excepted);
+        TestHelper::isFileEq($excepted, $actualClean);
 
         $img = new Image($base64Gif);
         $img->saveAs($actualBase64Gif);
-        TestHelper::isFileEq($actualBase64Gif, $excepted);
+        TestHelper::isFileEq($excepted, $actualBase64Gif);
 
         $img = new Image($base64Gif, true);
         $img->saveAs($actualBase64Gif);
-        TestHelper::isFileEq($actualBase64Gif, $excepted);
+        TestHelper::isFileEq($excepted, $actualBase64Gif);
 
         $img = new Image($base64Jpeg, true);
         $img->saveAs($actualBase64Jpeg);
-        TestHelper::isFileEq($actualBase64Jpeg, $excepted);
+        TestHelper::isFileEq($exceptedBase64Jpeg, $actualBase64Jpeg);
 
         $img = new Image($bin);
         $img->saveAs($actualBin);
-        TestHelper::isFileEq($actualBin, $excepted);
+        TestHelper::isFileEq($excepted, $actualBin);
     }
 
     public function testUnsupportedFormat()
@@ -463,7 +466,7 @@ class ImageTest extends PHPUnit
             is(100, $info['width']);
             is(200, $info['height']);
 
-            TestHelper::isFileEq($actual, $excepted);
+            TestHelper::isFileEq($excepted, $actual);
 
         } else {
             fail('Can\'t copy original file!');
@@ -481,7 +484,7 @@ class ImageTest extends PHPUnit
         $img = new Image($imgRes);
         $img->saveAs($actual);
 
-        TestHelper::isFileEq($actual, $excepted);
+        TestHelper::isFileEq($excepted, $actual);
     }
 
     public function testLoadStringUndefined()
