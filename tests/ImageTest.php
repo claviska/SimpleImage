@@ -261,6 +261,10 @@ class ImageTest extends PHPUnit
 
     public function testGetBase64()
     {
+        if (!Sys::isPHP('7.2')) {
+            skip('Test works only with PHP v7.2');
+        }
+
         $original = TestHelper::getOrig('smile.gif');
 
         $img = new Image($original);
@@ -280,6 +284,10 @@ class ImageTest extends PHPUnit
 
     public function testGetBinary()
     {
+        if (!Sys::isPHP('7.2')) {
+            skip('Test works only with PHP v7.2');
+        }
+
         $original = TestHelper::getOrig('smile.gif');
 
         $img = new Image($original);
