@@ -186,7 +186,7 @@ class ImageTest extends PHPUnit
     public function testConvertToWebp()
     {
         if (!Sys::isFunc('imagewebp')) {
-            $this->expectException(\JBZoo\Image\Exception::class);
+            skip('Function imagewebp() is not available. Rebuild your ext-gd for PHP');
         } else {
             $original = TestHelper::getOrig('butterfly.jpg');
             $excepted = TestHelper::getExpected(__FUNCTION__ . '.webp');

@@ -302,7 +302,7 @@ class Image
     protected function saveWebP(string $filename)
     {
         if (!Sys::isFunc('imagewebp')) {
-            throw new Exception('function imagewebp() is not available');
+            throw new Exception('Function imagewebp() is not available. Rebuild your ext-gd for PHP');
         }
 
         if ($this->image) {
@@ -363,7 +363,7 @@ class Image
             throw new Exception('Image resource not defined');
         }
 
-        $format = $format ?: $this->mime;
+        $format = (string)($format ?: $this->mime);
 
         $result = null;
         if (Helper::isJpeg($format)) {
@@ -383,7 +383,7 @@ class Image
                 $result = 'image/webp';
             }
         } else {
-            throw new Exception('Undefined format: ' . $format);
+            throw new Exception("Undefined format: {$format}");
         }
 
         return $result;
@@ -1086,7 +1086,10 @@ class Image
      */
     public function getUrl(): string
     {
-        return Url::root() . '/' . $this->getPath();
+        $rootPath = Url::root();
+        $relPath = $this->getPath();
+
+        return "{$rootPath}/{$relPath}";
     }
 
     /**
