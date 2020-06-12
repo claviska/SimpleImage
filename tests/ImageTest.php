@@ -17,6 +17,7 @@ namespace JBZoo\PHPUnit;
 
 use JBZoo\Image\Exception;
 use JBZoo\Image\Image;
+use JBZoo\Utils\Sys;
 
 /**
  * Class ImageTest
@@ -184,6 +185,10 @@ class ImageTest extends PHPUnit
 
     public function testConvertToWebp()
     {
+        if (!Sys::isFunc('imagewebp')) {
+            skip('function imagewebp() is not available');
+        }
+
         $original = TestHelper::getOrig('butterfly.jpg');
         $excepted = TestHelper::getExpected(__FUNCTION__ . '.webp');
         $actual = TestHelper::getActual(__FUNCTION__ . '.webp');
