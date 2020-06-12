@@ -50,31 +50,42 @@ class Text
      * @throws Exception
      * @throws \JBZoo\Utils\Exception
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
     public static function render($image, $text, $fFile, array $params = []): void
     {
         // Set vars
         $params = array_merge(self::$default, $params);
-        $angle = Helper::rotate($params['angle']);
-        $position = Helper::position($params['position']);
-        $fSize = $params['font-size'];
-        $color = $params['color'];
-        $offsetX = $params['offset-x'];
-        $offsetY = $params['offset-y'];
-        $strokeColor = $params['stroke-color'];
-        $strokeSize = $params['stroke-size'];
-        $strokeSpacing = $params['stroke-spacing'];
-        $imageWidth = imagesx($image);
-        $imageHeight = imagesy($image);
+        $angle = Helper::rotate((float)$params['angle']);
+        $position = Helper::position((string)$params['position']);
+
+        $fSize = (int)$params['font-size'];
+
+        $offsetX = (int)$params['offset-x'];
+        $offsetY = (int)$params['offset-y'];
+
+        $strokeSize = (int)$params['stroke-size'];
+        $strokeSpacing = (int)$params['stroke-spacing'];
+
+        $imageWidth = (int)imagesx($image);
+        $imageHeight = (int)imagesy($image);
+
+        $color = is_string($params['color']) ? (string)$params['color'] : (array)$params['color'];
+        $strokeColor = is_string($params['stroke-color'])
+            ? (string)$params['stroke-color']
+            : (array)$params['stroke-color'];
 
         $colorArr = self::getColor($image, $color);
         [$textWidth, $textHeight] = self::getTextBoxSize($fSize, $angle, $fFile, $text);
-        [$textX, $textY] = Helper::getInnerCoords(
+        $textCoords = Helper::getInnerCoords(
             $position,
             [$imageWidth, $imageHeight],
             [$textWidth, $textHeight],
             [$offsetX, $offsetY]
         );
+
+        $textX = (int)($textCoords[0] ?? null);
+        $textY = (int)($textCoords[1] ?? null);
 
         if ($strokeColor && $strokeSize) {
             if (is_array($color) || is_array($strokeColor)) {
@@ -149,7 +160,7 @@ class Text
     /**
      * Determine text color
      *
-     * @param mixed        $image GD resource
+     * @param resource     $image GD resource
      * @param string|array $colors
      * @return array
      * @throws \JBZoo\Utils\Exception
@@ -170,7 +181,7 @@ class Text
     /**
      * Determine textbox size
      *
-     * @param string $fontSize
+     * @param int    $fontSize
      * @param int    $angle
      * @param string $fontFile
      * @param string $text
@@ -178,19 +189,19 @@ class Text
      *
      * @throws Exception
      */
-    protected static function getTextBoxSize($fontSize, $angle, $fontFile, $text)
+    protected static function getTextBoxSize(int $fontSize, $angle, $fontFile, $text): array
     {
         // Determine textbox size
         $fontPath = FS::clean($fontFile);
 
         if (!FS::isFile($fontPath)) {
-            throw new Exception('Unable to load font: ' . $fontFile);
+            throw new Exception("Unable to load font: {$fontFile}");
         }
 
-        $box = imagettfbbox((float)$fontSize, $angle, $fontFile, $text);
+        $box = imagettfbbox($fontSize, $angle, $fontFile, $text);
 
-        $boxWidth = abs($box[6] - $box[2]);
-        $boxHeight = abs($box[7] - $box[1]);
+        $boxWidth = (int)abs($box[6] - $box[2]);
+        $boxHeight = (int)abs($box[7] - $box[1]);
 
         return [$boxWidth, $boxHeight];
     }
@@ -198,19 +209,17 @@ class Text
     /**
      * Compact args for imagettftext()
      *
-     * @param mixed  $image  A GD image object
-     * @param string $text   The text to output
-     * @param array  $font   [$fontfile, $fontsize, $color, $angle]
-     * @param array  $coords [X,Y] Coordinate of the starting position
-     *
-     * @return array
+     * @param resource $image  A GD image object
+     * @param string   $text   The text to output
+     * @param array    $font   [$fontfile, $fontsize, $color, $angle]
+     * @param array    $coords [X,Y] Coordinate of the starting position
      */
-    protected static function internalRender($image, $text, array $font, array $coords)
+    protected static function internalRender($image, $text, array $font, array $coords): void
     {
         [$coordX, $coordY] = $coords;
         [$file, $size, $color, $angle] = $font;
 
-        return imagettftext($image, $size, $angle, $coordX, $coordY, $color, $file, $text);
+        imagettftext($image, $size, $angle, $coordX, $coordY, $color, $file, $text);
     }
 
     /**
@@ -221,10 +230,8 @@ class Text
      * @param array  $font   [$fontfile, $fontsize, $color, $angle]
      * @param array  $coords [X,Y] Coordinate of the starting position
      * @param array  $stroke [$strokeSize, $strokeColor]
-     *
-     * @return array
      */
-    protected static function renderStroke($image, $text, array $font, array $coords, array $stroke)
+    protected static function renderStroke($image, $text, array $font, array $coords, array $stroke): void
     {
         [$coordX, $coordY] = $coords;
         [$file, $size, $color, $angle] = $font;
@@ -236,7 +243,7 @@ class Text
             }
         }
 
-        return imagettftext($image, $size, $angle, $coordX, $coordY, $color, $file, $text);
+        imagettftext($image, $size, $angle, $coordX, $coordY, $color, $file, $text);
     }
 
     /**
@@ -250,6 +257,7 @@ class Text
      * @param int          $strokeSpacing
      * @param int          $textX
      * @return int
+     * @noinspection PhpTooManyParametersInspection
      */
     protected static function getStrokeX($fontSize, $angle, $fontFile, $letters, $charKey, $strokeSpacing, $textX): int
     {

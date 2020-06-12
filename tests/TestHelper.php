@@ -78,8 +78,8 @@ class TestHelper
         $relPathActual = FS::getRelative($actual, __DIR__ . '/..');
         $errorMessage = "Expected: ./{$relPathExpected} ($expectedSize);\nActual:   ./{$relPathActual} ({$actualSize})";
 
-        //isFileEq($expected, $actual, $errorMessage);
         //isSame($expectedSize, $actualSize, "Invalid size:\n{$errorMessage}");
+        //isFileEq($expected, $actual, "Invalid bin:\n{$errorMessage}");
     }
 
     /**

@@ -15,7 +15,6 @@
 
 namespace JBZoo\Image;
 
-use JBZoo\Utils\Arr;
 use JBZoo\Utils\Filter as VarFilter;
 use JBZoo\Utils\FS;
 use JBZoo\Utils\Image as Helper;
@@ -28,6 +27,7 @@ use JBZoo\Utils\Url;
  * @SuppressWarnings(PHPMD.TooManyMethods)
  * @SuppressWarnings(PHPMD.TooManyPublicMethods)
  * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @SuppressWarnings(PHPMD.ExcessiveClassLength)
  */
 class Image
 {
@@ -325,12 +325,13 @@ class Image
         $filename = FS::clean($filename);
 
         // Create the image
-        $result = $this->renderImageByFormat($format, $filename, $quality);
+        if ($this->renderImageByFormat($format, $filename, $quality)) {
+            $this->loadFile($filename);
+            $this->quality = $quality;
+            return true;
+        }
 
-        $this->loadFile($filename);
-        $this->quality = $quality;
-
-        return true;
+        return false;
     }
 
     /**
@@ -447,19 +448,20 @@ class Image
      *
      * @return $this
      * @throws Exception
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      */
     protected function loadMeta($image = null, $strict = false)
     {
         // Gather meta data
         if (null === $image && $this->filename) {
             if ($imageInfo = getimagesize($this->filename)) {
-                $this->image = $this->imageCreate($imageInfo['mime'] ?? null);
+                $this->image = $this->imageCreate((string)($imageInfo['mime'] ?? ''));
             }
         } elseif (is_resource($image) && Helper::isGdRes($image)) {
             $this->image = $image;
             $imageInfo = [
-                '0'    => imagesx($this->image),
-                '1'    => imagesy($this->image),
+                '0'    => (int)imagesx($this->image),
+                '1'    => (int)imagesy($this->image),
                 'mime' => self::DEFAULT_MIME,
             ];
         } elseif (is_string($image)) {
@@ -480,8 +482,8 @@ class Image
         // Set internal state
         if (is_array($imageInfo)) {
             $this->mime = $imageInfo['mime'] ?? null;
-            $this->width = $imageInfo['0'] ?? null;
-            $this->height = $imageInfo['1'] ?? null;
+            $this->width = (int)($imageInfo['0'] ?? 0);
+            $this->height = (int)($imageInfo['1'] ?? 0);
         }
         $this->exif = $this->getExif();
         $this->orient = $this->getOrientation();
@@ -540,12 +542,12 @@ class Image
     /**
      * Create image resource
      *
-     * @param string $format
+     * @param string|null $format
      * @return resource
      *
      * @throws Exception
      */
-    protected function imageCreate(string $format)
+    protected function imageCreate(?string $format)
     {
         if (!$this->filename) {
             throw new Exception('Filename is undefined');
@@ -670,7 +672,7 @@ class Image
 
         if ($this->isGif()) {
             // Preserve transparency in GIFs
-            $transIndex = imagecolortransparent($this->image);
+            $transIndex = (int)imagecolortransparent($this->image);
             $palletSize = imagecolorstotal($this->image);
 
             if ($transIndex >= 0 && $transIndex < $palletSize) {
@@ -680,7 +682,7 @@ class Image
                 $green = VarFilter::int($trColor['green']);
                 $blue = VarFilter::int($trColor['blue']);
 
-                $transIndex = imagecolorallocate($newImage, $red, $green, $blue);
+                $transIndex = (int)imagecolorallocate($newImage, $red, $green, $blue);
 
                 imagefill($newImage, 0, 0, $transIndex);
                 imagecolortransparent($newImage, $transIndex);
@@ -866,8 +868,8 @@ class Image
             $this->destroyImage();
 
             $this->image = $newImage;
-            $this->width = imagesx($this->image);
-            $this->height = imagesy($this->image);
+            $this->width = (int)imagesx($this->image);
+            $this->height = (int)imagesy($this->image);
         }
     }
 
@@ -879,7 +881,7 @@ class Image
      */
     public function autoOrient()
     {
-        if (!Arr::key('Orientation', $this->exif)) {
+        if (!array_key_exists('Orientation', $this->exif)) {
             return $this;
         }
 
@@ -931,12 +933,15 @@ class Image
         $globOffsetY = VarFilter::int($globOffsetY);
 
         // Determine position
-        [$xOffset, $yOffset] = Helper::getInnerCoords(
+        $offsetCoords = Helper::getInnerCoords(
             $position,
             [$this->width, $this->height],
             [$overlay->getWidth(), $overlay->getHeight()],
             [$globOffsetX, $globOffsetY]
         );
+
+        $xOffset = (int)($offsetCoords[0] ?? null);
+        $yOffset = (int)($offsetCoords[1] ?? null);
 
         // Perform the overlay
         Helper::imageCopyMergeAlpha(
@@ -954,27 +959,26 @@ class Image
     /**
      * Add filter to current image
      *
-     * @param string|callable $filterName
-     * @param mixed           $arguments
+     * @param mixed $filter
      * @return $this
      */
-    public function addFilter($filterName, $arguments = null)
+    public function addFilter($filter)
     {
         $args = func_get_args();
         $args[0] = $this->image;
 
-        $newImage = null;
-
-        if (is_string($filterName)) {
-            if (method_exists(Filter::class, $filterName)) {
+        if (is_string($filter)) {
+            if (method_exists(Filter::class, $filter)) {
                 /** @var \Closure $filterFunc */
-                $filterFunc = [Filter::class, $filterName];
+                $filterFunc = [Filter::class, $filter];
                 $newImage = call_user_func_array($filterFunc, $args);
             } else {
-                throw new Exception("Undefined Image Filter: {$filterName}");
+                throw new Exception("Undefined Image Filter: {$filter}");
             }
-        } elseif (is_callable($filterName)) {
-            $newImage = call_user_func_array($filterName, $args);
+        } elseif (is_callable($filter)) {
+            $newImage = call_user_func_array($filter, $args);
+        } else {
+            throw new Exception('Undefined filter type');
         }
 
         if (Helper::isGdRes($newImage)) {

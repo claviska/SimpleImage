@@ -29,7 +29,8 @@ class Filter
     public const BLUR_SEL  = 0;
     public const BLUR_GAUS = 1;
 
-    private const MAX_PERCENT = 100;
+    private const DEFAULT_BACKGROUND = '#000000';
+    private const MAX_PERCENT        = 100;
 
     /**
      * Add sepia effect (emulation)
@@ -98,8 +99,8 @@ class Filter
      * Blur effect
      *
      * @param resource $image  Image GD resource
-     * @param int      $type   BLUR_SEL|BLUR_GAUS
      * @param int      $passes Number of times to apply the filter
+     * @param int      $type   BLUR_SEL|BLUR_GAUS
      */
     public static function blur($image, $passes = 1, $type = self::BLUR_SEL): void
     {
@@ -191,8 +192,8 @@ class Filter
     {
         // Determine percentage
         $percent = Helper::percent($percent);
-        $width = imagesx($image);
-        $height = imagesy($image);
+        $width = (int)imagesx($image);
+        $height = (int)imagesy($image);
 
         if ($percent === self::MAX_PERCENT) {
             self::grayscale($image);
@@ -231,30 +232,33 @@ class Filter
         // Determine opacity
         $opacity = Helper::opacity($opacity);
 
-        $width = imagesx($image);
-        $height = imagesy($image);
+        $width = (int)imagesx($image);
+        $height = (int)imagesy($image);
 
         if ($newImage = imagecreatetruecolor($width, $height)) {
             // Set a White & Transparent Background Color
-            $background = imagecolorallocatealpha($newImage, 0, 0, 0, 127);
-            imagefill($newImage, 0, 0, $background);
+            if ($background = imagecolorallocatealpha($newImage, 0, 0, 0, 127)) {
+                imagefill($newImage, 0, 0, $background);
 
-            // Copy and merge
-            Helper::imageCopyMergeAlpha(
-                $newImage,
-                $image,
-                [0, 0],
-                [0, 0],
-                [$width, $height],
-                $opacity
-            );
+                // Copy and merge
+                Helper::imageCopyMergeAlpha(
+                    $newImage,
+                    $image,
+                    [0, 0],
+                    [0, 0],
+                    [$width, $height],
+                    $opacity
+                );
 
-            imagedestroy($image);
+                imagedestroy($image);
 
-            return $newImage;
+                return $newImage;
+            }
+
+            throw new Exception('Image resourced can\'t be handle by "imagecolorallocatealpha"');
         }
 
-        throw new Exception("Image resourced can't be handle by \"imagecreatetruecolor\"");
+        throw new Exception('Image resourced can\'t be handle by "imagecreatetruecolor"');
     }
 
     /**
@@ -264,17 +268,17 @@ class Filter
      * @param int          $angle   -360 < x < 360
      * @param string|array $bgColor Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
      *                              Where red, green, blue - integers 0-255, alpha - integer 0-127
-     * @return resource
+     * @return resource|false
      * @throws \JBZoo\Utils\Exception
      */
-    public static function rotate($image, $angle, $bgColor = '#000000')
+    public static function rotate($image, $angle, $bgColor = self::DEFAULT_BACKGROUND)
     {
         // Perform the rotation
         $angle = Helper::rotate($angle);
         $rgba = Helper::normalizeColor($bgColor);
 
-        $bgColor = imagecolorallocatealpha($image, $rgba[0], $rgba[1], $rgba[2], $rgba[3]);
-        $newImage = imagerotate($image, -($angle), $bgColor);
+        $newBgColor = (int)imagecolorallocatealpha($image, $rgba[0], $rgba[1], $rgba[2], $rgba[3]);
+        $newImage = imagerotate($image, -($angle), $newBgColor);
 
         Helper::addAlpha($newImage);
 
@@ -291,8 +295,8 @@ class Filter
     public static function flip($image, $dir)
     {
         $dir = Helper::direction($dir);
-        $width = imagesx($image);
-        $height = imagesy($image);
+        $width = (int)imagesx($image);
+        $height = (int)imagesy($image);
 
         if ($newImage = imagecreatetruecolor($width, $height)) {
             Helper::addAlpha($newImage);
@@ -324,13 +328,13 @@ class Filter
      *                          Where red, green, blue - integers 0-255, alpha - integer 0-127
      * @throws \JBZoo\Utils\Exception
      */
-    public static function fill($image, $color = '#000000'): void
+    public static function fill($image, $color = self::DEFAULT_BACKGROUND): void
     {
-        $width = imagesx($image);
-        $height = imagesy($image);
+        $width = (int)imagesx($image);
+        $height = (int)imagesy($image);
 
         $rgba = Helper::normalizeColor($color);
-        $fillColor = imagecolorallocatealpha($image, $rgba[0], $rgba[1], $rgba[2], $rgba[3]);
+        $fillColor = (int)imagecolorallocatealpha($image, $rgba[0], $rgba[1], $rgba[2], $rgba[3]);
 
         Helper::addAlpha($image, false);
         imagefilledrectangle($image, 0, 0, $width, $height, $fillColor);
@@ -365,17 +369,17 @@ class Filter
             'size'  => 1,
         ], $params);
 
-        $size = Vars::range($params['size'], 1, 1000);
-        $rgba = Helper::normalizeColor($params['color']);
-        $width = imagesx($image);
-        $height = imagesy($image);
+        $size = Vars::range((int)$params['size'], 1, 1000);
+        $rgba = Helper::normalizeColor((string)$params['color']);
+        $width = (int)imagesx($image);
+        $height = (int)imagesy($image);
 
         $posX1 = 0;
         $posY1 = 0;
         $posX2 = $width - 1;
         $posY2 = $height - 1;
 
-        $color = imagecolorallocatealpha($image, $rgba[0], $rgba[1], $rgba[2], $rgba[3]);
+        $color = (int)imagecolorallocatealpha($image, $rgba[0], $rgba[1], $rgba[2], $rgba[3]);
 
         for ($i = 0; $i < $size; $i++) {
             imagerectangle($image, $posX1++, $posY1++, $posX2--, $posY2--, $color);

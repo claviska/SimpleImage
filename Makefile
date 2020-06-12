@@ -25,13 +25,3 @@ update: ##@Project Install/Update all 3rd party dependencies
 test-all: ##@Project Run all project tests at once
 	@make test
 	@make codestyle
-
-
-test-phpunit-clean: ##@Tests Run unit-tests with TeamCity output
-	$(call title,"PHPUnit - Running all tests")
-	@echo "Config: $(JBZOO_CONFIG_PHPUNIT)"
-	@php `pwd`/vendor/bin/phpunit                                 \
-        --cache-result-file="$(PATH_BUILD)/.phpunit.result.cache" \
-        --configuration="$(JBZOO_CONFIG_PHPUNIT)"                 \
-        --order-by=random                                         \
-        --colors=always
