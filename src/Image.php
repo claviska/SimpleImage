@@ -955,9 +955,10 @@ class Image
      * Add filter to current image
      *
      * @param string|callable $filterName
+     * @param mixed           $arguments
      * @return $this
      */
-    public function addFilter($filterName)
+    public function addFilter($filterName, $arguments = null)
     {
         $args = func_get_args();
         $args[0] = $this->image;
@@ -966,12 +967,12 @@ class Image
 
         if (is_string($filterName)) {
             if (method_exists(Filter::class, $filterName)) {
+                /** @var \Closure $filterFunc */
                 $filterFunc = [Filter::class, $filterName];
                 $newImage = call_user_func_array($filterFunc, $args);
             } else {
                 throw new Exception("Undefined Image Filter: {$filterName}");
             }
-
         } elseif (is_callable($filterName)) {
             $newImage = call_user_func_array($filterName, $args);
         }
@@ -1028,14 +1029,14 @@ class Image
      * @return array
      * @throws Exception
      */
-    protected function renderBinary($format, $quality)
+    protected function renderBinary(?string $format, ?int $quality)
     {
         if (!$this->image) {
             throw new Exception('Image resource not defined');
         }
 
         ob_start();
-        $mimeType = $this->renderImageByFormat($format, '', $quality);
+        $mimeType = $this->renderImageByFormat($format, '', (int)$quality);
         $imageData = ob_get_clean();
 
         return [$mimeType, $imageData];
