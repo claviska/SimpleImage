@@ -306,6 +306,7 @@ class Image
         }
 
         if ($this->image) {
+            /** @phan-suppress-next-line PhanUndeclaredFunction */
             return imagewebp($this->image, $filename ?: null);
         }
 
@@ -572,6 +573,7 @@ class Image
         } elseif (Helper::isGif($format)) {
             $result = imagecreatefromgif($this->filename);
         } elseif (function_exists('imagecreatefromwebp') && Helper::isWebp($format)) {
+            /** @phan-suppress-next-line PhanUndeclaredFunction */
             $result = imagecreatefromwebp($this->filename);
         } else {
             throw new Exception("Invalid image: {$this->filename}");
