@@ -4,7 +4,7 @@ A PHP class that makes working with images as simple as possible.
 
 Developed and maintained by [Cory LaViska](https://github.com/claviska).
 
-_If this project has you loving PHP image manipulation again, please consider making [a small donation](https://paypal.me/claviska) to support its development._
+_If this project has you loving PHP image manipulation again, please consider [sponsoring me](https://github.com/sponsors/claviska) to support its development._
 
 ---
 
