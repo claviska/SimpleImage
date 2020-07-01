@@ -75,7 +75,7 @@ require 'src/claviska/SimpleImage.php';
 
 SimpleImage is developed and maintained by [Cory LaViska](https://github.com/claviska). Copyright A Beautiful Site, LLC.
 
-Contributions are appreciated! If you enjoy using SimpleImage, especially in commercial applications, please consider [making a contribution](https://paypal.me/claviska) to support its development.
+If you enjoy using SimpleImage, especially in commercial applications, please consider [sponsoring me](https://github.com/sponsors/claviska) to support its development.
 
 Thanks! 🙌
 
