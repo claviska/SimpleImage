@@ -258,7 +258,7 @@ class Image
      * @param int    $quality
      * @return bool
      */
-    protected function savePng(string $filename, int $quality = self::DEFAULT_QUALITY)
+    protected function savePng(string $filename, int $quality = self::DEFAULT_QUALITY): bool
     {
         if ($this->image) {
             return imagepng($this->image, $filename ?: null, (int)round(9 * $quality / 100));
@@ -272,7 +272,7 @@ class Image
      * @param int    $quality
      * @return bool
      */
-    protected function saveJpeg(string $filename, int $quality = self::DEFAULT_QUALITY)
+    protected function saveJpeg(string $filename, int $quality = self::DEFAULT_QUALITY): bool
     {
         if ($this->image) {
             imageinterlace($this->image, 1);
@@ -286,7 +286,7 @@ class Image
      * @param string $filename
      * @return bool
      */
-    protected function saveGif(string $filename)
+    protected function saveGif(string $filename): bool
     {
         if ($this->image) {
             return imagegif($this->image, $filename ?: null);
@@ -299,7 +299,7 @@ class Image
      * @param string $filename
      * @return bool
      */
-    protected function saveWebP(string $filename)
+    protected function saveWebP(string $filename): bool
     {
         if (!function_exists('imagewebp')) {
             throw new Exception('Function imagewebp() is not available. Rebuild your ext-gd for PHP');
@@ -457,13 +457,13 @@ class Image
      * Get meta data of image or base64 string
      *
      * @param resource|string|null $image
-     * @param bool|null            $strict
+     * @param bool                 $strict
      *
      * @return $this
      * @throws Exception
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      */
-    protected function loadMeta($image = null, $strict = false): self
+    protected function loadMeta($image = null, bool $strict = false): self
     {
         // Gather meta data
         if (null === $image && $this->filename) {
@@ -606,7 +606,7 @@ class Image
     /**
      * @return bool
      */
-    public function isPortrait()
+    public function isPortrait(): bool
     {
         return $this->orient === self::PORTRAIT;
     }
@@ -614,7 +614,7 @@ class Image
     /**
      * @return bool
      */
-    public function isLandscape()
+    public function isLandscape(): bool
     {
         return $this->orient === self::LANDSCAPE;
     }
@@ -622,7 +622,7 @@ class Image
     /**
      * @return bool
      */
-    public function isSquare()
+    public function isSquare(): bool
     {
         return $this->orient === self::SQUARE;
     }
@@ -878,7 +878,7 @@ class Image
      */
     protected function replaceImage($newImage): void
     {
-        if (!$this->isSameResource($this->image, $newImage)) {
+        if (!self::isSameResource($this->image, $newImage)) {
             $this->destroyImage();
 
             $this->image = $newImage;
@@ -1099,7 +1099,7 @@ class Image
      * @param resource|null $resource2
      * @return bool
      */
-    protected function isSameResource($resource1 = null, $resource2 = null): bool
+    protected static function isSameResource($resource1 = null, $resource2 = null): bool
     {
         if (!$resource1 || !$resource2) {
             return false;

@@ -214,7 +214,7 @@ class Text
      * @param array    $font   [$fontfile, $fontsize, $color, $angle]
      * @param array    $coords [X,Y] Coordinate of the starting position
      */
-    protected static function internalRender($image, $text, array $font, array $coords): void
+    protected static function internalRender($image, string $text, array $font, array $coords): void
     {
         [$coordX, $coordY] = $coords;
         [$file, $size, $color, $angle] = $font;
@@ -231,7 +231,7 @@ class Text
      * @param array    $coords [X,Y] Coordinate of the starting position
      * @param array    $stroke [$strokeSize, $strokeColor]
      */
-    protected static function renderStroke($image, $text, array $font, array $coords, array $stroke): void
+    protected static function renderStroke($image, string $text, array $font, array $coords, array $stroke): void
     {
         [$coordX, $coordY] = $coords;
         [$file, $size, $color, $angle] = $font;
