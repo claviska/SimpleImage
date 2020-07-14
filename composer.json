@@ -7,7 +7,7 @@
     "authors"           : [
         {
             "name"  : "Denis Smetannikov",
-            "email" : "denis@jbzoo.com",
+            "email" : "admin@jbzoo.com",
             "role"  : "Lead"
         },
         {
@@ -29,12 +29,12 @@
         "ext-exif"    : "*",
         "ext-ctype"   : "*",
 
-        "jbzoo/utils" : "4.0.x-dev",
-        "jbzoo/data"  : "4.0.x-dev"
+        "jbzoo/utils" : "^4.0.0",
+        "jbzoo/data"  : "^4.0.0"
     },
 
     "require-dev"       : {
-        "jbzoo/toolbox-dev" : "1.1.x-dev"
+        "jbzoo/toolbox-dev" : "^2.0.0"
     },
 
     "autoload"          : {
