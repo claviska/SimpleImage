@@ -8,7 +8,7 @@
         {
             "name"  : "Denis Smetannikov",
             "email" : "admin@jbzoo.com",
-            "role"  : "Lead"
+            "role"  : "lead"
         },
         {
             "name"     : "Cory LaViska",
@@ -24,7 +24,7 @@
     ],
 
     "require"           : {
-        "php"         : ">=7.2",
+        "php"         : "^7.2",
         "ext-gd"      : "*",
         "ext-exif"    : "*",
         "ext-ctype"   : "*",
@@ -34,7 +34,7 @@
     },
 
     "require-dev"       : {
-        "jbzoo/toolbox-dev" : "^2.0.0"
+        "jbzoo/toolbox-dev" : "^2.1.0"
     },
 
     "autoload"          : {
@@ -56,7 +56,7 @@
 
     "extra"             : {
         "branch-alias" : {
-            "dev-master" : "5.0.x-dev"
+            "dev-master" : "5.x-dev"
         }
     }
 }

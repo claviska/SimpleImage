@@ -1,7 +1,9 @@
 # JBZoo / Image
 
 [![Build Status](https://travis-ci.org/JBZoo/Image.svg?branch=master)](https://travis-ci.org/JBZoo/Image)    [![Coverage Status](https://coveralls.io/repos/JBZoo/Image/badge.svg)](https://coveralls.io/github/JBZoo/Image?branch=master)    [![Psalm Coverage](https://shepherd.dev/github/JBZoo/Image/coverage.svg)](https://shepherd.dev/github/JBZoo/Image)    
-[![Latest Stable Version](https://poser.pugx.org/JBZoo/Image/v)](https://packagist.org/packages/JBZoo/Image)    [![Latest Unstable Version](https://poser.pugx.org/JBZoo/Image/v/unstable)](https://packagist.org/packages/JBZoo/Image)    [![Dependents](https://poser.pugx.org/JBZoo/Image/dependents)](https://packagist.org/packages/JBZoo/Image/dependents?order_by=downloads)    [![GitHub Issues](https://img.shields.io/github/issues/JBZoo/Image)](https://github.com/JBZoo/Image/issues)    [![Total Downloads](https://poser.pugx.org/JBZoo/Image/downloads)](https://packagist.org/packages/JBZoo/Image/stats)    [![GitHub License](https://img.shields.io/github/license/JBZoo/Image)](https://github.com/JBZoo/Image/blob/master/LICENSE)
+[![Stable Version](https://poser.pugx.org/jbzoo/image/version)](https://packagist.org/packages/jbzoo/image)    [![Latest Unstable Version](https://poser.pugx.org/jbzoo/image/v/unstable)](https://packagist.org/packages/jbzoo/image)    [![Dependents](https://poser.pugx.org/jbzoo/image/dependents)](https://packagist.org/packages/jbzoo/image/dependents?order_by=downloads)    [![GitHub Issues](https://img.shields.io/github/issues/jbzoo/image)](https://github.com/JBZoo/Image/issues)    [![Total Downloads](https://poser.pugx.org/jbzoo/image/downloads)](https://packagist.org/packages/jbzoo/image/stats)    [![GitHub License](https://img.shields.io/github/license/jbzoo/image)](https://github.com/JBZoo/Image/blob/master/LICENSE)
+
+
 
 Package provides object-oriented way to manipulate with images as simple as possible.
 
