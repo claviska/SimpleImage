@@ -24,17 +24,17 @@
     ],
 
     "require"           : {
-        "php"         : "^7.2",
+        "php"         : ">=7.2",
         "ext-gd"      : "*",
         "ext-exif"    : "*",
         "ext-ctype"   : "*",
 
-        "jbzoo/utils" : "^4.0.0",
-        "jbzoo/data"  : "^4.0.0"
+        "jbzoo/utils" : "^4.2.1",
+        "jbzoo/data"  : "^4.0.1"
     },
 
     "require-dev"       : {
-        "jbzoo/toolbox-dev" : "^2.1.0"
+        "jbzoo/toolbox-dev" : "^2.4.0"
     },
 
     "autoload"          : {
