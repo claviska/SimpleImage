@@ -20,7 +20,7 @@ use JBZoo\Utils\Image as Helper;
 use JBZoo\Utils\Vars;
 
 /**
- * Class Helper
+ * Class Filter
  * @package JBZoo\Image
  * @SuppressWarnings(PHPMD.TooManyPublicMethods)
  */
