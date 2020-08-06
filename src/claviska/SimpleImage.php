@@ -46,7 +46,7 @@ class SimpleImage {
    * Creates a new SimpleImage object.
    *
    * @param string $image An image file or a data URI to load.
-   * @throws \Exception Thrown if the GD library is not found.
+   * @throws \Exception Thrown if the GD library is not found; file|URI or image data is invalid.
    */
   public function __construct($image = null) {
     // Check for the required GD extension
@@ -115,7 +115,7 @@ class SimpleImage {
    * Loads an image from a file.
    *
    * @param string $file The image file to load.
-   * @throws \Exception Thrown if URI or image data is invalid.
+   * @throws \Exception Thrown if file or image data is invalid.
    * @return \claviska\SimpleImage
    */
   public function fromFile($file) {
