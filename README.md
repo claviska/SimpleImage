@@ -146,7 +146,7 @@ Returns a SimpleImage object.
 Generates a data URI.
 
 - `$mimeType` (string) - The image format to output as a mime type (defaults to the original mime type).
-- `$quality` (int) - Image quality as a percentage (default 100).
+- `$quality` (int) - Image quality as a percentage (default 100). This argument has no effect on PNG images, since the format is lossless.
 
 Returns a string containing a data URI.
 
@@ -156,7 +156,7 @@ Forces the image to be downloaded to the clients machine. Must be called before 
 
 - `$filename`* (string) - The filename (without path) to send to the client (e.g. 'image.jpeg').
 - `$mimeType` (string) - The image format to output as a mime type (defaults to the original mime type).
-- `$quality` (int) - Image quality as a percentage (default 100).
+- `$quality` (int) - Image quality as a percentage (default 100). This argument has no effect on PNG images, since the format is lossless.
 
 Returns a SimpleImage object.
 
@@ -165,7 +165,7 @@ Returns a SimpleImage object.
 Writes the image to a file.
 
 - `$mimeType` (string) - The image format to output as a mime type (defaults to the original mime type).
-- `$quality` (int) - Image quality as a percentage (default 100).
+- `$quality` (int) - Image quality as a percentage (default 100). This argument has no effect on PNG images, since the format is lossless.
 
 Returns a SimpleImage object.
 
@@ -174,7 +174,7 @@ Returns a SimpleImage object.
 Outputs the image to the screen. Must be called before any output is sent to the screen.
 
 - `$mimeType` (string) - The image format to output as a mime type (defaults to the original mime type).
-- `$quality` (int) - Image quality as a percentage (default 100).
+- `$quality` (int) - Image quality as a percentage (default 100). This argument has no effect on PNG images, since the format is lossless.
 
 Returns a SimpleImage object.
 
@@ -183,7 +183,7 @@ Returns a SimpleImage object.
 Generates an image string.
 
 - `$mimeType` (string) - The image format to output as a mime type (defaults to the original mime type).
-- `$quality` (int) - Image quality as a percentage (default 100).
+- `$quality` (int) - Image quality as a percentage (default 100). This argument has no effect on PNG images, since the format is lossless.
 
 Returns a SimpleImage object.
 
