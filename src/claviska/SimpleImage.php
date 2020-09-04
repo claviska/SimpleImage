@@ -256,8 +256,8 @@ class SimpleImage {
         // Not all versions of PHP will have webp support enabled
         if(!function_exists('imagewebp')) {
           throw new \Exception(
-              'WEBP support is not enabled in your version of PHP.',
-             self::ERR_WEBP_NOT_ENABLED
+            'WEBP support is not enabled in your version of PHP.',
+            self::ERR_WEBP_NOT_ENABLED
           );
         }
         imagesavealpha($this->image, true);
@@ -266,6 +266,13 @@ class SimpleImage {
       case 'image/bmp':
       case 'image/x-ms-bmp':
       case 'image/x-windows-bmp':
+        // Not all versions of PHP support bmp
+        if(!function_exists('imagebmp')) {
+          throw new \Exception(
+            'BMP support is not available in your version of PHP.',
+            self::ERR_UNSUPPORTED_FORMAT
+          );
+        }
         imageinterlace($this->image, true);
         imagebmp($this->image, null, $quality);
         break;
