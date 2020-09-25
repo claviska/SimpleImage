@@ -66,11 +66,19 @@ class SimpleImage {
   }
 
   /**
-   * Destroys the image resource.
+   * Destroys the image resource in php7.
+   * Destroys the image object in php8.
    */
   public function __destruct() {
-    if($this->image !== null && get_resource_type($this->image) === 'gd') {
-      imagedestroy($this->image);
+    if($this->image !== null) {
+      error_log(gettype($this->image));
+      // PHP7 image resource
+      if(is_resource($this->image) && get_resource_type($this->image) === 'gd') {
+          imagedestroy($this->image);
+      // PHP8 image object
+      } else if(is_object($this->image) && get_class($this->image) === 'GdImage') {
+          imagedestroy($this->image);
+      }
     }
   }
 
