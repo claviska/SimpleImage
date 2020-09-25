@@ -69,7 +69,7 @@ class SimpleImage {
    * Destroys the image resource.
    */
   public function __destruct() {
-    if($this->image !== null && get_resource_type($this->image) === 'gd') {
+    if($this->image !== null && is_resource($this->image) && get_resource_type($this->image) === 'gd') {
       imagedestroy($this->image);
     }
   }
