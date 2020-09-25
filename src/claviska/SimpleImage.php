@@ -71,7 +71,6 @@ class SimpleImage {
    */
   public function __destruct() {
     if($this->image !== null) {
-      error_log(gettype($this->image));
       // PHP7 image resource
       if(is_resource($this->image) && get_resource_type($this->image) === 'gd') {
           imagedestroy($this->image);
