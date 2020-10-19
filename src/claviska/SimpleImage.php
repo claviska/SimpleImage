@@ -708,9 +708,10 @@ class SimpleImage {
    * @param float $opacity The opacity level of the overlay 0-1 (default 1).
    * @param integer $xOffset Horizontal offset in pixels (default 0).
    * @param integer $yOffset Vertical offset in pixels (default 0).
+   * @param bool $calcuateOffsetFromEdge Calculate Offset referring to the edges of the image (default false).
    * @return \claviska\SimpleImage
    */
-  public function overlay($overlay, $anchor = 'center', $opacity = 1, $xOffset = 0, $yOffset = 0) {
+  public function overlay($overlay, $anchor = 'center', $opacity = 1, $xOffset = 0, $yOffset = 0, $calcuateOffsetFromEdge = false) {
     // Load overlay image
     if(!($overlay instanceof SimpleImage)) {
       $overlay = new SimpleImage($overlay);
@@ -726,36 +727,36 @@ class SimpleImage {
         $y = $yOffset;
         break;
       case 'top right':
-        $x = $this->getWidth() - $overlay->getWidth() + $xOffset;
+        $x = $this->getWidth() - $overlay->getWidth() + ($calcuateOffsetFromEdge ? -$xOffset : $xOffset);
         $y = $yOffset;
         break;
       case 'top':
-        $x = ($this->getWidth() / 2) - ($overlay->getWidth() / 2) + $xOffset;
+        $x = ($this->getWidth() / 2) - ($overlay->getWidth() / 2) + ($calcuateOffsetFromEdge ? 0 : $xOffset);
         $y = $yOffset;
         break;
       case 'bottom left':
         $x = $xOffset;
-        $y = $this->getHeight() - $overlay->getHeight() + $yOffset;
+        $y = $this->getHeight() - $overlay->getHeight() + ($calcuateOffsetFromEdge ? -$yOffset : $yOffset);
         break;
       case 'bottom right':
-        $x = $this->getWidth() - $overlay->getWidth() + $xOffset;
-        $y = $this->getHeight() - $overlay->getHeight() + $yOffset;
+        $x = $this->getWidth() - $overlay->getWidth() + ($calcuateOffsetFromEdge ? -$xOffset : $xOffset);
+        $y = $this->getHeight() - $overlay->getHeight() + ($calcuateOffsetFromEdge ? -$yOffset : $yOffset);
         break;
       case 'bottom':
-        $x = ($this->getWidth() / 2) - ($overlay->getWidth() / 2) + $xOffset;
-        $y = $this->getHeight() - $overlay->getHeight() + $yOffset;
+        $x = ($this->getWidth() / 2) - ($overlay->getWidth() / 2) + ($calcuateOffsetFromEdge ? 0 : $xOffset);
+        $y = $this->getHeight() - $overlay->getHeight() + ($calcuateOffsetFromEdge ? -$yOffset : $yOffset);
         break;
       case 'left':
         $x = $xOffset;
-        $y = ($this->getHeight() / 2) - ($overlay->getHeight() / 2) + $yOffset;
+        $y = ($this->getHeight() / 2) - ($overlay->getHeight() / 2) + ($calcuateOffsetFromEdge ? 0 : $yOffset);
         break;
       case 'right':
-        $x = $this->getWidth() - $overlay->getWidth() + $xOffset;
-        $y = ($this->getHeight() / 2) - ($overlay->getHeight() / 2) + $yOffset;
+        $x = $this->getWidth() - $overlay->getWidth() + ($calcuateOffsetFromEdge ? -$xOffset : $xOffset);
+        $y = ($this->getHeight() / 2) - ($overlay->getHeight() / 2) + ($calcuateOffsetFromEdge ? 0 : $yOffset);
         break;
       default:
-        $x = ($this->getWidth() / 2) - ($overlay->getWidth() / 2) + $xOffset;
-        $y = ($this->getHeight() / 2) - ($overlay->getHeight() / 2) + $yOffset;
+        $x = ($this->getWidth() / 2) - ($overlay->getWidth() / 2) + ($calcuateOffsetFromEdge ? 0 : $xOffset);
+        $y = ($this->getHeight() / 2) - ($overlay->getHeight() / 2) + ($calcuateOffsetFromEdge ? 0 : $yOffset);
         break;
     }
 
