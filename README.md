@@ -304,6 +304,7 @@ Place an image on top of the current image.
 - `$opacity` (float) - The opacity level of the overlay 0-1 (default 1).
 - `$xOffset` (int) - Horizontal offset in pixels (default 0).
 - `$yOffset` (int) - Vertical offset in pixels (default 0).
+- `$calcuateOffsetFromEdge` (bool) - Calculate Offset referring to the edges of the image. $xOffset and $yOffset have no effect in center anchor. (default false). 
 
 Returns a SimpleImage object.
 
