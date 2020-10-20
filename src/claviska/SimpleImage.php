@@ -713,53 +713,35 @@ class SimpleImage {
    */
   public function overlay($overlay, $anchor = 'center', $opacity = 1, $xOffset = 0, $yOffset = 0, $calcuateOffsetFromEdge = false) {
     // Load overlay image
-    if(!($overlay instanceof SimpleImage)) {
-      $overlay = new SimpleImage($overlay);
-    }
+    if(!($overlay instanceof SimpleImage)) $overlay = new SimpleImage($overlay);
 
     // Convert opacity
     $opacity = self::keepWithin($opacity, 0, 1) * 100;
 
     // Determine placement
-    switch($anchor) {
-      case 'top left':
-        $x = $xOffset;
-        $y = $yOffset;
-        break;
-      case 'top right':
-        $x = $this->getWidth() - $overlay->getWidth() + ($calcuateOffsetFromEdge ? -$xOffset : $xOffset);
-        $y = $yOffset;
-        break;
-      case 'top':
-        $x = ($this->getWidth() / 2) - ($overlay->getWidth() / 2) + ($calcuateOffsetFromEdge ? 0 : $xOffset);
-        $y = $yOffset;
-        break;
-      case 'bottom left':
-        $x = $xOffset;
-        $y = $this->getHeight() - $overlay->getHeight() + ($calcuateOffsetFromEdge ? -$yOffset : $yOffset);
-        break;
-      case 'bottom right':
-        $x = $this->getWidth() - $overlay->getWidth() + ($calcuateOffsetFromEdge ? -$xOffset : $xOffset);
-        $y = $this->getHeight() - $overlay->getHeight() + ($calcuateOffsetFromEdge ? -$yOffset : $yOffset);
-        break;
-      case 'bottom':
-        $x = ($this->getWidth() / 2) - ($overlay->getWidth() / 2) + ($calcuateOffsetFromEdge ? 0 : $xOffset);
-        $y = $this->getHeight() - $overlay->getHeight() + ($calcuateOffsetFromEdge ? -$yOffset : $yOffset);
-        break;
-      case 'left':
-        $x = $xOffset;
-        $y = ($this->getHeight() / 2) - ($overlay->getHeight() / 2) + ($calcuateOffsetFromEdge ? 0 : $yOffset);
-        break;
-      case 'right':
-        $x = $this->getWidth() - $overlay->getWidth() + ($calcuateOffsetFromEdge ? -$xOffset : $xOffset);
-        $y = ($this->getHeight() / 2) - ($overlay->getHeight() / 2) + ($calcuateOffsetFromEdge ? 0 : $yOffset);
-        break;
-      default:
-        $x = ($this->getWidth() / 2) - ($overlay->getWidth() / 2) + ($calcuateOffsetFromEdge ? 0 : $xOffset);
-        $y = ($this->getHeight() / 2) - ($overlay->getHeight() / 2) + ($calcuateOffsetFromEdge ? 0 : $yOffset);
-        break;
+
+    // Get available space 
+    $spaceX = $this->getWidth() - $overlay->getWidth();
+    $spaceY = $this->getHeight() - $overlay->getHeight();
+
+    // Set default center
+    $x = ($spaceX / 2) + ($calcuateOffsetFromEdge ? 0 : $xOffset);
+    $y = ($spaceY / 2) + ($calcuateOffsetFromEdge ? 0 : $yOffset);
+
+    // Determine if top|bottom
+    if (strpos($anchor, 'top') !== false) {
+      $y = $yOffset;
+    } elseif (strpos($anchor, 'bottom') !== false) {
+      $y = $spaceY + ($calcuateOffsetFromEdge ? -$yOffset : $yOffset);
     }
 
+    // Determine if left|right
+    if (strpos($anchor, 'left') !== false) {
+      $x = $xOffset;
+    } elseif (strpos($anchor, 'right') !== false) {
+      $x = $spaceX + ($calcuateOffsetFromEdge ? -$xOffset : $xOffset);
+    }
+    
     // Perform the overlay
     self::imageCopyMergeAlpha(
       $this->image,
