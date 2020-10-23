@@ -858,9 +858,10 @@ class SimpleImage {
    *       - xOffset (integer) - The horizontal offset in pixels (default 0).
    *       - yOffset (integer) - The vertical offset in pixels (default 0).
    *       - shadow (array) - Text shadow params.
-   *        - x* (integer) - Horizontal offset in pixels.
-   *        - y* (integer) - Vertical offset in pixels.
-   *        - color* (string|array) - The text shadow color.
+   *          - x* (integer) - Horizontal offset in pixels.
+   *          - y* (integer) - Vertical offset in pixels.
+   *          - color* (string|array) - The text shadow color.
+   *       - $calcuateOffsetFromEdge (bool) - Calculate Offset referring to the edges of the image (default false).
    * @param array $boundary
    *    If passed, this variable will contain an array with coordinates that surround the text: [x1, y1, x2, y2, width, height].
    *    This can be used for calculating the text's position after it gets added to the image.
@@ -884,7 +885,8 @@ class SimpleImage {
       'anchor' => 'center',
       'xOffset' => 0,
       'yOffset' => 0,
-      'shadow' => null
+      'shadow' => null,
+      'calcuateOffsetFromEdge' => false
     ], $options);
 
     // Extract and normalize options
@@ -894,6 +896,7 @@ class SimpleImage {
     $anchor = $options['anchor'];
     $xOffset = $options['xOffset'];
     $yOffset = $options['yOffset'];
+    $calcuateOffsetFromEdge = $options['calcuateOffsetFromEdge'];
     $angle = 0;
 
     // Calculate the bounding box dimensions
@@ -908,22 +911,43 @@ class SimpleImage {
     //
     // See: https://github.com/claviska/SimpleImage/issues/165
     //
-    $box = imagettfbbox($size, $angle, $fontFile, $text);
-    if(!$box) {
+    $boxText = imagettfbbox($size, $angle, $fontFile, $text);
+    if(!$boxText) { 
       throw new \Exception("Unable to load font file: $fontFile", self::ERR_FONT_FILE);
     }
-    $boxWidth = abs($box[6] - $box[2]);
-    $boxHeight = $options['size'];
+    $boxWidth = abs($boxText[4] - $boxText[0]); 
+    $boxHeight = abs($boxText[5] - $boxText[1]);
+    
+    // Calculate Offset referring to the edges of the image.
+    if ($calcuateOffsetFromEdge == true):
+      if (strpos($anchor, 'bottom') !== false) $yOffset *= -1; 
+      if (strpos($anchor, 'right') !== false) $xOffset *= -1;
 
-    // Determine cap height
-    $box = imagettfbbox($size, $angle, $fontFile, 'X');
-    $capHeight = abs($box[7] - $box[1]);
+      // Prevents fonts rendered outside the box boundary from being cut.
+      $yOffset -= $boxText[1];
+    
+    // Calculate Offset referring to top|left of the image
+    else:
+      // Create temporary box to get max height of this font.
+      $boxFull = imagettfbbox($size, $angle, $fontFile, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890');
 
-    // Determine descender height
-    $box = imagettfbbox($size, $angle, $fontFile, 'X Qgjpqy');
-    $fullHeight = abs($box[7] - $box[1]);
-    $descenderHeight = $fullHeight - $capHeight;
+      if (strpos($anchor, 'bottom') !== false):
+        $yOffset -= $boxFull[1];
 
+      elseif (strpos($anchor, 'top') !== false):
+        $yOffset += abs($boxFull[5]) - $boxHeight;
+
+      else: // center
+        $boxFullHeight = abs($boxFull[1]) + abs($boxFull[5]);
+        $yOffset += ($boxFullHeight/2) - ($boxHeight/2) - abs($boxFull[1]);
+
+      endif;
+
+    endif;
+
+    // Prevents fonts rendered outside the box boundary from being cut.
+    $xOffset -= $boxText[0];
+    
     // Determine position
     switch($anchor) {
     case 'top left':
@@ -940,15 +964,15 @@ class SimpleImage {
       break;
     case 'bottom left':
       $x = $xOffset;
-      $y = $this->getHeight() - $boxHeight + $yOffset + $boxHeight;
+      $y = $this->getHeight() + $yOffset ;
       break;
     case 'bottom right':
       $x = $this->getWidth() - $boxWidth + $xOffset;
-      $y = $this->getHeight() - $boxHeight + $yOffset + $boxHeight;
+      $y = $this->getHeight() + $yOffset;
       break;
     case 'bottom':
       $x = ($this->getWidth() / 2) - ($boxWidth / 2) + $xOffset;
-      $y = $this->getHeight() - $boxHeight + $yOffset + $boxHeight;
+      $y = $this->getHeight() + $yOffset;
       break;
     case 'left':
       $x = $xOffset;
@@ -963,16 +987,15 @@ class SimpleImage {
       $y = ($this->getHeight() / 2) - (($boxHeight / 2) - $boxHeight) + $yOffset;
       break;
     }
-
     $x = (int) round($x);
     $y = (int) round($y);
 
     // Pass the boundary back by reference
     $boundary = [
-      'x1' => $x,
-      'y1' => $y - $boxHeight, // $y is the baseline, not the top!
-      'x2' => $x + $boxWidth,
-      'y2' => $y,
+      'x1' => $x + $boxText[0] ,
+      'y1' => $y + $boxText[1] - $boxHeight, // $y is the baseline, not the top!
+      'x2' => $x + $boxWidth + $boxText[0],
+      'y2' => $y + $boxText[1],
       'width' => $boxWidth,
       'height' => $boxHeight
     ];
@@ -984,7 +1007,7 @@ class SimpleImage {
         $size,
         $angle,
         $x + $options['shadow']['x'],
-        $y + $options['shadow']['y'] - $descenderHeight,
+        $y + $options['shadow']['y'],
         $this->allocateColor($options['shadow']['color']),
         $fontFile,
         $text
@@ -992,7 +1015,7 @@ class SimpleImage {
     }
 
     // Draw the text
-    imagettftext($this->image, $size, $angle, $x, $y - $descenderHeight, $color, $fontFile, $text);
+    imagettftext($this->image, $size, $angle, $x, $y, $color, $fontFile, $text);
 
     return $this;
   }
