@@ -909,6 +909,7 @@ class SimpleImage {
     //
     // See: https://github.com/claviska/SimpleImage/issues/165
     //
+    
     $boxText = imagettfbbox($size, $angle, $fontFile, $text);
     if(!$boxText) { 
       throw new \Exception("Unable to load font file: $fontFile", self::ERR_FONT_FILE);
