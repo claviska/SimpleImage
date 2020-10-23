@@ -718,8 +718,6 @@ class SimpleImage {
     // Convert opacity
     $opacity = self::keepWithin($opacity, 0, 1) * 100;
 
-    // Determine placement
-
     // Get available space 
     $spaceX = $this->getWidth() - $overlay->getWidth();
     $spaceY = $this->getHeight() - $overlay->getHeight();
