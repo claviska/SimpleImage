@@ -914,23 +914,23 @@ class SimpleImage {
     //
     
     $boxText = imagettfbbox($size, $angle, $fontFile, $text);
-    if(!$boxText) { 
-      throw new \Exception("Unable to load font file: $fontFile", self::ERR_FONT_FILE);
-    }
+    if(!$boxText) throw new \Exception("Unable to load font file: $fontFile", self::ERR_FONT_FILE);
+
     $boxWidth = abs($boxText[4] - $boxText[0]); 
     $boxHeight = abs($boxText[5] - $boxText[1]);
     
     // Calculate Offset referring to the edges of the image.
+    // Just invert the value for bottom|right;
     if ($calcuateOffsetFromEdge == true):
       if (strpos($anchor, 'bottom') !== false) $yOffset *= -1; 
       if (strpos($anchor, 'right') !== false) $xOffset *= -1;
     endif;
     
     // Align the text font with the baseline.
+    // I use $yOffset to inject the vertical alignment correction value.
     if ($baselineAlign == true):
       // Create a temporary box to obtain the maximum height that this font can use.
       $boxFull = imagettfbbox($size, $angle, $fontFile, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890');
-
       // Based on the maximum height, the text is aligned.
       if (strpos($anchor, 'bottom') !== false):
         $yOffset -= $boxFull[1];
