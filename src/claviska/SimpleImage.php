@@ -860,6 +860,7 @@ class SimpleImage {
    *          - y* (integer) - Vertical offset in pixels.
    *          - color* (string|array) - The text shadow color.
    *       - $calcuateOffsetFromEdge (bool) - Calculate Offset referring to the edges of the image (default false).
+   *       - $baselineAlign (bool) - Align the text font with the baseline. (default true).
    * @param array $boundary
    *    If passed, this variable will contain an array with coordinates that surround the text: [x1, y1, x2, y2, width, height].
    *    This can be used for calculating the text's position after it gets added to the image.
@@ -884,7 +885,8 @@ class SimpleImage {
       'xOffset' => 0,
       'yOffset' => 0,
       'shadow' => null,
-      'calcuateOffsetFromEdge' => false
+      'calcuateOffsetFromEdge' => false,
+      'baselineAlign' => true
     ], $options);
 
     // Extract and normalize options
@@ -895,6 +897,7 @@ class SimpleImage {
     $xOffset = $options['xOffset'];
     $yOffset = $options['yOffset'];
     $calcuateOffsetFromEdge = $options['calcuateOffsetFromEdge'];
+    $baselineAlign = $options['baselineAlign'];
     $angle = 0;
 
     // Calculate the bounding box dimensions
@@ -921,13 +924,10 @@ class SimpleImage {
     if ($calcuateOffsetFromEdge == true):
       if (strpos($anchor, 'bottom') !== false) $yOffset *= -1; 
       if (strpos($anchor, 'right') !== false) $xOffset *= -1;
-
-      // Prevents fonts rendered outside the box boundary from being cut.
-      // Example: 'Scriptina' font, some letters invade the space of the previous or subsequent letter.
-      $yOffset -= $boxText[1];
+    endif;
     
-    // Calculate Offset referring to top|left of the image (default)
-    else:
+    // Align the text font with the baseline.
+    if ($baselineAlign == true):
       // Create a temporary box to obtain the maximum height that this font can use.
       $boxFull = imagettfbbox($size, $angle, $fontFile, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890');
 
@@ -940,7 +940,11 @@ class SimpleImage {
         $boxFullHeight = abs($boxFull[1]) + abs($boxFull[5]);
         $yOffset += ($boxFullHeight/2) - ($boxHeight/2) - abs($boxFull[1]);
       endif;
-
+    
+    else:
+      // Prevents fonts rendered outside the box boundary from being cut.
+      // Example: 'Scriptina' font, some letters invade the space of the previous or subsequent letter.
+      $yOffset -= $boxText[1];
     endif;
 
     // Prevents fonts rendered outside the box boundary from being cut.
