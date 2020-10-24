@@ -903,9 +903,9 @@ class SimpleImage {
     // different heights for different strings of the same font size. For example, 'type' will often
     // be taller than 'text' because the former has a descending letter.
     //
-    // To compensate for this, we create two bounding boxes: one to measure the cap height and
-    // another to measure the descender height. Based on that, we can adjust the text vertically
-    // to appear inside the box with a reasonable amount of consistency.
+    // To compensate for this, we created a temporary bounding box to measure the maximum height 
+    // that the font used can occupy. Based on this, we can adjust the text vertically so that it 
+    // appears inside the box with a good consistency.
     //
     // See: https://github.com/claviska/SimpleImage/issues/165
     //
@@ -923,28 +923,28 @@ class SimpleImage {
       if (strpos($anchor, 'right') !== false) $xOffset *= -1;
 
       // Prevents fonts rendered outside the box boundary from being cut.
+      // Example: 'Scriptina' font, some letters invade the space of the previous or subsequent letter.
       $yOffset -= $boxText[1];
     
-    // Calculate Offset referring to top|left of the image
+    // Calculate Offset referring to top|left of the image (default)
     else:
-      // Create temporary box to get max height of this font.
+      // Create a temporary box to obtain the maximum height that this font can use.
       $boxFull = imagettfbbox($size, $angle, $fontFile, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890');
 
+      // Based on the maximum height, the text is aligned.
       if (strpos($anchor, 'bottom') !== false):
         $yOffset -= $boxFull[1];
-
       elseif (strpos($anchor, 'top') !== false):
         $yOffset += abs($boxFull[5]) - $boxHeight;
-
       else: // center
         $boxFullHeight = abs($boxFull[1]) + abs($boxFull[5]);
         $yOffset += ($boxFullHeight/2) - ($boxHeight/2) - abs($boxFull[1]);
-
       endif;
 
     endif;
 
     // Prevents fonts rendered outside the box boundary from being cut.
+    // Example: 'Scriptina' font, some letters invade the space of the previous or subsequent letter.
     $xOffset -= $boxText[0];
     
     // Determine position
@@ -991,12 +991,13 @@ class SimpleImage {
 
     // Pass the boundary back by reference
     $boundary = [
-      'x1' => $x + $boxText[0] ,
+      'x1' => $x + $boxText[0],
       'y1' => $y + $boxText[1] - $boxHeight, // $y is the baseline, not the top!
       'x2' => $x + $boxWidth + $boxText[0],
       'y2' => $y + $boxText[1],
       'width' => $boxWidth,
-      'height' => $boxHeight
+      'height' => $boxHeight,
+      'boxText' => $boxText
     ];
 
     // Text shadow
