@@ -1000,8 +1000,7 @@ class SimpleImage {
       'x2' => $x + $boxWidth + $boxText[0],
       'y2' => $y + $boxText[1],
       'width' => $boxWidth,
-      'height' => $boxHeight,
-      'boxText' => $boxText
+      'height' => $boxHeight
     ];
 
     // Text shadow
