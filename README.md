@@ -349,9 +349,11 @@ Adds text to the image.
   - `xOffset` (int) - The horizontal offset in pixels (default 0).
   - `yOffset` (int) - The vertical offset in pixels (default 0).
   - `shadow` (array) - Text shadow params.
-    - `x`* (int) - Horizontal offset in pixels.
-    - `y`* (int) - Vertical offset in pixels.
-    - `color`* (string|array) - The text shadow color.
+      - `x`* (int) - Horizontal offset in pixels.
+      - `y`* (int) - Vertical offset in pixels.
+      - `color`* (string|array) - The text shadow color.
+  - `calcuateOffsetFromEdge` (bool) - Calculate Offset referring to the edges of the image (default false).
+  - `baselineAlign` (bool) - Align the text font with the baseline. (default true).
 - `$boundary` (array) - If passed, this variable will contain an array with coordinates that
   surround the text: [x1, y1, x2, y2, width, height]. This can be used for calculating the
   text's position after it gets added to the image.
