@@ -1323,6 +1323,7 @@ class SimpleImage {
    * @return \claviska\SimpleImage
    */
   public function roundedRectangle($x1, $y1, $x2, $y2, $radius, $color, $thickness = 1) {
+    $radius = self::keepWithin( $radius, 0, min(($x2-$x1)/2, ($y2-$y1)/2 )-1 );
     if($thickness === 'filled') {
       // Draw the filled rectangle without edges
       $this->rectangle($x1 + $radius + 1, $y1, $x2 - $radius - 1, $y2, $color, 'filled');
@@ -1334,18 +1335,38 @@ class SimpleImage {
       $this->arc($x1 + $radius, $y2 - $radius, $radius * 2, $radius * 2, 90, 180, $color, 'filled');
       $this->arc($x2 - $radius, $y2 - $radius, $radius * 2, $radius * 2, 360, 90, $color, 'filled');
     } else {
-      // Draw the rectangle outline without edges
-      $this->line($x1 + $radius, $y1, $x2 - $radius, $y1, $color, $thickness);
-      $this->line($x1 + $radius, $y2, $x2 - $radius, $y2, $color, $thickness);
-      $this->line($x1, $y1 + $radius, $x1, $y2 - $radius, $color, $thickness);
-      $this->line($x2, $y1 + $radius, $x2, $y2 - $radius, $color, $thickness);
-      // Fill in the edges with arcs
-      $this->arc($x1 + $radius, $y1 + $radius, $radius * 2, $radius * 2, 180, 270, $color, $thickness);
-      $this->arc($x2 - $radius, $y1 + $radius, $radius * 2, $radius * 2, 270, 360, $color, $thickness);
-      $this->arc($x1 + $radius, $y2 - $radius, $radius * 2, $radius * 2, 90, 180, $color, $thickness);
-      $this->arc($x2 - $radius, $y2 - $radius, $radius * 2, $radius * 2, 360, 90, $color, $thickness);
+      $thickness = self::keepWithin( $thickness, 1, min(($x2-$x1)/2, ($y2-$y1)/2) );
+      // New temp image
+      $tempImage = new SimpleImage();
+      $tempImage->fromNew($this->getWidth(), $this->getHeight(), 'transparent');
+      // Draw a large rectangle filled with $color.
+      $tempImage->roundedRectangle($x1, $y1, $x2, $y2, $radius, $color,'filled');
+      // Draw a smaller rectangle filled with red|blue (-$thickness pixels on each side).
+      $tempColor = ($color == 'red') ? 'blue' : 'red';
+      $radius = $radius - $thickness;
+      $radius = self::keepWithin($radius, 0, $radius);
+      $tempImage->roundedRectangle($x1+$thickness, $y1+$thickness, $x2-$thickness, $y2-$thickness, $radius, $tempColor, 'filled');
+      // Replace the color of the smaller rectangle with 'transparent'.
+      $tempImage->excludeInsideColor(($x2+$x1)/2, ($y2+$y1)/2, $color);
+      // Apply $tempImage over image. 
+      $this->overlay($tempImage);
     }
 
+    return $this;
+  }
+
+  /**
+   * Exclude inside color.
+   * Used only for roundedRectangle()
+   *
+   * @param number $x certer x of rectangle.
+   * @param number $y certer y of rectangle.
+   * @param string|array $borderColor The color of border.
+   */
+  private function excludeInsideColor($x, $y, $borderColor) {
+    $borderColor = $this->allocateColor($borderColor);
+    $transparent = $this->allocateColor('transparent');
+    imagefilltoborder($this->image, $x, $y, $borderColor, $transparent);
     return $this;
   }
 
