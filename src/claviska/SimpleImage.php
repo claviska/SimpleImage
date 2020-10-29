@@ -1323,7 +1323,6 @@ class SimpleImage {
    * @return \claviska\SimpleImage
    */
   public function roundedRectangle($x1, $y1, $x2, $y2, $radius, $color, $thickness = 1) {
-    $radius = self::keepWithin( $radius, 0, min(($x2-$x1)/2, ($y2-$y1)/2 )-1 );
     if($thickness === 'filled') {
       // Draw the filled rectangle without edges
       $this->rectangle($x1 + $radius + 1, $y1, $x2 - $radius - 1, $y2, $color, 'filled');
@@ -1335,6 +1334,13 @@ class SimpleImage {
       $this->arc($x1 + $radius, $y2 - $radius, $radius * 2, $radius * 2, 90, 180, $color, 'filled');
       $this->arc($x2 - $radius, $y2 - $radius, $radius * 2, $radius * 2, 360, 90, $color, 'filled');
     } else {
+      $offSet = $thickness/2;
+      $x1 -= $offSet;
+      $x2 += $offSet;
+      $y1 -= $offSet;
+      $y2 += $offSet;
+      $radius = self::keepWithin( $radius, 0, min(($x2-$x1)/2, ($y2-$y1)/2 )-1 );
+      $radius = floor($radius);
       $thickness = self::keepWithin( $thickness, 1, min(($x2-$x1)/2, ($y2-$y1)/2) );
       // New temp image
       $tempImage = new SimpleImage();
