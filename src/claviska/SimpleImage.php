@@ -718,7 +718,7 @@ class SimpleImage {
     // Convert opacity
     $opacity = self::keepWithin($opacity, 0, 1) * 100;
 
-    // Get available space 
+    // Get available space
     $spaceX = $this->getWidth() - $overlay->getWidth();
     $spaceY = $this->getHeight() - $overlay->getHeight();
 
@@ -739,7 +739,7 @@ class SimpleImage {
     } elseif (strpos($anchor, 'right') !== false) {
       $x = $spaceX + ($calcuateOffsetFromEdge ? -$xOffset : $xOffset);
     }
-    
+
     // Perform the overlay
     self::imageCopyMergeAlpha(
       $this->image,
@@ -906,26 +906,26 @@ class SimpleImage {
     // different heights for different strings of the same font size. For example, 'type' will often
     // be taller than 'text' because the former has a descending letter.
     //
-    // To compensate for this, we created a temporary bounding box to measure the maximum height 
-    // that the font used can occupy. Based on this, we can adjust the text vertically so that it 
+    // To compensate for this, we created a temporary bounding box to measure the maximum height
+    // that the font used can occupy. Based on this, we can adjust the text vertically so that it
     // appears inside the box with a good consistency.
     //
     // See: https://github.com/claviska/SimpleImage/issues/165
     //
-    
+
     $boxText = imagettfbbox($size, $angle, $fontFile, $text);
     if(!$boxText) throw new \Exception("Unable to load font file: $fontFile", self::ERR_FONT_FILE);
 
-    $boxWidth = abs($boxText[4] - $boxText[0]); 
+    $boxWidth = abs($boxText[4] - $boxText[0]);
     $boxHeight = abs($boxText[5] - $boxText[1]);
-    
+
     // Calculate Offset referring to the edges of the image.
     // Just invert the value for bottom|right;
     if ($calcuateOffsetFromEdge == true):
-      if (strpos($anchor, 'bottom') !== false) $yOffset *= -1; 
+      if (strpos($anchor, 'bottom') !== false) $yOffset *= -1;
       if (strpos($anchor, 'right') !== false) $xOffset *= -1;
     endif;
-    
+
     // Align the text font with the baseline.
     // I use $yOffset to inject the vertical alignment correction value.
     if ($baselineAlign == true):
@@ -940,7 +940,7 @@ class SimpleImage {
         $boxFullHeight = abs($boxFull[1]) + abs($boxFull[5]);
         $yOffset += ($boxFullHeight/2) - ($boxHeight/2) - abs($boxFull[1]);
       endif;
-    
+
     else:
       // Prevents fonts rendered outside the box boundary from being cut.
       // Example: 'Scriptina' font, some letters invade the space of the previous or subsequent letter.
@@ -950,7 +950,7 @@ class SimpleImage {
     // Prevents fonts rendered outside the box boundary from being cut.
     // Example: 'Scriptina' font, some letters invade the space of the previous or subsequent letter.
     $xOffset -= $boxText[0];
-    
+
     // Determine position
     switch($anchor) {
     case 'top left':
@@ -1328,33 +1328,47 @@ class SimpleImage {
       $this->rectangle($x1 + $radius + 1, $y1, $x2 - $radius - 1, $y2, $color, 'filled');
       $this->rectangle($x1, $y1 + $radius + 1, $x1 + $radius, $y2 - $radius - 1, $color, 'filled');
       $this->rectangle($x2 - $radius, $y1 + $radius + 1, $x2, $y2 - $radius - 1, $color, 'filled');
+
       // Fill in the edges with arcs
       $this->arc($x1 + $radius, $y1 + $radius, $radius * 2, $radius * 2, 180, 270, $color, 'filled');
       $this->arc($x2 - $radius, $y1 + $radius, $radius * 2, $radius * 2, 270, 360, $color, 'filled');
       $this->arc($x1 + $radius, $y2 - $radius, $radius * 2, $radius * 2, 90, 180, $color, 'filled');
       $this->arc($x2 - $radius, $y2 - $radius, $radius * 2, $radius * 2, 360, 90, $color, 'filled');
     } else {
-      $offSet = $thickness/2;
-      $x1 -= $offSet;
-      $x2 += $offSet;
-      $y1 -= $offSet;
-      $y2 += $offSet;
-      $radius = self::keepWithin( $radius, 0, min(($x2-$x1)/2, ($y2-$y1)/2 )-1 );
+      $offset = $thickness / 2;
+      $x1 -= $offset;
+      $x2 += $offset;
+      $y1 -= $offset;
+      $y2 += $offset;
+      $radius = self::keepWithin($radius, 0, min(($x2 - $x1) / 2, ($y2 - $y1) / 2 ) - 1);
       $radius = floor($radius);
-      $thickness = self::keepWithin( $thickness, 1, min(($x2-$x1)/2, ($y2-$y1)/2) );
+      $thickness = self::keepWithin($thickness, 1, min(($x2 - $x1) / 2, ($y2 - $y1) / 2));
+
       // New temp image
       $tempImage = new SimpleImage();
       $tempImage->fromNew($this->getWidth(), $this->getHeight(), 'transparent');
-      // Draw a large rectangle filled with $color.
+
+      // Draw a large rectangle filled with $color
       $tempImage->roundedRectangle($x1, $y1, $x2, $y2, $radius, $color,'filled');
-      // Draw a smaller rectangle filled with red|blue (-$thickness pixels on each side).
+
+      // Draw a smaller rectangle filled with red|blue (-$thickness pixels on each side)
       $tempColor = ($color == 'red') ? 'blue' : 'red';
       $radius = $radius - $thickness;
       $radius = self::keepWithin($radius, 0, $radius);
-      $tempImage->roundedRectangle($x1+$thickness, $y1+$thickness, $x2-$thickness, $y2-$thickness, $radius, $tempColor, 'filled');
-      // Replace the color of the smaller rectangle with 'transparent'.
-      $tempImage->excludeInsideColor(($x2+$x1)/2, ($y2+$y1)/2, $color);
-      // Apply $tempImage over image. 
+      $tempImage->roundedRectangle(
+        $x1 + $thickness,
+        $y1 + $thickness,
+        $x2 - $thickness,
+        $y2 - $thickness,
+        $radius,
+        $tempColor,
+        'filled'
+      );
+
+      // Replace the color of the smaller rectangle with 'transparent'
+      $tempImage->excludeInsideColor(($x2 + $x1) / 2, ($y2 + $y1) / 2, $color);
+
+      // Apply the temp image
       $this->overlay($tempImage);
     }
 
