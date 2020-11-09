@@ -1167,15 +1167,14 @@ class SimpleImage {
    * @return \claviska\SimpleImage
    */
   public function border($color, $thickness = 1) {
-    $x1 = 0;
+    $x1 = -1;
     $y1 = 0;
-    $x2 = $this->getWidth() - 1;
-    $y2 = $this->getHeight() - 1;
+    $x2 = $this->getWidth();
+    $y2 = $this->getHeight()-1;
 
-    // Draw a border rectangle until it reaches the correct width
-    for($i = 0; $i < $thickness; $i++) {
-      $this->rectangle($x1++, $y1++, $x2--, $y2--, $color);
-    }
+    $color = $this->allocateColor($color);
+    imagesetthickness($this->image, $thickness*2);
+    imagerectangle($this->image, $x1, $y1, $x2, $y2, $color);
 
     return $this;
   }
