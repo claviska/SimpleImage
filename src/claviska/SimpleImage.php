@@ -1125,15 +1125,35 @@ class SimpleImage {
    */
   public function arc($x, $y, $width, $height, $start, $end, $color, $thickness = 1) {
     // Allocate the color
-    $color = $this->allocateColor($color);
+    $tempColor = $this->allocateColor($color);
+    imagesetthickness($this->image, 1);
 
     // Draw an arc
     if($thickness === 'filled') {
-      imagesetthickness($this->image, 1);
-      imagefilledarc($this->image, $x, $y, $width, $height, $start, $end, $color, IMG_ARC_PIE);
+      imagefilledarc($this->image, $x, $y, $width, $height, $start, $end, $tempColor, IMG_ARC_PIE);
+
+    } else if ($thickness === 1) {
+      imagearc($this->image, $x, $y, $width, $height, $start, $end, $tempColor);
+
     } else {
-      imagesetthickness($this->image, $thickness);
-      imagearc($this->image, $x, $y, $width, $height, $start, $end, $color);
+      // New temp image
+      $tempImage = new SimpleImage();
+      $tempImage->fromNew($this->getWidth(), $this->getHeight(), 'transparent');
+      
+      // Draw a large ellipse filled with $color (+$thickness pixels)
+      $tempColor = $tempImage->allocateColor($color);
+      imagefilledarc($tempImage->image, $x, $y, $width+$thickness, $height+$thickness, $start, $end, $tempColor, IMG_ARC_PIE);
+
+      // Draw a smaller ellipse filled with red|blue (-$thickness pixels)
+      $tempColor = ($color == 'red') ? 'blue' : 'red';
+      $tempColor = $tempImage->allocateColor($tempColor);
+      imagefilledarc($tempImage->image, $x, $y, $width-$thickness, $height-$thickness, $start, $end, $tempColor, IMG_ARC_PIE);
+      
+      // Replace the color of the smaller ellipse with 'transparent'
+      $tempImage->excludeInsideColor($x, $y, $color);
+      
+      // Apply the temp image
+      $this->overlay($tempImage);
     }
 
     return $this;
@@ -1188,19 +1208,35 @@ class SimpleImage {
    */
   public function ellipse($x, $y, $width, $height, $color, $thickness = 1) {
     // Allocate the color
-    $color = $this->allocateColor($color);
+    $tempColor = $this->allocateColor($color);
+    imagesetthickness($this->image, 1);
 
     // Draw an ellipse
     if($thickness === 'filled') {
-      imagesetthickness($this->image, 1);
-      imagefilledellipse($this->image, $x, $y, $width, $height, $color);
+      imagefilledellipse($this->image, $x, $y, $width, $height, $tempColor);
+
+    } else if ($thickness === 1) {
+      imageellipse($this->image, $x, $y, $width, $height, $tempColor);
+      
     } else {
-      // imagesetthickness doesn't appear to work with imageellipse, so we work around it.
-      imagesetthickness($this->image, 1);
-      $i = 0;
-      while($i++ < $thickness * 2 - 1) {
-        imageellipse($this->image, $x, $y, --$width, $height--, $color);
-      }
+      // New temp image
+      $tempImage = new SimpleImage();
+      $tempImage->fromNew($this->getWidth(), $this->getHeight(), 'transparent');
+      
+      // Draw a large ellipse filled with $color (+$thickness pixels)
+      $tempColor = $tempImage->allocateColor($color);
+      imagefilledellipse($tempImage->image, $x, $y, $width+$thickness, $height+$thickness, $tempColor);
+
+      // Draw a smaller ellipse filled with red|blue (-$thickness pixels)
+      $tempColor = ($color == 'red') ? 'blue' : 'red';
+      $tempColor = $tempImage->allocateColor($tempColor);
+      imagefilledellipse($tempImage->image, $x, $y, $width-$thickness, $height-$thickness, $tempColor);
+      
+      // Replace the color of the smaller ellipse with 'transparent'
+      $tempImage->excludeInsideColor($x, $y, $color);
+
+      // Apply the temp image
+      $this->overlay($tempImage);
     }
 
     return $this;
@@ -1377,7 +1413,7 @@ class SimpleImage {
 
   /**
    * Exclude inside color.
-   * Used only for roundedRectangle()
+   * Used for roundedRectangle(), ellipse() and arc()
    *
    * @param number $x certer x of rectangle.
    * @param number $y certer y of rectangle.
