@@ -136,7 +136,7 @@ trait TextBlock {
 
         // $imageText->border('red|0.5'); // for developer test
         $this->overlay($imageText, $anchor, $opacity, $xOffset, $yOffset, $calcuateOffsetFromEdge);
-        echo $justify;
+
         return $this;
     }
 
