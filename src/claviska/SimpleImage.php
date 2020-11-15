@@ -14,12 +14,13 @@
 //
 
 namespace claviska;
-
+require_once 'TextBlock.php';
 /**
  * A PHP class that makes working with images as simple as possible.
  */
 class SimpleImage {
 
+  
   const
     ERR_FILE_NOT_FOUND = 1,
     ERR_FONT_FILE = 2,
@@ -37,6 +38,8 @@ class SimpleImage {
   protected $image;
   protected $mimeType;
   protected $exif;
+
+  use TextBlock;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // Magic methods
