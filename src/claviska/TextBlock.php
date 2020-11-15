@@ -58,7 +58,7 @@ trait TextBlock {
 
         $imageText = new SimpleImage();
         $imageText->fromNew($maxWidth + 10, $maxHeight + 10);
-        // $imageText->fromNew($maxWidth+10, $maxHeight+10, 'green|0.2');
+        // $imageText->fromNew($maxWidth+10, $maxHeight+10, 'green|0.2'); // for developer test
 
         // FOR CENTER, LEFT, RIGHT
         if ($justify <> 'justify'):
@@ -131,12 +131,12 @@ trait TextBlock {
         $imageTextCanvas = new SimpleImage();
         $imageTextCanvas
             ->fromNew($maxWidth, $imageText->getHeight())
-            ->overlay($imageText, 'top');
+            ->overlay($imageText, $justify);
         $imageText = $imageTextCanvas;
 
         // $imageText->border('red|0.5'); // for developer test
         $this->overlay($imageText, $anchor, $opacity, $xOffset, $yOffset, $calcuateOffsetFromEdge);
-
+        echo $justify;
         return $this;
     }
 
