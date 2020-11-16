@@ -14,7 +14,8 @@
 //
 
 namespace claviska;
-require_once 'TextBlock.php';
+require_once 'TextBox.php';
+
 /**
  * A PHP class that makes working with images as simple as possible.
  */
@@ -39,7 +40,7 @@ class SimpleImage {
   protected $mimeType;
   protected $exif;
 
-  use TextBlock;
+  use TextBox;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // Magic methods

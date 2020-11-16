@@ -2,27 +2,49 @@
 
 namespace claviska;
 
-trait TextBlock {
+trait TextBox {
 
-    /* --------------------------------------------------------------------------------- */
-    /* --------------------------------------------------------------------------------- */
-    public function textBlock($text, $options, &$boundary = null) {
+    /**
+    * Adds text with a line break to the image.
+    *
+    * @param string $text The desired text.
+    * @param array $options
+    *    An array of options.
+    *       - fontFile* (string) - The TrueType (or compatible) font file to use.
+    *       - size (integer) - The size of the font in pixels (default 12).
+    *       - color (string|array) - The text color (default black).
+    *       - anchor (string) - The anchor point: 'center', 'top', 'bottom', 'left', 'right', 'top left', 'top right', 'bottom left', 'bottom right' (default 'center').
+    *       - xOffset (integer) - The horizontal offset in pixels (default 0).
+    *       - yOffset (integer) - The vertical offset in pixels (default 0).
+    *       - shadow (array) - Text shadow params.
+    *          - x* (integer) - Horizontal offset in pixels.
+    *          - y* (integer) - Vertical offset in pixels.
+    *          - color* (string|array) - The text shadow color.
+    *       - $calcuateOffsetFromEdge (bool) - Calculate Offset referring to the edges of the image (default true).
+    *       - width (int) - Width of text box (Default image width).
+    *       - justify (string) - The justify: 'left', 'right', 'center', 'justify' (default 'left').
+    *       - $leading (float) - Increase/decrease spacing between lines of text (default 0).
+    *       - $opacity (float) - The opacity level of the text 0-1 (default 1).
+    * @throws \Exception
+    * @return \claviska\SimpleImage
+    */
+    public function textBox($text, $options) {
         // default width of image
         $maxWidth = $this->getWidth();
         // Default options
         $options = array_merge([
             'fontFile' => null,
-            'size' => 16,
+            'size' => 12,
             'color' => 'black',
             'anchor' => 'center',
             'xOffset' => 0,
             'yOffset' => 0,
             'shadow' => null,
             'calcuateOffsetFromEdge' => true,
-            'opacity' => 1,
+            'width' => $maxWidth,
+            'justify' => 'left',
             'leading' => 0,
-            'justify' => 'top left',
-            'maxWidth' => $maxWidth,
+            'opacity' => 1,
         ], $options);
 
         // Extract and normalize options
@@ -36,9 +58,10 @@ trait TextBlock {
         $shadow = $options['shadow'];
         $calcuateOffsetFromEdge = $options['calcuateOffsetFromEdge'];
         $angle = 0;
-        $opacity = $options['opacity'];
+        $maxWidth = $options['width'];
         $leading = $options['leading'];
-
+        $opacity = $options['opacity'];
+        
         $justify = $options['justify'];
         if ($justify == 'right'):
             $justify = 'top right';
@@ -50,15 +73,13 @@ trait TextBlock {
             $justify = 'top left';
         endif;
 
-        $maxWidth = $options['maxWidth'];
 
         list($lines, $isLastLine) = self::textSeparateLines($text, $fontFile, $fontSize, $maxWidth);
 
-        $maxHeight = (count($lines) + 1) * ($fontSizePx + $leading) * 1.2;
+        $maxHeight = count($lines) * ($fontSizePx + $leading) * 1.2;
 
         $imageText = new SimpleImage();
-        $imageText->fromNew($maxWidth + 10, $maxHeight + 10);
-        // $imageText->fromNew($maxWidth+10, $maxHeight+10, 'green|0.2'); // for developer test
+        $imageText->fromNew($maxWidth, $maxHeight);
 
         // FOR CENTER, LEFT, RIGHT
         if ($justify <> 'justify'):
@@ -69,38 +90,43 @@ trait TextBlock {
                     'size' => $fontSizePx,
                     'color' => $color,
                     'anchor' => $justify,
-                    'xOffset' => 5,
-                    'yOffset' => 5 + $key * ($fontSizePx + $leading) * 1.2,
+                    'xOffset' => 0,
+                    'yOffset' => $key * ($fontSizePx + $leading) * 1.2,
                     'shadow' => $shadow,
                     'calcuateOffsetFromEdge' => true,
-                ), $box);
-                // $imageText->rectangle($box['x1'], $box['y1'], $box['x2'], $box['y2'], 'black|0.5', 1); // for developer test
+                ));
             endforeach;
 
         // FOR JUSTIFY
         else:
             foreach ($lines as $keyLine => $line):
-                // check if there are spaces at the beginning of the sentence
+                // Check if there are spaces at the beginning of the sentence
                 $spaces = 0;
                 if (preg_match("/^\s+/", $line, $match)):
-                    $spaces = strlen($match[0]); // count spaces
+                    // count spaces
+                    $spaces = strlen($match[0]); 
                     $line = ltrim($line);
                 endif;
-                $words = preg_split("/\s+/", $line); // separate words
-                // include spaces on first word
+
+                // Separate words
+                $words = preg_split("/\s+/", $line); 
+                // Include spaces with the first word
                 $words[0] = str_repeat(" ", $spaces) . $words[0];
 
+                // Calculates the space occupied by all words
                 $wordsSize = array();
                 foreach ($words as $key => $word):
                     $wordBox = imagettfbbox($fontSize, 0, $fontFile, $word);
                     $wordWidth = abs($wordBox[4] - $wordBox[0]);
                     $wordsSize[$key] = $wordWidth;
                 endforeach;
+                $wordsSizeTotal = array_sum($wordsSize);
+
+                // Calculates the required space between words
                 $countWords = count($words);
-                $wordSizeTotal = array_sum($wordsSize);
                 $wordSpacing = 0;
                 if ($countWords > 1):
-                    $wordSpacing = ($maxWidth - $wordSizeTotal) / ($countWords - 1);
+                    $wordSpacing = ($maxWidth - $wordsSizeTotal) / ($countWords - 1);
                     $wordSpacing = round($wordSpacing, 3);
                 endif;
 
@@ -115,35 +141,45 @@ trait TextBlock {
                         'size' => $fontSizePx,
                         'color' => $color,
                         'anchor' => 'top left',
-                        'xOffset' => 5 + $xOffsetJustify,
-                        'yOffset' => 5 + $keyLine * ($fontSizePx + $leading) * 1.2,
+                        'xOffset' => $xOffsetJustify,
+                        'yOffset' => $keyLine * ($fontSizePx + $leading) * 1.2,
                         'shadow' => $shadow,
                         'calcuateOffsetFromEdge' => true,
-                    ), $box);
-                    // $imageText->rectangle($box['x1'], $box['y1'], $box['x2'], $box['y2'], 'black|0.5', 1); // for developer test
+                    ));
+
+                    // Calculate offSet for next word
                     $xOffsetJustify += $wordsSize[$key] + $wordSpacing;
                 endforeach;
 
             endforeach;
 
         endif;
-        $imageText->image = imagecropauto($imageText->image, IMG_CROP_SIDES);
-        $imageTextCanvas = new SimpleImage();
-        $imageTextCanvas
-            ->fromNew($maxWidth, $imageText->getHeight())
-            ->overlay($imageText, $justify);
-        $imageText = $imageTextCanvas;
 
-        // $imageText->border('red|0.5'); // for developer test
+        // Remove empty spaces at the top and bottom of the text, if $anchor not is top
+        if (strpos($anchor, 'top') === false):
+            $imageText->image = imagecropauto($imageText->image, IMG_CROP_SIDES);
+            $imageTextCanvas = new SimpleImage();
+            $imageTextCanvas
+                ->fromNew($maxWidth, $imageText->getHeight())
+                ->overlay($imageText, $justify);
+            $imageText = $imageTextCanvas;
+        endif;
+
         $this->overlay($imageText, $anchor, $opacity, $xOffset, $yOffset, $calcuateOffsetFromEdge);
 
         return $this;
     }
 
 
-    /* --------------------------------------------------------------------------------- */
-    // Recebe um texto e quebra em LINHAS, retorna um array 
-    /* --------------------------------------------------------------------------------- */
+    /**
+    * Receives a text and breaks into LINES.
+    *
+    * @param integer $text  
+    * @param string $fontFile 
+    * @param int $fontSize 
+    * @param int $maxWidth 
+    * @return array
+    */
     private function textSeparateLines($text, $fontFile, $fontSize, $maxWidth) {
         $words = self::textSeparateWords($text);
         $countWords = count($words);
@@ -159,9 +195,9 @@ trait TextBlock {
                 $lines[$lineKey] = '';
                 continue;
             endif;
-            $lineWidth = imagettfbbox($fontSize, 0, $fontFile, $lines[$lineKey] . $word);
-            // var_dump($lineWidth);
-            if (abs($lineWidth[4] - $lineWidth[0]) < $maxWidth):
+            $lineBox = imagettfbbox($fontSize, 0, $fontFile, $lines[$lineKey] . $word);
+            // var_dump($lineBox);
+            if (abs($lineBox[4] - $lineBox[0]) < $maxWidth):
                 $lines[$lineKey] .= $word . ' ';
             else :
                 $lineKey++;
@@ -176,22 +212,21 @@ trait TextBlock {
     }
 
 
-    /* --------------------------------------------------------------------------------- */
-    // Recebe um texto e quebra em PALAVRA/ESPAÇO/NOVA LINHA, retorna um array 
-    /* --------------------------------------------------------------------------------- */
+    /**
+    * Receives a text and breaks into WORD / SPACE / NEW LINE.
+    *
+    * @param integer $text  
+    * @return array
+    */
     private function textSeparateWords($text) {
+        // Normalizes line break 
         $text = preg_replace('/(\r\n|\n|\r)/', PHP_EOL, $text);
         $text = explode(PHP_EOL, $text);
         $newText = array();
         foreach ($text as $key => $line):
-            if ( $line === '' ):
-                $newText = array_merge($newText, [PHP_EOL]);
-            else:
-                $newText = array_merge($newText, [PHP_EOL], explode(' ', $line));
-            endif;
+                $newText = array_merge($newText, explode(' ', $line), [PHP_EOL]);
         endforeach;
 
-        if ($newText[0] == PHP_EOL) array_shift($newText);
         return $newText;
     }
 } // end trait
