@@ -60,6 +60,7 @@ trait TextBox {
         $angle = 0;
         $maxWidth = $options['width'];
         $leading = $options['leading'];
+        $leading = self::keepWithin($leading, ($fontSizePx * -1), $leading);
         $opacity = $options['opacity'];
         
         $justify = $options['justify'];
@@ -76,7 +77,7 @@ trait TextBox {
 
         list($lines, $isLastLine) = self::textSeparateLines($text, $fontFile, $fontSize, $maxWidth);
 
-        $maxHeight = count($lines) * ($fontSizePx + $leading) * 1.2;
+        $maxHeight = count($lines) * ($fontSizePx * 1.2 + $leading);
 
         $imageText = new SimpleImage();
         $imageText->fromNew($maxWidth, $maxHeight);
@@ -91,7 +92,7 @@ trait TextBox {
                     'color' => $color,
                     'anchor' => $justify,
                     'xOffset' => 0,
-                    'yOffset' => $key * ($fontSizePx + $leading) * 1.2,
+                    'yOffset' => $key * ($fontSizePx * 1.2 + $leading),
                     'shadow' => $shadow,
                     'calcuateOffsetFromEdge' => true,
                 ));
@@ -142,7 +143,7 @@ trait TextBox {
                         'color' => $color,
                         'anchor' => 'top left',
                         'xOffset' => $xOffsetJustify,
-                        'yOffset' => $keyLine * ($fontSizePx + $leading) * 1.2,
+                        'yOffset' => $keyLine * ($fontSizePx * 1.2 + $leading),
                         'shadow' => $shadow,
                         'calcuateOffsetFromEdge' => true,
                     ));
