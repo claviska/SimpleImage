@@ -75,9 +75,9 @@ trait TextBox {
         endif;
 
 
-        list($lines, $isLastLine) = self::textSeparateLines($text, $fontFile, $fontSize, $maxWidth);
+        list($lines, $isLastLine, $lastLineHeight) = self::textSeparateLines($text, $fontFile, $fontSize, $maxWidth);
 
-        $maxHeight = count($lines) * ($fontSizePx * 1.2 + $leading);
+        $maxHeight = array_key_last($lines) * ($fontSizePx * 1.2 + $leading) + $lastLineHeight;
 
         $imageText = new SimpleImage();
         $imageText->fromNew($maxWidth, $maxHeight);
@@ -95,7 +95,8 @@ trait TextBox {
                     'yOffset' => $key * ($fontSizePx * 1.2 + $leading),
                     'shadow' => $shadow,
                     'calcuateOffsetFromEdge' => true,
-                ));
+                    )
+                );
             endforeach;
 
         // FOR JUSTIFY
@@ -104,7 +105,7 @@ trait TextBox {
                 // Check if there are spaces at the beginning of the sentence
                 $spaces = 0;
                 if (preg_match("/^\s+/", $line, $match)):
-                    // count spaces
+                    // Count spaces
                     $spaces = strlen($match[0]); 
                     $line = ltrim($line);
                 endif;
@@ -146,31 +147,19 @@ trait TextBox {
                         'yOffset' => $keyLine * ($fontSizePx * 1.2 + $leading),
                         'shadow' => $shadow,
                         'calcuateOffsetFromEdge' => true,
-                    ));
-
+                        )
+                    );
                     // Calculate offSet for next word
                     $xOffsetJustify += $wordsSize[$key] + $wordSpacing;
                 endforeach;
-
             endforeach;
 
-        endif;
-
-        // Remove empty spaces at the top and bottom of the text, if $anchor not is top
-        if (strpos($anchor, 'top') === false):
-            $imageText->image = imagecropauto($imageText->image, IMG_CROP_SIDES);
-            $imageTextCanvas = new SimpleImage();
-            $imageTextCanvas
-                ->fromNew($maxWidth, $imageText->getHeight())
-                ->overlay($imageText, $justify);
-            $imageText = $imageTextCanvas;
         endif;
 
         $this->overlay($imageText, $anchor, $opacity, $xOffset, $yOffset, $calcuateOffsetFromEdge);
 
         return $this;
     }
-
 
     /**
     * Receives a text and breaks into LINES.
@@ -183,7 +172,7 @@ trait TextBox {
     */
     private function textSeparateLines($text, $fontFile, $fontSize, $maxWidth) {
         $words = self::textSeparateWords($text);
-        $countWords = count($words);
+        $countWords = array_key_last($words);
         $lines[0] = '';
         $lineKey = 0;
         $isLastLine = [];
@@ -197,7 +186,6 @@ trait TextBox {
                 continue;
             endif;
             $lineBox = imagettfbbox($fontSize, 0, $fontFile, $lines[$lineKey] . $word);
-            // var_dump($lineBox);
             if (abs($lineBox[4] - $lineBox[0]) < $maxWidth):
                 $lines[$lineKey] .= $word . ' ';
             else :
@@ -206,12 +194,16 @@ trait TextBox {
             endif;
         endfor;
         $isLastLine[$lineKey] = true;
-        // exclude space of right
+        // Exclude space of right
         $lines = array_map('rtrim', $lines);
+        // Calculate height of last line
+        $boxFull = imagettfbbox($fontSize, 0, $fontFile, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890');
+        $lineBox = imagettfbbox($fontSize, 0, $fontFile, $lines[$lineKey]);
+        // Height of last line = ascender of $boxFull + descender of $lineBox 
+        $lastLineHeight = abs($lineBox[1]) + abs($boxFull[5]);
 
-        return array($lines, $isLastLine);
+        return array($lines, $isLastLine, $lastLineHeight);
     }
-
 
     /**
     * Receives a text and breaks into WORD / SPACE / NEW LINE.
@@ -230,4 +222,4 @@ trait TextBox {
 
         return $newText;
     }
-} // end trait
+} // End trait
