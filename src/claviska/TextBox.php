@@ -74,10 +74,9 @@ trait TextBox {
             $justify = 'top left';
         endif;
 
-
         list($lines, $isLastLine, $lastLineHeight) = self::textSeparateLines($text, $fontFile, $fontSize, $maxWidth);
 
-        $maxHeight = array_key_last($lines) * ($fontSizePx * 1.2 + $leading) + $lastLineHeight;
+        $maxHeight = (count($lines) - 1) * ($fontSizePx * 1.2 + $leading) + $lastLineHeight;
 
         $imageText = new SimpleImage();
         $imageText->fromNew($maxWidth, $maxHeight);
@@ -135,7 +134,7 @@ trait TextBox {
                 $xOffsetJustify = 0;
                 foreach ($words as $key => $word):
                     if ($isLastLine[$keyLine] == true):
-                        if ($key < array_key_last($words)) continue;
+                        if ($key < (count($words) - 1)) continue;
                         $word = $line;
                     endif;
                     $imageText->text($word, array(
@@ -172,7 +171,7 @@ trait TextBox {
     */
     private function textSeparateLines($text, $fontFile, $fontSize, $maxWidth) {
         $words = self::textSeparateWords($text);
-        $countWords = array_key_last($words);
+        $countWords = count($words) - 1;
         $lines[0] = '';
         $lineKey = 0;
         $isLastLine = [];
