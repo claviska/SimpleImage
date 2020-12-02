@@ -921,31 +921,31 @@ class SimpleImage {
 
     // Calculate Offset referring to the edges of the image.
     // Just invert the value for bottom|right;
-    if ($calcuateOffsetFromEdge == true):
+    if ($calcuateOffsetFromEdge == true) {
       if (strpos($anchor, 'bottom') !== false) $yOffset *= -1;
       if (strpos($anchor, 'right') !== false) $xOffset *= -1;
-    endif;
+    }
 
     // Align the text font with the baseline.
     // I use $yOffset to inject the vertical alignment correction value.
-    if ($baselineAlign == true):
+    if ($baselineAlign == true) {
       // Create a temporary box to obtain the maximum height that this font can use.
       $boxFull = imagettfbbox($size, $angle, $fontFile, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890');
       // Based on the maximum height, the text is aligned.
-      if (strpos($anchor, 'bottom') !== false):
+      if (strpos($anchor, 'bottom') !== false) {
         $yOffset -= $boxFull[1];
-      elseif (strpos($anchor, 'top') !== false):
+      } elseif (strpos($anchor, 'top') !== false) {
         $yOffset += abs($boxFull[5]) - $boxHeight;
-      else: // center
+      } else { // center
         $boxFullHeight = abs($boxFull[1]) + abs($boxFull[5]);
         $yOffset += ($boxFullHeight/2) - ($boxHeight/2) - abs($boxFull[1]);
-      endif;
+      }
 
-    else:
+    } else {
       // Prevents fonts rendered outside the box boundary from being cut.
       // Example: 'Scriptina' font, some letters invade the space of the previous or subsequent letter.
       $yOffset -= $boxText[1];
-    endif;
+    }
 
     // Prevents fonts rendered outside the box boundary from being cut.
     // Example: 'Scriptina' font, some letters invade the space of the previous or subsequent letter.
@@ -953,42 +953,42 @@ class SimpleImage {
 
     // Determine position
     switch($anchor) {
-    case 'top left':
-      $x = $xOffset;
-      $y = $yOffset + $boxHeight;
-      break;
-    case 'top right':
-      $x = $this->getWidth() - $boxWidth + $xOffset;
-      $y = $yOffset + $boxHeight;
-      break;
-    case 'top':
-      $x = ($this->getWidth() / 2) - ($boxWidth / 2) + $xOffset;
-      $y = $yOffset + $boxHeight;
-      break;
-    case 'bottom left':
-      $x = $xOffset;
-      $y = $this->getHeight() + $yOffset ;
-      break;
-    case 'bottom right':
-      $x = $this->getWidth() - $boxWidth + $xOffset;
-      $y = $this->getHeight() + $yOffset;
-      break;
-    case 'bottom':
-      $x = ($this->getWidth() / 2) - ($boxWidth / 2) + $xOffset;
-      $y = $this->getHeight() + $yOffset;
-      break;
-    case 'left':
-      $x = $xOffset;
-      $y = ($this->getHeight() / 2) - (($boxHeight / 2) - $boxHeight) + $yOffset;
-      break;
-    case 'right';
-      $x = $this->getWidth() - $boxWidth + $xOffset;
-      $y = ($this->getHeight() / 2) - (($boxHeight / 2) - $boxHeight) + $yOffset;
-      break;
-    default: // center
-      $x = ($this->getWidth() / 2) - ($boxWidth / 2) + $xOffset;
-      $y = ($this->getHeight() / 2) - (($boxHeight / 2) - $boxHeight) + $yOffset;
-      break;
+      case 'top left':
+        $x = $xOffset;
+        $y = $yOffset + $boxHeight;
+        break;
+      case 'top right':
+        $x = $this->getWidth() - $boxWidth + $xOffset;
+        $y = $yOffset + $boxHeight;
+        break;
+      case 'top':
+        $x = ($this->getWidth() / 2) - ($boxWidth / 2) + $xOffset;
+        $y = $yOffset + $boxHeight;
+        break;
+      case 'bottom left':
+        $x = $xOffset;
+        $y = $this->getHeight() + $yOffset ;
+        break;
+      case 'bottom right':
+        $x = $this->getWidth() - $boxWidth + $xOffset;
+        $y = $this->getHeight() + $yOffset;
+        break;
+      case 'bottom':
+        $x = ($this->getWidth() / 2) - ($boxWidth / 2) + $xOffset;
+        $y = $this->getHeight() + $yOffset;
+        break;
+      case 'left':
+        $x = $xOffset;
+        $y = ($this->getHeight() / 2) - (($boxHeight / 2) - $boxHeight) + $yOffset;
+        break;
+      case 'right';
+        $x = $this->getWidth() - $boxWidth + $xOffset;
+        $y = ($this->getHeight() / 2) - (($boxHeight / 2) - $boxHeight) + $yOffset;
+        break;
+      default: // center
+        $x = ($this->getWidth() / 2) - ($boxWidth / 2) + $xOffset;
+        $y = ($this->getHeight() / 2) - (($boxHeight / 2) - $boxHeight) + $yOffset;
+        break;
     }
     $x = (int) round($x);
     $y = (int) round($y);
@@ -1083,15 +1083,15 @@ class SimpleImage {
     $opacity = $options['opacity'];
 
     $justify = $options['justify'];
-    if ($justify == 'right'):
+    if ($justify == 'right') {
       $justify = 'top right';
-    elseif ($justify == 'center'):
+    } elseif ($justify == 'center') {
       $justify = 'top';
-    elseif ($justify == 'justify'):
+    } elseif ($justify == 'justify') {
       $justify = 'justify';
-    else :
+    } else {
       $justify = 'top left';
-    endif;
+    }
 
     list($lines, $isLastLine, $lastLineHeight) = self::textSeparateLines($text, $fontFile, $fontSize, $maxWidth);
 
@@ -1101,8 +1101,8 @@ class SimpleImage {
     $imageText->fromNew($maxWidth, $maxHeight);
 
     // FOR CENTER, LEFT, RIGHT
-    if ($justify <> 'justify'):
-      foreach ($lines as $key => $line):
+    if ($justify <> 'justify') {
+      foreach ($lines as $key => $line) {
         if( $justify == 'top' ) $line = trim($line); // If is justify = 'center'
         $imageText->text($line, array(
           'fontFile' => $fontFile,
@@ -1115,18 +1115,18 @@ class SimpleImage {
           'calcuateOffsetFromEdge' => true,
           )
         );
-      endforeach;
+      }
 
     // FOR JUSTIFY
-    else:
-      foreach ($lines as $keyLine => $line):
+    } else {
+      foreach ($lines as $keyLine => $line) {
         // Check if there are spaces at the beginning of the sentence
         $spaces = 0;
-        if (preg_match("/^\s+/", $line, $match)):
+        if (preg_match("/^\s+/", $line, $match)) {
           // Count spaces
           $spaces = strlen($match[0]);
           $line = ltrim($line);
-        endif;
+        }
 
         // Separate words
         $words = preg_split("/\s+/", $line);
@@ -1135,27 +1135,27 @@ class SimpleImage {
 
         // Calculates the space occupied by all words
         $wordsSize = array();
-        foreach ($words as $key => $word):
+        foreach ($words as $key => $word) {
           $wordBox = imagettfbbox($fontSize, 0, $fontFile, $word);
           $wordWidth = abs($wordBox[4] - $wordBox[0]);
           $wordsSize[$key] = $wordWidth;
-        endforeach;
+        }
         $wordsSizeTotal = array_sum($wordsSize);
 
         // Calculates the required space between words
         $countWords = count($words);
         $wordSpacing = 0;
-        if ($countWords > 1):
+        if ($countWords > 1) {
           $wordSpacing = ($maxWidth - $wordsSizeTotal) / ($countWords - 1);
           $wordSpacing = round($wordSpacing, 3);
-        endif;
+        }
 
         $xOffsetJustify = 0;
-        foreach ($words as $key => $word):
-          if ($isLastLine[$keyLine] == true):
+        foreach ($words as $key => $word) {
+          if ($isLastLine[$keyLine] == true) {
             if ($key < (count($words) - 1)) continue;
             $word = $line;
-          endif;
+          }
           $imageText->text($word, array(
             'fontFile' => $fontFile,
             'size' => $fontSizePx,
@@ -1169,10 +1169,9 @@ class SimpleImage {
           );
           // Calculate offSet for next word
           $xOffsetJustify += $wordsSize[$key] + $wordSpacing;
-        endforeach;
-      endforeach;
-
-    endif;
+        }
+      }
+    }
 
     $this->overlay($imageText, $anchor, $opacity, $xOffset, $yOffset, $calcuateOffsetFromEdge);
 
@@ -1194,23 +1193,23 @@ class SimpleImage {
     $lines[0] = '';
     $lineKey = 0;
     $isLastLine = [];
-    for ($i = 0; $i < $countWords; $i++):
+    for ($i = 0; $i < $countWords; $i++) {
       $word = $words[$i];
       $isLastLine[$lineKey] = false;
-      if ($word === PHP_EOL):
+      if ($word === PHP_EOL) {
         $isLastLine[$lineKey] = true;
         $lineKey++;
         $lines[$lineKey] = '';
         continue;
-      endif;
+      }
       $lineBox = imagettfbbox($fontSize, 0, $fontFile, $lines[$lineKey] . $word);
-      if (abs($lineBox[4] - $lineBox[0]) < $maxWidth):
+      if (abs($lineBox[4] - $lineBox[0]) < $maxWidth) {
         $lines[$lineKey] .= $word . ' ';
-      else :
+      } else {
         $lineKey++;
         $lines[$lineKey] = $word . ' ';
-      endif;
-    endfor;
+      }
+    }
     $isLastLine[$lineKey] = true;
     // Exclude space of right
     $lines = array_map('rtrim', $lines);
@@ -1234,9 +1233,9 @@ class SimpleImage {
     $text = preg_replace('/(\r\n|\n|\r)/', PHP_EOL, $text);
     $text = explode(PHP_EOL, $text);
     $newText = array();
-    foreach ($text as $key => $line):
-        $newText = array_merge($newText, explode(' ', $line), [PHP_EOL]);
-    endforeach;
+    foreach ($text as $key => $line) {
+      $newText = array_merge($newText, explode(' ', $line), [PHP_EOL]);
+    }
 
     return $newText;
   }
