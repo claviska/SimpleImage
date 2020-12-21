@@ -275,7 +275,7 @@ class Image
     protected function saveJpeg(string $filename, int $quality = self::DEFAULT_QUALITY): bool
     {
         if ($this->image) {
-            imageinterlace($this->image, 1);
+            //imageinterlace($this->image, true);
             return imagejpeg($this->image, $filename ?: null, (int)round($quality));
         }
 
@@ -692,9 +692,15 @@ class Image
             if ($transIndex >= 0 && $transIndex < $palletSize) {
                 $trColor = imagecolorsforindex($this->image, $transIndex);
 
-                $red = VarFilter::int($trColor['red']);
-                $green = VarFilter::int($trColor['green']);
-                $blue = VarFilter::int($trColor['blue']);
+                $red = 0;
+                $green = 0;
+                $blue = 0;
+
+                if ($trColor) {
+                    $red = VarFilter::int($trColor['red']);
+                    $green = VarFilter::int($trColor['green']);
+                    $blue = VarFilter::int($trColor['blue']);
+                }
 
                 $transIndex = (int)imagecolorallocate($newImage, $red, $green, $blue);
 

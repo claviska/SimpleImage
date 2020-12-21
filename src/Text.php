@@ -199,9 +199,12 @@ class Text
         }
 
         $box = imagettfbbox($fontSize, $angle, $fontFile, $text);
-
-        $boxWidth = (int)abs($box[6] - $box[2]);
-        $boxHeight = (int)abs($box[7] - $box[1]);
+        if ($box) {
+            $boxWidth = (int)abs($box[6] - $box[2]);
+            $boxHeight = (int)abs($box[7] - $box[1]);
+        } else {
+            throw new Exception("Can't get box size for {$fontSize}; {$angle}; {$fontFile}; {$text}");
+        }
 
         return [$boxWidth, $boxHeight];
     }
@@ -269,6 +272,10 @@ class Text
         int $textX
     ): int {
         $charSize = imagettfbbox($fontSize, $angle, $fontFile, $letters[$charKey - 1]);
+        if (!$charSize) {
+            throw new Exception("Can't get StrokeX");
+        }
+
         $textX += abs($charSize[4] - $charSize[0]) + $strokeSpacing;
 
         return (int)$textX;

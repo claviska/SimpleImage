@@ -21,6 +21,8 @@ php:
   - 7.4
 
 env:
+  global:
+    - XDEBUG_MODE=coverage
   matrix:
     - JBZOO_COMPOSER_UPDATE_FLAGS="--prefer-lowest --prefer-stable"
     - JBZOO_COMPOSER_UPDATE_FLAGS=""
