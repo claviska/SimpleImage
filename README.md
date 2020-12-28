@@ -304,7 +304,7 @@ Place an image on top of the current image.
 - `$opacity` (float) - The opacity level of the overlay 0-1 (default 1).
 - `$xOffset` (int) - Horizontal offset in pixels (default 0).
 - `$yOffset` (int) - Vertical offset in pixels (default 0).
-- `$calcuateOffsetFromEdge` (bool) - Calculate Offset referring to the edges of the image. $xOffset and $yOffset have no effect in center anchor. (default false). 
+- `$calculateOffsetFromEdge` (bool) - Calculate Offset referring to the edges of the image. $xOffset and $yOffset have no effect in center anchor. (default false).
 
 Returns a SimpleImage object.
 
@@ -352,7 +352,7 @@ Adds text to the image.
       - `x`* (int) - Horizontal offset in pixels.
       - `y`* (int) - Vertical offset in pixels.
       - `color`* (string|array) - The text shadow color.
-  - `calcuateOffsetFromEdge` (bool) - Calculate Offset referring to the edges of the image (default false).
+  - `calculateOffsetFromEdge` (bool) - Calculate Offset referring to the edges of the image (default false).
   - `baselineAlign` (bool) - Align the text font with the baseline. (default true).
 - `$boundary` (array) - If passed, this variable will contain an array with coordinates that
   surround the text: [x1, y1, x2, y2, width, height]. This can be used for calculating the

@@ -708,10 +708,10 @@ class SimpleImage {
    * @param float $opacity The opacity level of the overlay 0-1 (default 1).
    * @param integer $xOffset Horizontal offset in pixels (default 0).
    * @param integer $yOffset Vertical offset in pixels (default 0).
-   * @param bool $calcuateOffsetFromEdge Calculate Offset referring to the edges of the image (default false).
+   * @param bool $calculateOffsetFromEdge Calculate Offset referring to the edges of the image (default false).
    * @return \claviska\SimpleImage
    */
-  public function overlay($overlay, $anchor = 'center', $opacity = 1, $xOffset = 0, $yOffset = 0, $calcuateOffsetFromEdge = false) {
+  public function overlay($overlay, $anchor = 'center', $opacity = 1, $xOffset = 0, $yOffset = 0, $calculateOffsetFromEdge = false) {
     // Load overlay image
     if(!($overlay instanceof SimpleImage)) $overlay = new SimpleImage($overlay);
 
@@ -723,21 +723,21 @@ class SimpleImage {
     $spaceY = $this->getHeight() - $overlay->getHeight();
 
     // Set default center
-    $x = ($spaceX / 2) + ($calcuateOffsetFromEdge ? 0 : $xOffset);
-    $y = ($spaceY / 2) + ($calcuateOffsetFromEdge ? 0 : $yOffset);
+    $x = ($spaceX / 2) + ($calculateOffsetFromEdge ? 0 : $xOffset);
+    $y = ($spaceY / 2) + ($calculateOffsetFromEdge ? 0 : $yOffset);
 
     // Determine if top|bottom
     if (strpos($anchor, 'top') !== false) {
       $y = $yOffset;
     } elseif (strpos($anchor, 'bottom') !== false) {
-      $y = $spaceY + ($calcuateOffsetFromEdge ? -$yOffset : $yOffset);
+      $y = $spaceY + ($calculateOffsetFromEdge ? -$yOffset : $yOffset);
     }
 
     // Determine if left|right
     if (strpos($anchor, 'left') !== false) {
       $x = $xOffset;
     } elseif (strpos($anchor, 'right') !== false) {
-      $x = $spaceX + ($calcuateOffsetFromEdge ? -$xOffset : $xOffset);
+      $x = $spaceX + ($calculateOffsetFromEdge ? -$xOffset : $xOffset);
     }
 
     // Perform the overlay
@@ -859,7 +859,7 @@ class SimpleImage {
    *          - x* (integer) - Horizontal offset in pixels.
    *          - y* (integer) - Vertical offset in pixels.
    *          - color* (string|array) - The text shadow color.
-   *       - $calcuateOffsetFromEdge (bool) - Calculate Offset referring to the edges of the image (default false).
+   *       - $calculateOffsetFromEdge (bool) - Calculate offsets from the edge of the image (default false).
    *       - $baselineAlign (bool) - Align the text font with the baseline. (default true).
    * @param array $boundary
    *    If passed, this variable will contain an array with coordinates that surround the text: [x1, y1, x2, y2, width, height].
@@ -885,7 +885,7 @@ class SimpleImage {
       'xOffset' => 0,
       'yOffset' => 0,
       'shadow' => null,
-      'calcuateOffsetFromEdge' => false,
+      'calculateOffsetFromEdge' => false,
       'baselineAlign' => true
     ], $options);
 
@@ -896,7 +896,7 @@ class SimpleImage {
     $anchor = $options['anchor'];
     $xOffset = $options['xOffset'];
     $yOffset = $options['yOffset'];
-    $calcuateOffsetFromEdge = $options['calcuateOffsetFromEdge'];
+    $calculateOffsetFromEdge = $options['calculateOffsetFromEdge'];
     $baselineAlign = $options['baselineAlign'];
     $angle = 0;
 
@@ -921,7 +921,7 @@ class SimpleImage {
 
     // Calculate Offset referring to the edges of the image.
     // Just invert the value for bottom|right;
-    if ($calcuateOffsetFromEdge == true) {
+    if ($calculateOffsetFromEdge == true) {
       if (strpos($anchor, 'bottom') !== false) $yOffset *= -1;
       if (strpos($anchor, 'right') !== false) $xOffset *= -1;
     }
@@ -1029,19 +1029,19 @@ class SimpleImage {
   * @param string $text The desired text.
   * @param array $options
   *  An array of options.
-  *     - x* (integer) - Horizontal offset in pixels.
-  *     - y* (integer) - Vertical offset in pixels.
   *     - fontFile* (string) - The TrueType (or compatible) font file to use.
   *     - size (integer) - The size of the font in pixels (default 12).
   *     - color (string|array) - The text color (default black).
   *     - anchor (string) - The anchor point: 'center', 'top', 'bottom', 'left', 'right', 'top left', 'top right', 'bottom left', 'bottom right' (default 'center').
-  *     - xOffset (integer) - The horizontal offset in pixels (default 0).
-  *     - shadow* (string|array) - The text shadow color.
-  *     - yOffset (integer) - The vertical offset in pixels (default 0).
+  *     - xOffset (integer) - The horizontal offset in pixels (default 0). Has no effect when anchor is 'center'.
+  *     - yOffset (integer) - The vertical offset in pixels (default 0). Has no effect when anchor is 'center'.
   *     - shadow (array) - Text shadow params.
-  *     - $calcuateOffsetFromEdge (bool) - Calculate Offset referring to the edges of the image (default true).
-  *     - width (int) - Width of text box (Default image width).
-  *     - justify (string) - The justify: 'left', 'right', 'center', 'justify' (default 'left').
+  *       - x* (integer) - Horizontal offset in pixels.
+  *       - y* (integer) - Vertical offset in pixels.
+  *       - color* (string|array) - The text shadow color.
+  *     - $calculateOffsetFromEdge (bool) - Calculate offsets from the edge of the image (default false).
+  *     - width (int) - Width of text box (default image width).
+  *     - align (string) - How to align text: 'left', 'right', 'center', 'justify' (default 'left').
   *     - leading (float) - Increase/decrease spacing between lines of text (default 0).
   *     - opacity (float) - The opacity level of the text 0-1 (default 1).
   * @throws \Exception
@@ -1059,11 +1059,11 @@ class SimpleImage {
       'xOffset' => 0,
       'yOffset' => 0,
       'shadow' => null,
-      'calcuateOffsetFromEdge' => true,
+      'calculateOffsetFromEdge' => false,
       'width' => $maxWidth,
-      'justify' => 'left',
+      'align' => 'left',
       'leading' => 0,
-      'opacity' => 1,
+      'opacity' => 1
     ], $options);
 
     // Extract and normalize options
@@ -1075,22 +1075,22 @@ class SimpleImage {
     $xOffset = $options['xOffset'];
     $yOffset = $options['yOffset'];
     $shadow = $options['shadow'];
-    $calcuateOffsetFromEdge = $options['calcuateOffsetFromEdge'];
+    $calculateOffsetFromEdge = $options['calculateOffsetFromEdge'];
     $angle = 0;
     $maxWidth = $options['width'];
     $leading = $options['leading'];
     $leading = self::keepWithin($leading, ($fontSizePx * -1), $leading);
     $opacity = $options['opacity'];
 
-    $justify = $options['justify'];
-    if ($justify == 'right') {
-      $justify = 'top right';
-    } elseif ($justify == 'center') {
-      $justify = 'top';
-    } elseif ($justify == 'justify') {
-      $justify = 'justify';
+    $align = $options['align'];
+    if ($align == 'right') {
+      $align = 'top right';
+    } elseif ($align == 'center') {
+      $align = 'top';
+    } elseif ($align == 'justify') {
+      $align = 'justify';
     } else {
-      $justify = 'top left';
+      $align = 'top left';
     }
 
     list($lines, $isLastLine, $lastLineHeight) = self::textSeparateLines($text, $fontFile, $fontSize, $maxWidth);
@@ -1100,24 +1100,23 @@ class SimpleImage {
     $imageText = new SimpleImage();
     $imageText->fromNew($maxWidth, $maxHeight);
 
-    // FOR CENTER, LEFT, RIGHT
-    if ($justify <> 'justify') {
+    // Align left/center/right
+    if ($align <> 'justify') {
       foreach ($lines as $key => $line) {
-        if( $justify == 'top' ) $line = trim($line); // If is justify = 'center'
+        if( $align == 'top' ) $line = trim($line); // If is justify = 'center'
         $imageText->text($line, array(
           'fontFile' => $fontFile,
           'size' => $fontSizePx,
           'color' => $color,
-          'anchor' => $justify,
+          'anchor' => $align,
           'xOffset' => 0,
           'yOffset' => $key * ($fontSizePx * 1.2 + $leading),
           'shadow' => $shadow,
-          'calcuateOffsetFromEdge' => true,
-          )
-        );
+          'calculateOffsetFromEdge' => true
+        ));
       }
 
-    // FOR JUSTIFY
+    // Justify
     } else {
       foreach ($lines as $keyLine => $line) {
         // Check if there are spaces at the beginning of the sentence
@@ -1131,7 +1130,7 @@ class SimpleImage {
         // Separate words
         $words = preg_split("/\s+/", $line);
         // Include spaces with the first word
-        $words[0] = str_repeat(" ", $spaces) . $words[0];
+        $words[0] = str_repeat(' ', $spaces) . $words[0];
 
         // Calculates the space occupied by all words
         $wordsSize = array();
@@ -1164,16 +1163,16 @@ class SimpleImage {
             'xOffset' => $xOffsetJustify,
             'yOffset' => $keyLine * ($fontSizePx * 1.2 + $leading),
             'shadow' => $shadow,
-            'calcuateOffsetFromEdge' => true,
+            'calculateOffsetFromEdge' => true,
             )
           );
-          // Calculate offSet for next word
+          // Calculate offset for next word
           $xOffsetJustify += $wordsSize[$key] + $wordSpacing;
         }
       }
     }
 
-    $this->overlay($imageText, $anchor, $opacity, $xOffset, $yOffset, $calcuateOffsetFromEdge);
+    $this->overlay($imageText, $anchor, $opacity, $xOffset, $yOffset, $calculateOffsetFromEdge);
 
     return $this;
   }
