@@ -128,7 +128,7 @@ class SimpleImage {
     fclose($handle);
 
     // Get image info
-    $info = getimagesize($file);
+    $info = @getimagesize($file);
     if($info === false) {
       throw new \Exception("Invalid image file: $file", self::ERR_INVALID_IMAGE);
     }
