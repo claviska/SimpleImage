@@ -587,13 +587,14 @@ class SimpleImage {
     $y1 = self::keepWithin($y1, 0, $this->getHeight());
     $y2 = self::keepWithin($y2, 0, $this->getHeight());
 
-    // don't use native imagecrop() because of bug with PNG transparency
+    // Avoid using native imagecrop() because of a bug with PNG transparency
     $dstW = abs($x2 - $x1);
     $dstH = abs($y2 - $y1);
     $newImage = imagecreatetruecolor($dstW, $dstH);
     $transparentColor = imagecolorallocatealpha($newImage, 0, 0, 0, 127);
     imagecolortransparent($newImage, $transparentColor);
     imagefill($newImage, 0, 0, $transparentColor);
+
     // Crop it
     imagecopyresampled(
       $newImage,
@@ -607,6 +608,7 @@ class SimpleImage {
 
     // Swap out the new image
     $this->image = $newImage;
+
     return $this;
   }
 
