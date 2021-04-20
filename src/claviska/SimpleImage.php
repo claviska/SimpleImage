@@ -1378,7 +1378,7 @@ class SimpleImage {
       imagefilledarc($tempImage->image, $x, $y, $width+$thickness, $height+$thickness, $start, $end, $tempColor, IMG_ARC_PIE);
 
       // Draw a smaller ellipse filled with red|blue (-$thickness pixels)
-      $tempColor = ($color == 'red') ? 'blue' : 'red';
+      $tempColor = (self::normalizeColor($color)['red'] == 255) ? 'blue' : 'red';
       $tempColor = $tempImage->allocateColor($tempColor);
       imagefilledarc($tempImage->image, $x, $y, $width-$thickness, $height-$thickness, $start, $end, $tempColor, IMG_ARC_PIE);
 
@@ -1460,7 +1460,7 @@ class SimpleImage {
       imagefilledellipse($tempImage->image, $x, $y, $width+$thickness, $height+$thickness, $tempColor);
 
       // Draw a smaller ellipse filled with red|blue (-$thickness pixels)
-      $tempColor = ($color == 'red') ? 'blue' : 'red';
+      $tempColor = (self::normalizeColor($color)['red'] == 255) ? 'blue' : 'red';
       $tempColor = $tempImage->allocateColor($tempColor);
       imagefilledellipse($tempImage->image, $x, $y, $width-$thickness, $height-$thickness, $tempColor);
 
@@ -1620,7 +1620,7 @@ class SimpleImage {
       $tempImage->roundedRectangle($x1, $y1, $x2, $y2, $radius, $color,'filled');
 
       // Draw a smaller rectangle filled with red|blue (-$thickness pixels on each side)
-      $tempColor = ($color == 'red') ? 'blue' : 'red';
+      $tempColor = (self::normalizeColor($color)['red'] == 255) ? 'blue' : 'red';
       $radius = $radius - $thickness;
       $radius = self::keepWithin($radius, 0, $radius);
       $tempImage->roundedRectangle(
