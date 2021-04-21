@@ -13,6 +13,8 @@
  * @link       https://github.com/JBZoo/Image
  */
 
+declare(strict_types=1);
+
 namespace JBZoo\Image;
 
 use JBZoo\Utils\Filter as VarFilter;
@@ -29,7 +31,7 @@ use JBZoo\Utils\Url;
  * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
  * @SuppressWarnings(PHPMD.ExcessiveClassLength)
  */
-class Image
+final class Image
 {
     public const LANDSCAPE = 'landscape';
     public const PORTRAIT  = 'portrait';

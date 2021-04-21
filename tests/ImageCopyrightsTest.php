@@ -13,6 +13,8 @@
  * @link       https://github.com/JBZoo/Image
  */
 
+declare(strict_types=1);
+
 namespace JBZoo\PHPUnit;
 
 /**
@@ -22,4 +24,5 @@ namespace JBZoo\PHPUnit;
 class ImageCopyrightsTest extends AbstractCopyrightTest
 {
     protected $packageName = "Image";
+    protected $isPhpStrictType = true;
 }

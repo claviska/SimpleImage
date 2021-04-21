@@ -13,6 +13,8 @@
  * @link       https://github.com/JBZoo/Image
  */
 
+declare(strict_types=1);
+
 namespace JBZoo\PHPUnit;
 
 use Symfony\Component\Finder\Finder;

@@ -29,12 +29,12 @@
         "ext-exif"    : "*",
         "ext-ctype"   : "*",
 
-        "jbzoo/utils" : "^4.2.3",
-        "jbzoo/data"  : "^4.1.2"
+        "jbzoo/utils" : "^4.3.0",
+        "jbzoo/data"  : "^4.2.0"
     },
 
     "require-dev"       : {
-        "jbzoo/toolbox-dev" : "^2.6.2"
+        "jbzoo/toolbox-dev" : "^2.10.0"
     },
 
     "autoload"          : {

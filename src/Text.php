@@ -13,6 +13,8 @@
  * @link       https://github.com/JBZoo/Image
  */
 
+declare(strict_types=1);
+
 namespace JBZoo\Image;
 
 use JBZoo\Utils\FS;
@@ -22,7 +24,7 @@ use JBZoo\Utils\Image as Helper;
  * Class Text
  * @package JBZoo\Image
  */
-class Text
+final class Text
 {
     /**
      * @var array
