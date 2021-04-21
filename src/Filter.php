@@ -13,6 +13,8 @@
  * @link       https://github.com/JBZoo/Image
  */
 
+declare(strict_types=1);
+
 namespace JBZoo\Image;
 
 use JBZoo\Utils\Filter as VarFilter;
@@ -24,7 +26,7 @@ use JBZoo\Utils\Vars;
  * @package JBZoo\Image
  * @SuppressWarnings(PHPMD.TooManyPublicMethods)
  */
-class Filter
+final class Filter
 {
     public const BLUR_SEL  = 0;
     public const BLUR_GAUS = 1;
@@ -62,7 +64,7 @@ class Filter
     public static function pixelate($image, int $blockSize = 10): void
     {
         $blockSize = VarFilter::int($blockSize);
-        imagefilter($image, IMG_FILTER_PIXELATE, $blockSize, 1);
+        imagefilter($image, IMG_FILTER_PIXELATE, $blockSize, true);
     }
 
     /**

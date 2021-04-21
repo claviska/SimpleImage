@@ -13,6 +13,8 @@
  * @link       https://github.com/JBZoo/Image
  */
 
+declare(strict_types=1);
+
 namespace JBZoo\PHPUnit;
 
 /**
@@ -23,4 +25,10 @@ namespace JBZoo\PHPUnit;
 class ImageReadmeTest extends AbstractReadmeTest
 {
     protected $packageName = 'Image';
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->params['strict_types'] = true;
+    }
 }
