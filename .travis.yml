@@ -19,16 +19,19 @@ php:
   - 7.2
   - 7.3
   - 7.4
+  - 8.0
+  - nightly
+
+jobs:
+  fast_finish: true
+  allow_failures:
+    - php: 8.0
+    - php: nightly
 
 env:
-  global:
-    - XDEBUG_MODE=coverage
   matrix:
     - JBZOO_COMPOSER_UPDATE_FLAGS="--prefer-lowest --prefer-stable"
     - JBZOO_COMPOSER_UPDATE_FLAGS=""
-
-before_install:
-  - sudo apt-get update
 
 before_script:
   - composer self-update
