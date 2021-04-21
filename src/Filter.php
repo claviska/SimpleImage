@@ -64,7 +64,7 @@ final class Filter
     public static function pixelate($image, int $blockSize = 10): void
     {
         $blockSize = VarFilter::int($blockSize);
-        imagefilter($image, IMG_FILTER_PIXELATE, $blockSize, true);
+        imagefilter($image, IMG_FILTER_PIXELATE, $blockSize);
     }
 
     /**
