@@ -1,0 +1,68 @@
+#
+# JBZoo Toolbox - Image
+#
+# This file is part of the JBZoo Toolbox project.
+# For the full copyright and license information, please view the LICENSE
+# file that was distributed with this source code.
+#
+# @package    Image
+# @license    MIT
+# @copyright  Copyright (C) JBZoo.com, All rights reserved.
+# @link       https://github.com/JBZoo/Image
+#
+
+name: Continuous Integration
+
+on:
+  pull_request:
+    branches:
+      - "*"
+  push:
+    branches:
+      - 'master'
+  schedule:
+    - cron: '15 */8 * * *'
+
+env:
+  COLUMNS: 120
+  TERM_PROGRAM: Hyper
+
+jobs:
+  phpunit:
+    name: PHPUnit
+    runs-on: ubuntu-latest
+    env:
+      JBZOO_COMPOSER_UPDATE_FLAGS: ${{ matrix.composer_flags }}
+    strategy:
+      matrix:
+        php-version: [ 7.2, 7.3, 7.4 ]
+        coverage: [ xdebug, none ]
+        experimental: [ false ]
+        composer_flags: [ "--prefer-lowest", "" ]
+        include:
+          - php-version: "8.0"
+            experimental: true
+          - php-version: "8.1"
+            experimental: true
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup PHP and composer
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          coverage: ${{ matrix.coverage }}
+          tools: composer
+
+      - name: Build the Project
+        continue-on-error: ${{ matrix.experimental }}
+        run: make update --no-print-directory
+
+      - name: 🧪 PHPUnit Tests
+        continue-on-error: ${{ matrix.experimental }}
+        run: make test --no-print-directory
+
+      - name: 👍 Code Quality
+        continue-on-error: ${{ matrix.experimental }}
+        run: make codestyle --no-print-directory

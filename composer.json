@@ -43,9 +43,6 @@
         }
     },
 
-    "minimum-stability" : "dev",
-    "prefer-stable"     : true,
-
     "autoload-dev"      : {
         "classmap" : ["tests"]
     },
