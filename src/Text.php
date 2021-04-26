@@ -72,10 +72,8 @@ final class Text
         $imageWidth = (int)imagesx($image);
         $imageHeight = (int)imagesy($image);
 
-        $color = is_string($params['color']) ? (string)$params['color'] : (array)$params['color'];
-        $strokeColor = is_string($params['stroke-color'])
-            ? (string)$params['stroke-color']
-            : (array)$params['stroke-color'];
+        $color = is_string($params['color']) ? $params['color'] : (array)$params['color'];
+        $strokeColor = is_string($params['stroke-color']) ? $params['stroke-color'] : (array)$params['stroke-color'];
 
         $colorArr = self::getColor($image, $color);
         [$textWidth, $textHeight] = self::getTextBoxSize($fSize, $angle, $fontFile, $text);
