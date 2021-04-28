@@ -11,7 +11,7 @@
 # @link       https://github.com/JBZoo/Image
 #
 
-name: Continuous Integration
+name: CI
 
 on:
   pull_request:
@@ -21,7 +21,7 @@ on:
     branches:
       - 'master'
   schedule:
-    - cron: '15 */8 * * *'
+    - cron: '20 */8 * * *'
 
 env:
   COLUMNS: 120
@@ -36,33 +36,92 @@ jobs:
     strategy:
       matrix:
         php-version: [ 7.2, 7.3, 7.4 ]
-        coverage: [ xdebug, none ]
-        experimental: [ false ]
         composer_flags: [ "--prefer-lowest", "" ]
-        include:
-          - php-version: "8.0"
-            experimental: true
-          - php-version: "8.1"
-            experimental: true
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
-      - name: Setup PHP and composer
+      - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-version }}
-          coverage: ${{ matrix.coverage }}
+          coverage: xdebug
           tools: composer
 
       - name: Build the Project
-        continue-on-error: ${{ matrix.experimental }}
         run: make update --no-print-directory
 
       - name: 🧪 PHPUnit Tests
-        continue-on-error: ${{ matrix.experimental }}
         run: make test --no-print-directory
 
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: PHPUnit - ${{ matrix.php-version }} - ${{ matrix.coverage }}
+          path: build/
+
+
+  linters:
+    name: Linters
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-version: [ 7.2, 7.3, 7.4 ]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: ast
+          tools: composer
+
+      - name: Build the Project
+        run: make update --no-print-directory
+
       - name: 👍 Code Quality
-        continue-on-error: ${{ matrix.experimental }}
         run: make codestyle --no-print-directory
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: Linters - ${{ matrix.php-version }}
+          path: build/
+
+
+  report:
+    name: Reports
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-version: [ 7.2, 7.3, 7.4 ]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          coverage: xdebug
+          tools: composer
+
+      - name: Build the Project
+        run: make update --no-print-directory
+
+      - name: 📝 Build Reports
+        run: make report-all --no-print-directory
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: Reports - ${{ matrix.php-version }}
+          path: build/

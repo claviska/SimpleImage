@@ -24,5 +24,5 @@ namespace JBZoo\PHPUnit;
  */
 class ImageComposerTest extends AbstractComposerTest
 {
-
+    protected $phpVersion = '^7.2';
 }

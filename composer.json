@@ -1,10 +1,10 @@
 {
-    "name"              : "jbzoo/image",
-    "type"              : "library",
-    "description"       : "A PHP class that simplifies working with images",
-    "license"           : "MIT",
-    "keywords"          : ["image", "resize", "images", "jbzoo", "crop", "filters", "thumbnail", "watermark", "gd"],
-    "authors"           : [
+    "name"         : "jbzoo/image",
+    "type"         : "library",
+    "description"  : "A PHP class that simplifies working with images",
+    "license"      : "MIT",
+    "keywords"     : ["image", "resize", "images", "jbzoo", "crop", "filters", "thumbnail", "watermark", "gd"],
+    "authors"      : [
         {
             "name"  : "Denis Smetannikov",
             "email" : "admin@jbzoo.com",
@@ -23,35 +23,35 @@
         }
     ],
 
-    "require"           : {
-        "php"         : ">=7.2",
+    "require"      : {
+        "php"         : "^7.2",
         "ext-gd"      : "*",
         "ext-exif"    : "*",
         "ext-ctype"   : "*",
 
-        "jbzoo/utils" : "^4.4.0",
-        "jbzoo/data"  : "^4.2.1"
+        "jbzoo/utils" : "^4.5.0",
+        "jbzoo/data"  : "^4.3.0"
     },
 
-    "require-dev"       : {
-        "jbzoo/toolbox-dev" : "^2.12.0"
+    "require-dev"  : {
+        "jbzoo/toolbox-dev" : "^2.13.1"
     },
 
-    "autoload"          : {
+    "autoload"     : {
         "psr-4" : {
             "JBZoo\\Image\\" : "src"
         }
     },
 
-    "autoload-dev"      : {
+    "autoload-dev" : {
         "classmap" : ["tests"]
     },
 
-    "config"            : {
+    "config"       : {
         "optimize-autoloader" : true
     },
 
-    "extra"             : {
+    "extra"        : {
         "branch-alias" : {
             "dev-master" : "5.x-dev"
         }

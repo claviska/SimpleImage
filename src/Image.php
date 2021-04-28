@@ -109,7 +109,7 @@ final class Image
             && FS::isFile($filename)
         ) {
             $this->loadFile($filename);
-        } elseif (is_resource($filename) && Helper::isGdRes($filename)) {
+        } elseif (is_resource($filename) && self::isGdRes($filename)) {
             $this->loadResource($filename);
         } elseif ($filename && is_string($filename)) {
             $this->loadString($filename, $strict);
@@ -300,6 +300,7 @@ final class Image
     /**
      * @param string $filename
      * @return bool
+     * @phan-suppress-next-line PhanUndeclaredFunction
      */
     protected function saveWebP(string $filename): bool
     {
@@ -308,7 +309,6 @@ final class Image
         }
 
         if ($this->image) {
-            /** @phan-suppress-next-line PhanUndeclaredFunction */
             return imagewebp($this->image, $filename ?: null);
         }
 
@@ -445,7 +445,7 @@ final class Image
      */
     public function loadResource($imageRes): self
     {
-        if (!Helper::isGdRes($imageRes)) {
+        if (!self::isGdRes($imageRes)) {
             throw new Exception('Image is not GD resource!');
         }
 
@@ -472,7 +472,7 @@ final class Image
             if ($imageInfo = getimagesize($this->filename)) {
                 $this->image = $this->imageCreate((string)($imageInfo['mime'] ?? ''));
             }
-        } elseif (is_resource($image) && Helper::isGdRes($image)) {
+        } elseif (is_resource($image) && self::isGdRes($image)) {
             $this->image = $image;
             $imageInfo = [
                 '0'    => (int)imagesx($this->image),
@@ -534,7 +534,7 @@ final class Image
      */
     protected function destroyImage(): void
     {
-        if ($this->image && Helper::isGdRes($this->image)) {
+        if ($this->image && self::isGdRes($this->image)) {
             imagedestroy($this->image);
             $this->image = null;
         }
@@ -1008,7 +1008,7 @@ final class Image
             throw new Exception('Undefined filter type');
         }
 
-        if (Helper::isGdRes($newImage)) {
+        if (self::isGdRes($newImage)) {
             $this->replaceImage($newImage);
         }
 
@@ -1113,10 +1113,19 @@ final class Image
             return false;
         }
 
-        if (Helper::isGdRes($resource1) && Helper::isGdRes($resource2)) {
+        if (self::isGdRes($resource1) && self::isGdRes($resource2)) {
             return (int)$resource1 === (int)$resource2 && (int)$resource1 > 0;
         }
 
         return false;
+    }
+
+    /**
+     * @param mixed $variable
+     * @return bool
+     */
+    public static function isGdRes($variable): bool
+    {
+        return is_resource($variable) && strtolower(get_resource_type($variable)) === 'gd';
     }
 }
