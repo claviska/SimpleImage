@@ -28,6 +28,13 @@ env:
     - JBZOO_COMPOSER_UPDATE_FLAGS="--prefer-lowest --prefer-stable"
     - JBZOO_COMPOSER_UPDATE_FLAGS=""
 
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install -y python-software-properties
+  - LC_ALL=C.UTF-8 sudo add-apt-repository -y ppa:ondrej/php
+  - sudo apt-get update
+  - sudo apt-get install -y apt-transport-https apt-utils php"$PHP_VERSION"-cli php"$PHP_VERSION"-gd
+
 before_script:
   - composer self-update
 
