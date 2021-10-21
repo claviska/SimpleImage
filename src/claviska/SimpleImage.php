@@ -226,10 +226,11 @@ class SimpleImage {
    *
    * @param string $mimeType The image format to output as a mime type (defaults to the original mime type).
    * @param integer $quality Image quality as a percentage (default 100).
+   * @param boolean $compressed Enable/disable compression for BMP only (default true).
    * @throws \Exception Thrown when WEBP support is not enabled or unsupported format.
    * @return array Returns an array containing the image data and mime type ['data' => '', 'mimeType' => ''].
    */
-  protected function generate($mimeType = null, $quality = 100) {
+  protected function generate($mimeType = null, $quality = 100, $compressed = true) {
     // Format defaults to the original mime type
     $mimeType = $mimeType ?: $this->mimeType;
 
@@ -277,7 +278,7 @@ class SimpleImage {
           );
         }
         imageinterlace($this->image, true);
-        imagebmp($this->image, null, $quality);
+        imagebmp($this->image, null, $compressed);
         break;
       default:
         throw new \Exception('Unsupported format: ' . $mimeType, self::ERR_UNSUPPORTED_FORMAT);
@@ -298,10 +299,11 @@ class SimpleImage {
    *
    * @param string $mimeType The image format to output as a mime type (defaults to the original mime type).
    * @param integer $quality Image quality as a percentage (default 100).
+   * @param boolean $compressed Enable/disable compression for BMP only (default true).
    * @return string Returns a string containing a data URI.
    */
-  public function toDataUri($mimeType = null, $quality = 100) {
-    $image = $this->generate($mimeType, $quality);
+  public function toDataUri($mimeType = null, $quality = 100, $compressed = true) {
+    $image = $this->generate($mimeType, $quality, $compressed);
 
     return 'data:' . $image['mimeType'] . ';base64,' . base64_encode($image['data']);
   }
@@ -312,10 +314,11 @@ class SimpleImage {
    * @param string $filename The filename (without path) to send to the client (e.g. 'image.jpeg').
    * @param string $mimeType The image format to output as a mime type (defaults to the original mime type).
    * @param integer $quality Image quality as a percentage (default 100).
+   * @param boolean $compressed Enable/disable compression for BMP only (default true).
    * @return \claviska\SimpleImage
    */
-  public function toDownload($filename, $mimeType = null, $quality = 100) {
-    $image = $this->generate($mimeType, $quality);
+  public function toDownload($filename, $mimeType = null, $quality = 100, $compressed = true) {
+    $image = $this->generate($mimeType, $quality, $compressed);
 
     // Set download headers
     header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
@@ -336,11 +339,12 @@ class SimpleImage {
    * @param string $file The image format to output as a mime type (defaults to the original mime type).
    * @param string $mimeType Image quality as a percentage (default 100).
    * @param integer $quality Image quality as a percentage (default 100).
+   * @param boolean $compressed Enable/disable compression for BMP only (default true).
    * @throws \Exception Thrown if failed write to file.
    * @return \claviska\SimpleImage
    */
-  public function toFile($file, $mimeType = null, $quality = 100) {
-    $image = $this->generate($mimeType, $quality);
+  public function toFile($file, $mimeType = null, $quality = 100, $compressed = true) {
+    $image = $this->generate($mimeType, $quality, $compressed);
 
     // Save the image to file
     if(!file_put_contents($file, $image['data'])) {
@@ -355,10 +359,11 @@ class SimpleImage {
    *
    * @param string $mimeType The image format to output as a mime type (defaults to the original mime type).
    * @param integer $quality Image quality as a percentage (default 100).
+   * @param boolean $compressed Enable/disable compression for BMP only (default true).
    * @return \claviska\SimpleImage
    */
-  public function toScreen($mimeType = null, $quality = 100) {
-    $image = $this->generate($mimeType, $quality);
+  public function toScreen($mimeType = null, $quality = 100, $compressed = true) {
+    $image = $this->generate($mimeType, $quality, $compressed);
 
     // Output the image to stdout
     header('Content-Type: ' . $image['mimeType']);
@@ -372,10 +377,11 @@ class SimpleImage {
    *
    * @param string $mimeType The image format to output as a mime type (defaults to the original mime type).
    * @param integer $quality Image quality as a percentage (default 100).
+   * @param boolean $compressed Enable/disable compression for BMP only (default true).
    * @return string
    */
-  public function toString($mimeType = null, $quality = 100) {
-    return $this->generate($mimeType, $quality)['data'];
+  public function toString($mimeType = null, $quality = 100, $compressed = true) {
+    return $this->generate($mimeType, $quality, $compressed)['data'];
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
