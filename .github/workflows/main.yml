@@ -56,6 +56,11 @@ jobs:
       - name: 🧪 PHPUnit Tests
         run: make test --no-print-directory
 
+      - name: Uploading coverage to coveralls
+        env:
+            COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: make report-coveralls --no-print-directory
+
       - name: Upload Artifacts
         uses: actions/upload-artifact@v2
         continue-on-error: true
