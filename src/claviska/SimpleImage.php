@@ -69,7 +69,10 @@ class SimpleImage {
    * Destroys the image resource.
    */
   public function __destruct() {
-    if($this->image !== null && is_resource($this->image) && get_resource_type($this->image) === 'gd') {
+    //Check for a valid GDimage instance
+    $type_check = (gettype($this->image) == "object" && get_class($this->image) == "GdImage");
+
+    if($this->image !== null && is_resource($this->image) && $type_check) {
       imagedestroy($this->image);
     }
   }
@@ -128,7 +131,7 @@ class SimpleImage {
     fclose($handle);
 
     // Get image info
-    $info = getimagesize($file);
+    $info = @getimagesize($file);
     if($info === false) {
       throw new \Exception("Invalid image file: $file", self::ERR_INVALID_IMAGE);
     }
@@ -587,13 +590,27 @@ class SimpleImage {
     $y1 = self::keepWithin($y1, 0, $this->getHeight());
     $y2 = self::keepWithin($y2, 0, $this->getHeight());
 
+    // Avoid using native imagecrop() because of a bug with PNG transparency
+    $dstW = abs($x2 - $x1);
+    $dstH = abs($y2 - $y1);
+    $newImage = imagecreatetruecolor($dstW, $dstH);
+    $transparentColor = imagecolorallocatealpha($newImage, 0, 0, 0, 127);
+    imagecolortransparent($newImage, $transparentColor);
+    imagefill($newImage, 0, 0, $transparentColor);
+
     // Crop it
-    $this->image = imagecrop($this->image, [
-      'x' => min($x1, $x2),
-      'y' => min($y1, $y2),
-      'width' => abs($x2 - $x1),
-      'height' => abs($y2 - $y1)
-    ]);
+    imagecopyresampled(
+      $newImage,
+      $this->image,
+      0, 0, min($x1, $x2), min($y1, $y2),
+      $dstW,
+      $dstH,
+      $dstW,
+      $dstH
+    );
+
+    // Swap out the new image
+    $this->image = $newImage;
 
     return $this;
   }
