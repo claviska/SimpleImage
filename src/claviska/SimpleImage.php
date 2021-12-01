@@ -1885,7 +1885,7 @@ class SimpleImage {
       $color['red'],
       $color['green'],
       $color['blue'],
-      (int) ( 127 - ($color['alpha'] * 127) )
+      (int) (127 - ($color['alpha'] * 127))
     );
     if($index > -1) {
       // Yes, return this color index
