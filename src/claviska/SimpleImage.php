@@ -802,7 +802,7 @@ class SimpleImage {
     // We can't use imagescale because it doesn't seem to preserve transparency properly. The
     // workaround is to create a new truecolor image, allocate a transparent color, and copy the
     // image over to it using imagecopyresampled.
-    $newImage = imagecreatetruecolor( (int) $width, (int) $height );
+    $newImage = imagecreatetruecolor((int) $width, (int) $height);
     $transparentColor = imagecolorallocatealpha($newImage, 0, 0, 0, 127);
     imagecolortransparent($newImage, $transparentColor);
     imagefill($newImage, 0, 0, $transparentColor);
