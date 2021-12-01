@@ -490,7 +490,7 @@ class SimpleImage {
       imagefilter($srcIm, IMG_FILTER_COLORIZE, 0, 0, 0, 127 * ((100 - $pct) / 100));
     }
 
-    imagecopy($dstIm, $srcIm, (int)$dstX, (int)$dstY, (int)$srcX, (int)$srcY, (int)$srcW, (int)$srcH);
+    imagecopy($dstIm, $srcIm, (int) $dstX, (int) $dstY, (int) $srcX, (int) $srcY, (int) $srcW, (int) $srcH);
 
     return true;
   }
