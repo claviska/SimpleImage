@@ -194,7 +194,7 @@ class SimpleImage {
    * @return \claviska\SimpleImage
    */
   public function fromNew($width, $height, $color = 'transparent') {
-    $this->image = imagecreatetruecolor( (int) $width, (int) $height );
+    $this->image = imagecreatetruecolor((int) $width, (int) $height);
 
     // Use PNG for dynamically created images because it's lossless and supports transparency
     $this->mimeType = 'image/png';
