@@ -593,7 +593,7 @@ class SimpleImage {
     // Avoid using native imagecrop() because of a bug with PNG transparency
     $dstW = abs($x2 - $x1);
     $dstH = abs($y2 - $y1);
-    $newImage = imagecreatetruecolor( (int) $dstW, (int) $dstH );
+    $newImage = imagecreatetruecolor((int) $dstW, (int) $dstH);
     $transparentColor = imagecolorallocatealpha($newImage, 0, 0, 0, 127);
     imagecolortransparent($newImage, $transparentColor);
     imagefill($newImage, 0, 0, $transparentColor);
