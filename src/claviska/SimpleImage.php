@@ -147,7 +147,7 @@ class SimpleImage {
         // workaround to prevent imagepalettetruecolor() from borking transparency.
         $width = imagesx($gif);
         $height = imagesy($gif);
-        $this->image = imagecreatetruecolor( (int) $width, (int) $height );
+        $this->image = imagecreatetruecolor((int) $width, (int) $height);
         $transparentColor = imagecolorallocatealpha($this->image, 0, 0, 0, 127);
         imagecolortransparent($this->image, $transparentColor);
         imagefill($this->image, 0, 0, $transparentColor);
