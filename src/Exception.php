@@ -23,5 +23,4 @@ namespace JBZoo\Image;
  */
 class Exception extends \RuntimeException
 {
-
 }
