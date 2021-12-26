@@ -42,7 +42,7 @@ final class Filter
     public static function sepia($image): void
     {
         self::grayscale($image);
-        imagefilter($image, IMG_FILTER_COLORIZE, 100, 50, 0);
+        \imagefilter($image, \IMG_FILTER_COLORIZE, 100, 50, 0);
     }
 
     /**
@@ -52,7 +52,7 @@ final class Filter
      */
     public static function grayscale($image): void
     {
-        imagefilter($image, IMG_FILTER_GRAYSCALE);
+        \imagefilter($image, \IMG_FILTER_GRAYSCALE);
     }
 
     /**
@@ -64,7 +64,7 @@ final class Filter
     public static function pixelate($image, int $blockSize = 10): void
     {
         $blockSize = VarFilter::int($blockSize);
-        imagefilter($image, IMG_FILTER_PIXELATE, $blockSize);
+        \imagefilter($image, \IMG_FILTER_PIXELATE, $blockSize);
     }
 
     /**
@@ -74,7 +74,7 @@ final class Filter
      */
     public static function edges($image): void
     {
-        imagefilter($image, IMG_FILTER_EDGEDETECT);
+        \imagefilter($image, \IMG_FILTER_EDGEDETECT);
     }
 
     /**
@@ -84,7 +84,7 @@ final class Filter
      */
     public static function emboss($image): void
     {
-        imagefilter($image, IMG_FILTER_EMBOSS);
+        \imagefilter($image, \IMG_FILTER_EMBOSS);
     }
 
     /**
@@ -94,7 +94,7 @@ final class Filter
      */
     public static function invert($image): void
     {
-        imagefilter($image, IMG_FILTER_NEGATE);
+        \imagefilter($image, \IMG_FILTER_NEGATE);
     }
 
     /**
@@ -108,13 +108,13 @@ final class Filter
     {
         $passes = Helper::blur($passes);
 
-        $filterType = IMG_FILTER_SELECTIVE_BLUR;
+        $filterType = \IMG_FILTER_SELECTIVE_BLUR;
         if (self::BLUR_GAUS === $type) {
-            $filterType = IMG_FILTER_GAUSSIAN_BLUR;
+            $filterType = \IMG_FILTER_GAUSSIAN_BLUR;
         }
 
         for ($i = 0; $i < $passes; $i++) {
-            imagefilter($image, $filterType);
+            \imagefilter($image, $filterType);
         }
     }
 
@@ -126,7 +126,7 @@ final class Filter
      */
     public static function brightness($image, int $level): void
     {
-        imagefilter($image, IMG_FILTER_BRIGHTNESS, Helper::brightness($level));
+        \imagefilter($image, \IMG_FILTER_BRIGHTNESS, Helper::brightness($level));
     }
 
     /**
@@ -137,7 +137,7 @@ final class Filter
      */
     public static function contrast($image, int $level): void
     {
-        imagefilter($image, IMG_FILTER_CONTRAST, Helper::contrast($level));
+        \imagefilter($image, \IMG_FILTER_CONTRAST, Helper::contrast($level));
     }
 
     /**
@@ -159,7 +159,7 @@ final class Filter
         $green = Helper::color($rgba[1]);
         $blue = Helper::color($rgba[2]);
 
-        imagefilter($image, IMG_FILTER_COLORIZE, $red, $green, $blue, $alpha);
+        \imagefilter($image, \IMG_FILTER_COLORIZE, $red, $green, $blue, $alpha);
     }
 
     /**
@@ -169,7 +169,7 @@ final class Filter
      */
     public static function meanRemove($image): void
     {
-        imagefilter($image, IMG_FILTER_MEAN_REMOVAL);
+        \imagefilter($image, \IMG_FILTER_MEAN_REMOVAL);
     }
 
     /**
@@ -180,7 +180,7 @@ final class Filter
      */
     public static function smooth($image, int $passes = 1): void
     {
-        imagefilter($image, IMG_FILTER_SMOOTH, Helper::smooth($passes));
+        \imagefilter($image, \IMG_FILTER_SMOOTH, Helper::smooth($passes));
     }
 
     /**
@@ -194,15 +194,15 @@ final class Filter
     {
         // Determine percentage
         $percent = Helper::percent($percent);
-        $width = (int)imagesx($image);
-        $height = (int)imagesy($image);
+        $width = (int)\imagesx($image);
+        $height = (int)\imagesy($image);
 
         if ($percent === self::MAX_PERCENT) {
             self::grayscale($image);
-        } elseif ($newImage = imagecreatetruecolor($width, $height)) { // Make a desaturated copy of the image
-            imagealphablending($newImage, false);
-            imagecopy($newImage, $image, 0, 0, 0, 0, $width, $height);
-            imagefilter($newImage, IMG_FILTER_GRAYSCALE);
+        } elseif ($newImage = \imagecreatetruecolor($width, $height)) { // Make a desaturated copy of the image
+            \imagealphablending($newImage, false);
+            \imagecopy($newImage, $image, 0, 0, 0, 0, $width, $height);
+            \imagefilter($newImage, \IMG_FILTER_GRAYSCALE);
 
             // Merge with specified percentage
             Helper::imageCopyMergeAlpha(
@@ -234,13 +234,13 @@ final class Filter
         // Determine opacity
         $opacity = Helper::opacity($opacity);
 
-        $width = (int)imagesx($image);
-        $height = (int)imagesy($image);
+        $width = (int)\imagesx($image);
+        $height = (int)\imagesy($image);
 
-        if ($newImage = imagecreatetruecolor($width, $height)) {
+        if ($newImage = \imagecreatetruecolor($width, $height)) {
             // Set a White & Transparent Background Color
-            if ($background = imagecolorallocatealpha($newImage, 0, 0, 0, 127)) {
-                imagefill($newImage, 0, 0, $background);
+            if ($background = \imagecolorallocatealpha($newImage, 0, 0, 0, 127)) {
+                \imagefill($newImage, 0, 0, $background);
 
                 // Copy and merge
                 Helper::imageCopyMergeAlpha(
@@ -252,7 +252,7 @@ final class Filter
                     $opacity
                 );
 
-                imagedestroy($image);
+                \imagedestroy($image);
 
                 return $newImage;
             }
@@ -279,8 +279,8 @@ final class Filter
         $angle = Helper::rotate($angle);
         $rgba = Helper::normalizeColor($bgColor);
 
-        $newBgColor = (int)imagecolorallocatealpha($image, $rgba[0], $rgba[1], $rgba[2], $rgba[3]);
-        $newImage = imagerotate($image, -($angle), $newBgColor);
+        $newBgColor = (int)\imagecolorallocatealpha($image, $rgba[0], $rgba[1], $rgba[2], $rgba[3]);
+        $newImage = \imagerotate($image, -($angle), $newBgColor);
 
         Helper::addAlpha($newImage);
 
@@ -297,19 +297,19 @@ final class Filter
     public static function flip($image, string $direction)
     {
         $direction = Helper::direction($direction);
-        $width = (int)imagesx($image);
-        $height = (int)imagesy($image);
+        $width = (int)\imagesx($image);
+        $height = (int)\imagesy($image);
 
-        if ($newImage = imagecreatetruecolor($width, $height)) {
+        if ($newImage = \imagecreatetruecolor($width, $height)) {
             Helper::addAlpha($newImage);
 
             if ($direction === 'y') {
                 for ($y = 0; $y < $height; $y++) {
-                    imagecopy($newImage, $image, 0, $y, 0, $height - $y - 1, $width, 1);
+                    \imagecopy($newImage, $image, 0, $y, 0, $height - $y - 1, $width, 1);
                 }
             } elseif ($direction === 'x') {
                 for ($x = 0; $x < $width; $x++) {
-                    imagecopy($newImage, $image, $x, 0, $width - $x - 1, 0, 1, $height);
+                    \imagecopy($newImage, $image, $x, 0, $width - $x - 1, 0, 1, $height);
                 }
             } elseif ($direction === 'xy' || $direction === 'yx') {
                 $newImage = self::flip($image, 'x');
@@ -332,14 +332,14 @@ final class Filter
      */
     public static function fill($image, $color = self::DEFAULT_BACKGROUND): void
     {
-        $width = (int)imagesx($image);
-        $height = (int)imagesy($image);
+        $width = (int)\imagesx($image);
+        $height = (int)\imagesy($image);
 
         $rgba = Helper::normalizeColor($color);
-        $fillColor = (int)imagecolorallocatealpha($image, $rgba[0], $rgba[1], $rgba[2], $rgba[3]);
+        $fillColor = (int)\imagecolorallocatealpha($image, $rgba[0], $rgba[1], $rgba[2], $rgba[3]);
 
         Helper::addAlpha($image, false);
-        imagefilledrectangle($image, 0, 0, $width, $height, $fillColor);
+        \imagefilledrectangle($image, 0, 0, $width, $height, $fillColor);
     }
 
     /**
@@ -366,25 +366,25 @@ final class Filter
      */
     public static function border($image, array $params = []): void
     {
-        $params = array_merge([
+        $params = \array_merge([
             'color' => '#333',
             'size'  => 1,
         ], $params);
 
         $size = Vars::range((int)$params['size'], 1, 1000);
         $rgba = Helper::normalizeColor((string)$params['color']);
-        $width = (int)imagesx($image);
-        $height = (int)imagesy($image);
+        $width = (int)\imagesx($image);
+        $height = (int)\imagesy($image);
 
         $posX1 = 0;
         $posY1 = 0;
         $posX2 = $width - 1;
         $posY2 = $height - 1;
 
-        $color = (int)imagecolorallocatealpha($image, $rgba[0], $rgba[1], $rgba[2], $rgba[3]);
+        $color = (int)\imagecolorallocatealpha($image, $rgba[0], $rgba[1], $rgba[2], $rgba[3]);
 
         for ($i = 0; $i < $size; $i++) {
-            imagerectangle($image, $posX1++, $posY1++, $posX2--, $posY2--, $color);
+            \imagerectangle($image, $posX1++, $posY1++, $posX2--, $posY2--, $color);
         }
     }
 }

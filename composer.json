@@ -34,7 +34,7 @@
     },
 
     "require-dev"  : {
-        "jbzoo/toolbox-dev" : "^3.1.0"
+        "jbzoo/toolbox-dev" : "^3.2.0"
     },
 
     "autoload"     : {
@@ -48,7 +48,10 @@
     },
 
     "config"       : {
-        "optimize-autoloader" : true
+        "optimize-autoloader" : true,
+        "allow-plugins"       : {
+            "composer/package-versions-deprecated" : true
+        }
     },
 
     "extra"        : {

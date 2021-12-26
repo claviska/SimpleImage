@@ -104,14 +104,14 @@ final class Image
 
         if (
             $filename
-            && is_string($filename)
-            && ctype_print($filename)
+            && \is_string($filename)
+            && \ctype_print($filename)
             && FS::isFile($filename)
         ) {
             $this->loadFile($filename);
-        } elseif (is_resource($filename) && self::isGdRes($filename)) {
+        } elseif (\is_resource($filename) && self::isGdRes($filename)) {
             $this->loadResource($filename);
-        } elseif ($filename && is_string($filename)) {
+        } elseif ($filename && \is_string($filename)) {
             $this->loadString($filename, $strict);
         }
     }
@@ -214,7 +214,7 @@ final class Image
         }
 
         $dir = FS::dirName($filename);
-        if (is_dir($dir)) {
+        if (\is_dir($dir)) {
             $this->internalSave($filename, $quality);
         } else {
             throw new Exception("Target directory \"{$dir}\" not exists");
@@ -263,7 +263,7 @@ final class Image
     protected function savePng(string $filename, int $quality = self::DEFAULT_QUALITY): bool
     {
         if ($this->image) {
-            return imagepng($this->image, $filename ?: null, (int)round(9 * $quality / 100));
+            return \imagepng($this->image, $filename ?: null, (int)\round(9 * $quality / 100));
         }
 
         throw new Exception('Image resource ins not defined');
@@ -278,7 +278,7 @@ final class Image
     {
         if ($this->image) {
             //imageinterlace($this->image, true);
-            return imagejpeg($this->image, $filename ?: null, (int)round($quality));
+            return \imagejpeg($this->image, $filename ?: null, (int)\round($quality));
         }
 
         throw new Exception('Image resource ins not defined');
@@ -291,7 +291,7 @@ final class Image
     protected function saveGif(string $filename): bool
     {
         if ($this->image) {
-            return imagegif($this->image, $filename ?: null);
+            return \imagegif($this->image, $filename ?: null);
         }
 
         throw new Exception('Image resource ins not defined');
@@ -304,12 +304,12 @@ final class Image
      */
     protected function saveWebP(string $filename): bool
     {
-        if (!function_exists('imagewebp')) {
+        if (!\function_exists('\imagewebp')) {
             throw new Exception('Function imagewebp() is not available. Rebuild your ext-gd for PHP');
         }
 
         if ($this->image) {
-            return imagewebp($this->image, $filename ?: null);
+            return \imagewebp($this->image, $filename ?: null);
         }
 
         throw new Exception('Image resource ins not defined');
@@ -329,7 +329,7 @@ final class Image
         $quality = $quality ?: $this->quality;
         $quality = Helper::quality($quality);
 
-        $format = strtolower(FS::ext($filename));
+        $format = \strtolower(FS::ext($filename));
         if (!Helper::isSupportedFormat($format)) {
             $format = $this->mime;
         }
@@ -469,33 +469,38 @@ final class Image
     {
         // Gather meta data
         if (null === $image && $this->filename) {
-            if ($imageInfo = getimagesize($this->filename)) {
+            if ($imageInfo = \getimagesize($this->filename)) {
                 $this->image = $this->imageCreate((string)($imageInfo['mime'] ?? ''));
             }
-        } elseif (is_resource($image) && self::isGdRes($image)) {
+        } elseif (\is_resource($image) && self::isGdRes($image)) {
             $this->image = $image;
             $imageInfo = [
-                '0'    => (int)imagesx($this->image),
-                '1'    => (int)imagesy($this->image),
+                '0'    => (int)\imagesx($this->image),
+                '1'    => (int)\imagesy($this->image),
                 'mime' => self::DEFAULT_MIME,
             ];
-        } elseif (is_string($image)) {
+        } elseif (\is_string($image)) {
             if ($strict) {
-                $cleanedString = str_replace(' ', '+', (string)preg_replace('#^data:image/[^;]+;base64,#', '', $image));
-                if (base64_decode($cleanedString, true) === false) {
+                $cleanedString = \str_replace(
+                    ' ',
+                    '+',
+                    (string)\preg_replace('#^data:image/[^;]+;base64,#', '', $image)
+                );
+
+                if (\base64_decode($cleanedString, true) === false) {
                     throw new Exception('Invalid image source.');
                 }
             }
 
             $imageBin = Helper::strToBin($image);
-            $imageInfo = getimagesizefromstring($imageBin);
-            $this->image = imagecreatefromstring($imageBin) ?: null;
+            $imageInfo = \getimagesizefromstring($imageBin);
+            $this->image = \imagecreatefromstring($imageBin) ?: null;
         } else {
             throw new Exception('Undefined format of source. Only "resource|string" are expected');
         }
 
         // Set internal state
-        if (is_array($imageInfo)) {
+        if (\is_array($imageInfo)) {
             $this->mime = $imageInfo['mime'] ?? null;
             $this->width = (int)($imageInfo['0'] ?? 0);
             $this->height = (int)($imageInfo['1'] ?? 0);
@@ -535,7 +540,7 @@ final class Image
     protected function destroyImage(): void
     {
         if ($this->image && self::isGdRes($this->image)) {
-            imagedestroy($this->image);
+            \imagedestroy($this->image);
             $this->image = null;
         }
     }
@@ -548,7 +553,7 @@ final class Image
         $result = [];
 
         if ($this->filename && Sys::isFunc('exif_read_data') && Helper::isJpeg($this->mime)) {
-            $result = exif_read_data($this->filename) ?: [];
+            $result = \exif_read_data($this->filename) ?: [];
         }
 
         return $result;
@@ -569,14 +574,14 @@ final class Image
         }
 
         if (Helper::isJpeg($format)) {
-            $result = imagecreatefromjpeg($this->filename);
+            $result = \imagecreatefromjpeg($this->filename);
         } elseif (Helper::isPng($format)) {
-            $result = imagecreatefrompng($this->filename);
+            $result = \imagecreatefrompng($this->filename);
         } elseif (Helper::isGif($format)) {
-            $result = imagecreatefromgif($this->filename);
-        } elseif (function_exists('imagecreatefromwebp') && Helper::isWebp($format)) {
+            $result = \imagecreatefromgif($this->filename);
+        } elseif (\function_exists('imagecreatefromwebp') && Helper::isWebp($format)) {
             /** @phan-suppress-next-line PhanUndeclaredFunction */
-            $result = imagecreatefromwebp($this->filename);
+            $result = \imagecreatefromwebp($this->filename);
         } else {
             throw new Exception("Invalid image: {$this->filename}");
         }
@@ -647,7 +652,7 @@ final class Image
 
         $this->width = VarFilter::int($width);
         $this->height = VarFilter::int($height);
-        if ($newImageRes = imagecreatetruecolor($this->width, $this->height)) {
+        if ($newImageRes = \imagecreatetruecolor($this->width, $this->height)) {
             $this->image = $newImageRes;
         } else {
             throw new Exception("Can't create empty image resource");
@@ -678,7 +683,7 @@ final class Image
         $height = VarFilter::int($height);
 
         // Generate new GD image
-        if (!$newImage = imagecreatetruecolor($width, $height)) {
+        if (!$newImage = \imagecreatetruecolor($width, $height)) {
             throw new Exception("Can't create new image resource");
         }
 
@@ -688,11 +693,11 @@ final class Image
 
         if ($this->isGif()) {
             // Preserve transparency in GIFs
-            $transIndex = (int)imagecolortransparent($this->image);
-            $palletSize = imagecolorstotal($this->image);
+            $transIndex = (int)\imagecolortransparent($this->image);
+            $palletSize = \imagecolorstotal($this->image);
 
             if ($transIndex >= 0 && $transIndex < $palletSize) {
-                $trColor = imagecolorsforindex($this->image, $transIndex);
+                $trColor = \imagecolorsforindex($this->image, $transIndex);
 
                 $red = 0;
                 $green = 0;
@@ -704,10 +709,10 @@ final class Image
                     $blue = VarFilter::int($trColor['blue']);
                 }
 
-                $transIndex = (int)imagecolorallocate($newImage, $red, $green, $blue);
+                $transIndex = (int)\imagecolorallocate($newImage, $red, $green, $blue);
 
-                imagefill($newImage, 0, 0, $transIndex);
-                imagecolortransparent($newImage, $transIndex);
+                \imagefill($newImage, 0, 0, $transIndex);
+                \imagecolortransparent($newImage, $transIndex);
             }
         } else {
             // Preserve transparency in PNG
@@ -715,7 +720,7 @@ final class Image
         }
 
         // Resize
-        imagecopyresampled($newImage, $this->image, 0, 0, 0, 0, $width, $height, $this->width, $this->height);
+        \imagecopyresampled($newImage, $this->image, 0, 0, 0, 0, $width, $height, $this->width, $this->height);
 
         // Update meta data
         $this->replaceImage($newImage);
@@ -791,8 +796,8 @@ final class Image
             $this->fitToWidth($width);
         }
 
-        $left = (int)floor(($this->width / 2) - ($width / 2));
-        $top = (int)floor(($this->height / 2) - ($height / 2));
+        $left = (int)\floor(($this->width / 2) - ($width / 2));
+        $top = (int)\floor(($this->height / 2) - ($height / 2));
 
         // Return trimmed image
         $right = $width + $left;
@@ -864,11 +869,11 @@ final class Image
         $croppedH = $bottom - $top;
 
         // Perform crop
-        $newImage = imagecreatetruecolor($croppedW, $croppedH);
+        $newImage = \imagecreatetruecolor($croppedW, $croppedH);
         Helper::addAlpha($newImage);
 
-        if (is_resource($newImage) && is_resource($this->image)) {
-            imagecopyresampled($newImage, $this->image, 0, 0, $left, $top, $croppedW, $croppedH, $croppedW, $croppedH);
+        if (\is_resource($newImage) && \is_resource($this->image)) {
+            \imagecopyresampled($newImage, $this->image, 0, 0, $left, $top, $croppedW, $croppedH, $croppedW, $croppedH);
         } else {
             throw new Exception("Can't crop image, image resource is undefined");
         }
@@ -890,8 +895,8 @@ final class Image
             $this->destroyImage();
 
             $this->image = $newImage;
-            $this->width = (int)imagesx($this->image);
-            $this->height = (int)imagesy($this->image);
+            $this->width = (int)\imagesx($this->image);
+            $this->height = (int)\imagesy($this->image);
         }
     }
 
@@ -903,7 +908,7 @@ final class Image
      */
     public function autoOrient(): self
     {
-        if (!array_key_exists('Orientation', $this->exif)) {
+        if (!\array_key_exists('Orientation', $this->exif)) {
             return $this;
         }
 
@@ -991,19 +996,19 @@ final class Image
      */
     public function addFilter($filter): self
     {
-        $args = func_get_args();
+        $args = \func_get_args();
         $args[0] = $this->image;
 
-        if (is_string($filter)) {
-            if (method_exists(Filter::class, $filter)) {
+        if (\is_string($filter)) {
+            if (\method_exists(Filter::class, $filter)) {
                 /** @var \Closure $filterFunc */
                 $filterFunc = [Filter::class, $filter];
-                $newImage = call_user_func_array($filterFunc, $args);
+                $newImage = \call_user_func_array($filterFunc, $args);
             } else {
                 throw new Exception("Undefined Image Filter: {$filter}");
             }
-        } elseif (is_callable($filter)) {
-            $newImage = call_user_func_array($filter, $args);
+        } elseif (\is_callable($filter)) {
+            $newImage = \call_user_func_array($filter, $args);
         } else {
             throw new Exception('Undefined filter type');
         }
@@ -1029,7 +1034,7 @@ final class Image
     {
         [$mimeType, $binaryData] = $this->renderBinary($format, $quality);
 
-        $result = base64_encode($binaryData);
+        $result = \base64_encode($binaryData);
 
         if ($addMime) {
             $result = 'data:' . $mimeType . ';base64,' . $result;
@@ -1066,9 +1071,9 @@ final class Image
             throw new Exception('Image resource not defined');
         }
 
-        ob_start();
+        \ob_start();
         $mimeType = $this->renderImageByFormat($format, '', (int)$quality);
-        $imageData = ob_get_clean();
+        $imageData = \ob_get_clean();
 
         return [$mimeType, $imageData];
     }
@@ -1126,6 +1131,6 @@ final class Image
      */
     public static function isGdRes($variable): bool
     {
-        return is_resource($variable) && strtolower(get_resource_type($variable)) === 'gd';
+        return \is_resource($variable) && \strtolower(\get_resource_type($variable)) === 'gd';
     }
 }

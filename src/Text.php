@@ -57,7 +57,7 @@ final class Text
     public static function render($image, string $text, string $fontFile, array $params = []): void
     {
         // Set vars
-        $params = array_merge(self::$default, $params);
+        $params = \array_merge(self::$default, $params);
         $angle = Helper::rotate((float)$params['angle']);
         $position = Helper::position((string)$params['position']);
 
@@ -69,11 +69,11 @@ final class Text
         $strokeSize = (int)$params['stroke-size'];
         $strokeSpacing = (int)$params['stroke-spacing'];
 
-        $imageWidth = (int)imagesx($image);
-        $imageHeight = (int)imagesy($image);
+        $imageWidth = (int)\imagesx($image);
+        $imageHeight = (int)\imagesy($image);
 
-        $color = is_string($params['color']) ? $params['color'] : (array)$params['color'];
-        $strokeColor = is_string($params['stroke-color']) ? $params['stroke-color'] : (array)$params['stroke-color'];
+        $color = \is_string($params['color']) ? $params['color'] : (array)$params['color'];
+        $strokeColor = \is_string($params['stroke-color']) ? $params['stroke-color'] : (array)$params['stroke-color'];
 
         $colorArr = self::getColor($image, $color);
         [$textWidth, $textHeight] = self::getTextBoxSize($fSize, $angle, $fontFile, $text);
@@ -88,10 +88,10 @@ final class Text
         $textY = (int)($textCoords[1] ?? null);
 
         if ($strokeColor && $strokeSize) {
-            if (is_array($color) || is_array($strokeColor)) {
+            if (\is_array($color) || \is_array($strokeColor)) {
                 // Multi colored text and/or multi colored stroke
                 $strokeColor = self::getColor($image, $strokeColor);
-                $chars = str_split($text, 1);
+                $chars = \str_split($text, 1);
 
                 foreach ($chars as $key => $char) {
                     if ($key > 0) {
@@ -106,34 +106,34 @@ final class Text
                     self::renderStroke(
                         $image,
                         $char,
-                        [$fontFile, $fSize, current($colorArr), $angle],
+                        [$fontFile, $fSize, \current($colorArr), $angle],
                         [$textX, $textY],
-                        [$strokeSize, current($strokeColor)]
+                        [$strokeSize, \current($strokeColor)]
                     );
 
                     // #000 is 0, black will reset the array so we write it this way
-                    if (next($colorArr) === false) {
-                        reset($colorArr);
+                    if (\next($colorArr) === false) {
+                        \reset($colorArr);
                     }
 
                     // #000 is 0, black will reset the array so we write it this way
-                    if (next($strokeColor) === false) {
-                        reset($strokeColor);
+                    if (\next($strokeColor) === false) {
+                        \reset($strokeColor);
                     }
                 }
             } else {
                 $rgba = Helper::normalizeColor($strokeColor);
-                $strokeColor = imagecolorallocatealpha($image, $rgba[0], $rgba[1], $rgba[2], $rgba[3]);
+                $strokeColor = \imagecolorallocatealpha($image, $rgba[0], $rgba[1], $rgba[2], $rgba[3]);
                 self::renderStroke(
                     $image,
                     $text,
-                    [$fontFile, $fSize, current($colorArr), $angle],
+                    [$fontFile, $fSize, \current($colorArr), $angle],
                     [$textX, $textY],
                     [$strokeSize, $strokeColor]
                 );
             }
-        } elseif (is_array($color)) { // Multi colored text
-            $chars = str_split($text, 1);
+        } elseif (\is_array($color)) { // Multi colored text
+            $chars = \str_split($text, 1);
             foreach ($chars as $key => $char) {
                 if ($key > 0) {
                     $textX = self::getStrokeX($fSize, $angle, $fontFile, $chars, $key, $strokeSpacing, $textX);
@@ -144,12 +144,12 @@ final class Text
                     continue;
                 }
 
-                $fontInfo = [$fontFile, $fSize, current($colorArr), $angle];
+                $fontInfo = [$fontFile, $fSize, \current($colorArr), $angle];
                 self::internalRender($image, $char, $fontInfo, [$textX, $textY]);
 
                 // #000 is 0, black will reset the array so we write it this way
-                if (next($colorArr) === false) {
-                    reset($colorArr);
+                if (\next($colorArr) === false) {
+                    \reset($colorArr);
                 }
             }
         } else {
@@ -172,7 +172,7 @@ final class Text
         $result = [];
         foreach ($colors as $color) {
             $rgba = Helper::normalizeColor($color);
-            $result[] = imagecolorallocatealpha($image, $rgba[0], $rgba[1], $rgba[2], $rgba[3]);
+            $result[] = \imagecolorallocatealpha($image, $rgba[0], $rgba[1], $rgba[2], $rgba[3]);
         }
 
         return $result;
@@ -198,10 +198,10 @@ final class Text
             throw new Exception("Unable to load font: {$fontFile}");
         }
 
-        $box = imagettfbbox($fontSize, $angle, $fontFile, $text);
+        $box = \imagettfbbox($fontSize, $angle, $fontFile, $text);
         if ($box) {
-            $boxWidth = (int)abs($box[6] - $box[2]);
-            $boxHeight = (int)abs($box[7] - $box[1]);
+            $boxWidth = (int)\abs($box[6] - $box[2]);
+            $boxHeight = (int)\abs($box[7] - $box[1]);
         } else {
             throw new Exception("Can't get box size for {$fontSize}; {$angle}; {$fontFile}; {$text}");
         }
@@ -222,7 +222,7 @@ final class Text
         [$coordX, $coordY] = $coords;
         [$file, $size, $color, $angle] = $font;
 
-        imagettftext($image, $size, $angle, $coordX, $coordY, $color, $file, $text);
+        \imagettftext($image, $size, $angle, $coordX, $coordY, $color, $file, $text);
     }
 
     /**
@@ -240,13 +240,13 @@ final class Text
         [$file, $size, $color, $angle] = $font;
         [$strokeSize, $strokeColor] = $stroke;
 
-        for ($x = ($coordX - abs($strokeSize)); $x <= ($coordX + abs($strokeSize)); $x++) {
-            for ($y = ($coordY - abs($strokeSize)); $y <= ($coordY + abs($strokeSize)); $y++) {
-                imagettftext($image, $size, $angle, (int)$x, (int)$y, $strokeColor, $file, $text);
+        for ($x = ($coordX - \abs($strokeSize)); $x <= ($coordX + \abs($strokeSize)); $x++) {
+            for ($y = ($coordY - \abs($strokeSize)); $y <= ($coordY + \abs($strokeSize)); $y++) {
+                \imagettftext($image, $size, $angle, (int)$x, (int)$y, $strokeColor, $file, $text);
             }
         }
 
-        imagettftext($image, $size, $angle, $coordX, $coordY, $color, $file, $text);
+        \imagettftext($image, $size, $angle, $coordX, $coordY, $color, $file, $text);
     }
 
     /**
@@ -271,12 +271,12 @@ final class Text
         int $strokeSpacing,
         int $textX
     ): int {
-        $charSize = imagettfbbox($fontSize, $angle, $fontFile, $letters[$charKey - 1]);
+        $charSize = \imagettfbbox($fontSize, $angle, $fontFile, $letters[$charKey - 1]);
         if (!$charSize) {
             throw new Exception("Can't get StrokeX");
         }
 
-        $textX += abs($charSize[4] - $charSize[0]) + $strokeSpacing;
+        $textX += \abs($charSize[4] - $charSize[0]) + $strokeSpacing;
 
         return (int)$textX;
     }
