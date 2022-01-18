@@ -12,7 +12,7 @@ try {
   $image
     ->fromFile('parrot.jpg')              // load parrot.jpg
     ->autoOrient()                        // adjust orientation based on exif data
-    ->bestFit(300, 600)                   // proportinoally resize to fit inside a 250x400 box
+    ->bestFit(300, 600)                   // proportionally resize to fit inside a 250x400 box
     ->flip('x')                           // flip horizontally
     ->colorize('DarkGreen')               // tint dark green
     ->border('black', 5)                  // add a 5 pixel black border
