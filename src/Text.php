@@ -29,7 +29,7 @@ final class Text
     /**
      * @var array
      */
-    protected static $default = [
+    protected static array $default = [
         'position'       => 'bottom',
         'angle'          => 0,
         'font-size'      => 32,
@@ -91,7 +91,7 @@ final class Text
             if (\is_array($color) || \is_array($strokeColor)) {
                 // Multi colored text and/or multi colored stroke
                 $strokeColor = self::getColor($image, $strokeColor);
-                $chars = \str_split($text, 1);
+                $chars = \str_split($text);
 
                 foreach ($chars as $key => $char) {
                     if ($key > 0) {
@@ -111,12 +111,12 @@ final class Text
                         [$strokeSize, \current($strokeColor)]
                     );
 
-                    // #000 is 0, black will reset the array so we write it this way
+                    // #000 is 0, black will reset the array, so we write it this way
                     if (\next($colorArr) === false) {
                         \reset($colorArr);
                     }
 
-                    // #000 is 0, black will reset the array so we write it this way
+                    // #000 is 0, black will reset the array, so we write it this way
                     if (\next($strokeColor) === false) {
                         \reset($strokeColor);
                     }
@@ -133,7 +133,7 @@ final class Text
                 );
             }
         } elseif (\is_array($color)) { // Multi colored text
-            $chars = \str_split($text, 1);
+            $chars = \str_split($text);
             foreach ($chars as $key => $char) {
                 if ($key > 0) {
                     $textX = self::getStrokeX($fSize, $angle, $fontFile, $chars, $key, $strokeSpacing, $textX);
@@ -147,7 +147,7 @@ final class Text
                 $fontInfo = [$fontFile, $fSize, \current($colorArr), $angle];
                 self::internalRender($image, $char, $fontInfo, [$textX, $textY]);
 
-                // #000 is 0, black will reset the array so we write it this way
+                // #000 is 0, black will reset the array, so we write it this way
                 if (\next($colorArr) === false) {
                     \reset($colorArr);
                 }

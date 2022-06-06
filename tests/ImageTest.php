@@ -27,7 +27,7 @@ use JBZoo\Utils\Sys;
  */
 class ImageTest extends PHPUnit
 {
-    protected $class = Image::class;
+    protected string $class = Image::class;
 
     public function testCreateInstance()
     {

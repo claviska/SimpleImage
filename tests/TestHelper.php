@@ -29,7 +29,7 @@ class TestHelper
      * @param $filename
      * @return string
      */
-    public static function getActual($filename)
+    public static function getActual($filename): string
     {
         $filename = self::camelCase2Human($filename);
         return FS::clean(__DIR__ . "/../build/images/{$filename}");
@@ -58,7 +58,7 @@ class TestHelper
      * @param string $expected
      * @param string $actual
      */
-    public static function isFileEq($expected, $actual)
+    public static function isFileEq(string $expected, string $actual)
     {
         $expected = realpath($expected);
         $actual = realpath($actual);
@@ -88,7 +88,7 @@ class TestHelper
      * @param string $input
      * @return mixed|string
      */
-    public static function camelCase2Human($input)
+    public static function camelCase2Human(string $input)
     {
         $original = $input;
 
@@ -107,7 +107,7 @@ class TestHelper
         $output = trim($output);
         $output = strtolower($output);
 
-        if (strlen($output) == 0) {
+        if ('' === $output) {
             return $original;
         }
 

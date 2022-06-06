@@ -57,7 +57,7 @@ final class Image
     /**
      * @var int
      */
-    protected $quality = self::DEFAULT_QUALITY;
+    protected int $quality = self::DEFAULT_QUALITY;
 
     /**
      * @var string|null
@@ -67,27 +67,27 @@ final class Image
     /**
      * @var array
      */
-    protected $exif = [];
+    protected array $exif = [];
 
     /**
      * @var int
      */
-    protected $width = 0;
+    protected int $width = 0;
 
     /**
      * @var int
      */
-    protected $height = 0;
+    protected int $height = 0;
 
     /**
      * @var string|null
      */
-    protected $orient;
+    protected ?string $orient;
 
     /**
      * @var string|null
      */
-    protected $mime;
+    protected ?string $mime;
 
     /**
      * Image constructor.
@@ -101,6 +101,10 @@ final class Image
     public function __construct($filename = null, bool $strict = false)
     {
         Helper::checkGD();
+
+        $this->orient = null;
+        $this->filename = null;
+        $this->mime = null;
 
         if (
             $filename
@@ -456,7 +460,7 @@ final class Image
     }
 
     /**
-     * Get meta data of image or base64 string
+     * Get metadata of image or base64 string
      *
      * @param resource|string|null $image
      * @param bool                 $strict
@@ -693,11 +697,11 @@ final class Image
 
         if ($this->isGif()) {
             // Preserve transparency in GIFs
-            $transIndex = (int)\imagecolortransparent($this->image);
+            $transIndex = \imagecolortransparent($this->image);
             $palletSize = \imagecolorstotal($this->image);
 
             if ($transIndex >= 0 && $transIndex < $palletSize) {
-                $trColor = \imagecolorsforindex($this->image, $transIndex);
+                $trColor = \imagecolorsforindex($this->image, $transIndex ?: 0);
 
                 $red = 0;
                 $green = 0;

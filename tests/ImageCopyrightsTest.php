@@ -23,6 +23,6 @@ namespace JBZoo\PHPUnit;
  */
 class ImageCopyrightsTest extends AbstractCopyrightTest
 {
-    protected $packageName = "Image";
+    protected $packageName     = "Image";
     protected $isPhpStrictType = true;
 }

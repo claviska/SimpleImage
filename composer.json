@@ -12,29 +12,29 @@
         },
         {
             "name"     : "Cory LaViska",
-            "homepage" : "http://www.abeautifulsite.net/",
+            "homepage" : "https://www.abeautifulsite.net/",
             "role"     : "Developer"
         },
         {
             "name"     : "Nazar Mokrynskyi",
             "email"    : "nazar@mokrynskyi.com",
-            "homepage" : "http://cleverstyle.org/",
+            "homepage" : "https://cleverstyle.org/",
             "role"     : "Developer"
         }
     ],
 
     "require"      : {
-        "php"         : "^7.2",
+        "php"         : "^7.4",
         "ext-gd"      : "*",
         "ext-exif"    : "*",
         "ext-ctype"   : "*",
 
-        "jbzoo/utils" : "^4.5.0",
-        "jbzoo/data"  : "^4.3.0"
+        "jbzoo/utils" : "^4.5|^5.0",
+        "jbzoo/data"  : "^4.3|^5.0"
     },
 
     "require-dev"  : {
-        "jbzoo/toolbox-dev" : "^3.2.0"
+        "jbzoo/toolbox-dev" : "^4.0.1"
     },
 
     "autoload"     : {

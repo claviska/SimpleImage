@@ -35,7 +35,7 @@ jobs:
       JBZOO_COMPOSER_UPDATE_FLAGS: ${{ matrix.composer_flags }}
     strategy:
       matrix:
-        php-version: [ 7.2, 7.3, 7.4 ]
+        php-version: [ 7.4, 8.0, 8.1 ]
         composer_flags: [ "--prefer-lowest", "" ]
     steps:
       - name: Checkout code
@@ -58,8 +58,8 @@ jobs:
 
       - name: Uploading coverage to coveralls
         env:
-            COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: make report-coveralls --no-print-directory
+          COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: make report-coveralls --no-print-directory || true
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v2
@@ -74,7 +74,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php-version: [ 7.2, 7.3, 7.4 ]
+        php-version: [ 7.4, 8.0, 8.1 ]
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -85,8 +85,8 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-version }}
-          extensions: ast
           tools: composer
+          extensions: ast
 
       - name: Build the Project
         run: make update --no-print-directory
@@ -107,7 +107,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php-version: [ 7.2, 7.3, 7.4 ]
+        php-version: [ 7.4, 8.0, 8.1 ]
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
