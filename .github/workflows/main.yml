@@ -59,7 +59,7 @@ jobs:
       - name: Uploading coverage to coveralls
         env:
             COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: make report-coveralls --no-print-directory
+        run: make report-coveralls --no-print-directory || true
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v2
@@ -85,8 +85,8 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-version }}
-          extensions: ast
           tools: composer
+          extensions: ast
 
       - name: Build the Project
         run: make update --no-print-directory
