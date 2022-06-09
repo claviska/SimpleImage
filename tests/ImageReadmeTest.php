@@ -24,12 +24,5 @@ namespace JBZoo\PHPUnit;
  */
 class ImageReadmeTest extends AbstractReadmeTest
 {
-    protected $packageName = 'Image';
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->params['strict_types'] = true;
-        $this->params['travis'] = false;
-    }
+    protected string $packageName = 'Image';
 }

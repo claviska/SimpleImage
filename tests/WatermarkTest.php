@@ -94,7 +94,7 @@ class WatermarkTest extends PHPUnit
 
         $img = new Image();
         $img->loadFile($original)
-            ->overlay($overlay, 'bottom right')
+            ->overlay($overlay)
             ->saveAs($actual);
 
         TestHelper::isFileEq($excepted, $actual);

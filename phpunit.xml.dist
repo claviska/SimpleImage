@@ -11,7 +11,8 @@
     @copyright  Copyright (C) JBZoo.com, All rights reserved.
     @link       https://github.com/JBZoo/Image
 -->
-<phpunit bootstrap="tests/autoload.php"
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         bootstrap="tests/autoload.php"
          colors="true"
          convertErrorsToExceptions="true"
          convertNoticesToExceptions="true"
@@ -23,7 +24,18 @@
          stopOnSkipped="false"
          stopOnRisky="false"
          verbose="false"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
 >
+    <coverage processUncoveredFiles="true">
+        <include>
+            <directory suffix=".php">src</directory>
+        </include>
+        <report>
+            <clover outputFile="build/coverage_xml/main.xml"/>
+            <php outputFile="build/coverage_cov/main.cov"/>
+            <text outputFile="php://stdout" showUncoveredFiles="false" showOnlySummary="true"/>
+        </report>
+    </coverage>
 
     <testsuites>
         <testsuite name="PHPUnit">
@@ -31,17 +43,7 @@
         </testsuite>
     </testsuites>
 
-    <filter>
-        <whitelist processUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">src</directory>
-        </whitelist>
-    </filter>
-
     <logging>
-        <log type="coverage-clover" target="build/coverage_xml/main.xml"/>
-        <log type="coverage-php" target="build/coverage_cov/main.cov"/>
-        <log type="junit" target="build/coverage_junit/main.xml"/>
-        <log type="coverage-text" target="php://stdout" showUncoveredFiles="false" showOnlySummary="true"/>
+        <junit outputFile="build/coverage_junit/main.xml"/>
     </logging>
-
 </phpunit>

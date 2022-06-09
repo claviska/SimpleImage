@@ -26,20 +26,20 @@ use JBZoo\Utils\FS;
 class TestHelper
 {
     /**
-     * @param $filename
+     * @param string $filename
      * @return string
      */
-    public static function getActual($filename)
+    public static function getActual(string $filename): string
     {
         $filename = self::camelCase2Human($filename);
         return FS::clean(__DIR__ . "/../build/images/{$filename}");
     }
 
     /**
-     * @param $filename
+     * @param string $filename
      * @return string
      */
-    public static function getExpected($filename)
+    public static function getExpected(string $filename): string
     {
         $filename = self::camelCase2Human($filename);
         return FS::clean(__DIR__ . "/expected/{$filename}");
@@ -49,7 +49,7 @@ class TestHelper
      * @param $filename
      * @return string
      */
-    public static function getOrig($filename)
+    public static function getOrig($filename): string
     {
         return FS::clean(__DIR__ . "/resources/{$filename}");
     }
@@ -58,7 +58,7 @@ class TestHelper
      * @param string $expected
      * @param string $actual
      */
-    public static function isFileEq($expected, $actual)
+    public static function isFileEq(string $expected, string $actual)
     {
         $expected = realpath($expected);
         $actual = realpath($actual);
@@ -88,13 +88,12 @@ class TestHelper
      * @param string $input
      * @return mixed|string
      */
-    public static function camelCase2Human($input)
+    public static function camelCase2Human(string $input)
     {
         $original = $input;
 
         if (strpos($input, '\\') !== false) {
             $input = explode('\\', $input);
-            reset($input);
             $input = end($input);
         }
 
@@ -107,7 +106,7 @@ class TestHelper
         $output = trim($output);
         $output = strtolower($output);
 
-        if (strlen($output) == 0) {
+        if ('' === $output) {
             return $original;
         }
 

@@ -48,7 +48,7 @@ class IssuesTest extends PHPUnit
 
         $img = new Image($base);
 
-        if ($img->getHeight() != $img->getWidth()) {
+        if ($img->getHeight() !== $img->getWidth()) {
 
             if ($img->getWidth() < 175) {
                 $img->fitToWidth($img->getWidth());

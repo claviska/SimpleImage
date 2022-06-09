@@ -37,9 +37,9 @@ final class Filter
     /**
      * Add sepia effect (emulation)
      *
-     * @param resource $image Image GD resource
+     * @param \GdImage $image Image GD resource
      */
-    public static function sepia($image): void
+    public static function sepia(\GdImage $image): void
     {
         self::grayscale($image);
         \imagefilter($image, \IMG_FILTER_COLORIZE, 100, 50, 0);
@@ -48,9 +48,9 @@ final class Filter
     /**
      * Add grayscale effect
      *
-     * @param resource $image Image GD resource
+     * @param \GdImage $image Image GD resource
      */
-    public static function grayscale($image): void
+    public static function grayscale(\GdImage $image): void
     {
         \imagefilter($image, \IMG_FILTER_GRAYSCALE);
     }
@@ -58,10 +58,10 @@ final class Filter
     /**
      * Pixelate effect
      *
-     * @param resource $image     Image GD resource
+     * @param \GdImage $image     Image GD resource
      * @param int      $blockSize Size in pixels of each resulting block
      */
-    public static function pixelate($image, int $blockSize = 10): void
+    public static function pixelate(\GdImage $image, int $blockSize = 10): void
     {
         $blockSize = VarFilter::int($blockSize);
         \imagefilter($image, \IMG_FILTER_PIXELATE, $blockSize);
@@ -70,9 +70,9 @@ final class Filter
     /**
      * Edge Detect
      *
-     * @param resource $image Image GD resource
+     * @param \GdImage $image Image GD resource
      */
-    public static function edges($image): void
+    public static function edges(\GdImage $image): void
     {
         \imagefilter($image, \IMG_FILTER_EDGEDETECT);
     }
@@ -80,9 +80,9 @@ final class Filter
     /**
      * Emboss
      *
-     * @param resource $image Image GD resource
+     * @param \GdImage $image Image GD resource
      */
-    public static function emboss($image): void
+    public static function emboss(\GdImage $image): void
     {
         \imagefilter($image, \IMG_FILTER_EMBOSS);
     }
@@ -90,9 +90,9 @@ final class Filter
     /**
      * Negative
      *
-     * @param resource $image Image GD resource
+     * @param \GdImage $image Image GD resource
      */
-    public static function invert($image): void
+    public static function invert(\GdImage $image): void
     {
         \imagefilter($image, \IMG_FILTER_NEGATE);
     }
@@ -100,11 +100,11 @@ final class Filter
     /**
      * Blur effect
      *
-     * @param resource $image  Image GD resource
+     * @param \GdImage $image  Image GD resource
      * @param int      $passes Number of times to apply the filter
      * @param int      $type   BLUR_SEL|BLUR_GAUS
      */
-    public static function blur($image, int $passes = 1, int $type = self::BLUR_SEL): void
+    public static function blur(\GdImage $image, int $passes = 1, int $type = self::BLUR_SEL): void
     {
         $passes = Helper::blur($passes);
 
@@ -121,10 +121,10 @@ final class Filter
     /**
      * Change brightness
      *
-     * @param resource $image Image GD resource
+     * @param \GdImage $image Image GD resource
      * @param int      $level Darkest = -255, lightest = 255
      */
-    public static function brightness($image, int $level): void
+    public static function brightness(\GdImage $image, int $level): void
     {
         \imagefilter($image, \IMG_FILTER_BRIGHTNESS, Helper::brightness($level));
     }
@@ -132,10 +132,10 @@ final class Filter
     /**
      * Change contrast
      *
-     * @param resource $image Image GD resource
+     * @param \GdImage $image Image GD resource
      * @param int      $level Min = -100, max = 100
      */
-    public static function contrast($image, int $level): void
+    public static function contrast(\GdImage $image, int $level): void
     {
         \imagefilter($image, \IMG_FILTER_CONTRAST, Helper::contrast($level));
     }
@@ -143,14 +143,14 @@ final class Filter
     /**
      * Set colorize
      *
-     * @param resource $image       Image GD resource
+     * @param \GdImage $image       Image GD resource
      * @param string   $color       Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
      *                              Where red, green, blue - integers 0-255, alpha - integer 0-127
      * @param float    $opacity     0-100
      *
      * @throws \JBZoo\Utils\Exception
      */
-    public static function colorize($image, string $color, float $opacity): void
+    public static function colorize(\GdImage $image, string $color, float $opacity): void
     {
         $rgba = Helper::normalizeColor($color);
         $alpha = Helper::opacity2Alpha($opacity);
@@ -165,9 +165,9 @@ final class Filter
     /**
      * Mean Remove
      *
-     * @param resource $image Image GD resource
+     * @param \GdImage $image Image GD resource
      */
-    public static function meanRemove($image): void
+    public static function meanRemove(\GdImage $image): void
     {
         \imagefilter($image, \IMG_FILTER_MEAN_REMOVAL);
     }
@@ -175,10 +175,10 @@ final class Filter
     /**
      * Smooth effect
      *
-     * @param resource $image  Image GD resource
+     * @param \GdImage $image  Image GD resource
      * @param int      $passes Number of times to apply the filter (1 - 2048)
      */
-    public static function smooth($image, int $passes = 1): void
+    public static function smooth(\GdImage $image, int $passes = 1): void
     {
         \imagefilter($image, \IMG_FILTER_SMOOTH, Helper::smooth($passes));
     }
@@ -186,16 +186,16 @@ final class Filter
     /**
      * Desaturate
      *
-     * @param resource $image   Image GD resource
+     * @param \GdImage $image   Image GD resource
      * @param int      $percent Level of desaturization.
-     * @return resource
+     * @return \GdImage
      */
-    public static function desaturate($image, int $percent = 100)
+    public static function desaturate(\GdImage $image, int $percent = 100): \GdImage
     {
         // Determine percentage
         $percent = Helper::percent($percent);
-        $width = (int)\imagesx($image);
-        $height = (int)\imagesy($image);
+        $width = \imagesx($image);
+        $height = \imagesy($image);
 
         if ($percent === self::MAX_PERCENT) {
             self::grayscale($image);
@@ -224,18 +224,18 @@ final class Filter
     /**
      * Changes the opacity level of the image
      *
-     * @param resource  $image   Image GD resource
+     * @param \GdImage  $image   Image GD resource
      * @param float|int $opacity 0-1 or 0-100
      *
-     * @return resource|false
+     * @return \GdImage
      */
-    public static function opacity($image, $opacity)
+    public static function opacity(\GdImage $image, float|int $opacity): \GdImage
     {
         // Determine opacity
         $opacity = Helper::opacity($opacity);
 
-        $width = (int)\imagesx($image);
-        $height = (int)\imagesy($image);
+        $width = \imagesx($image);
+        $height = \imagesy($image);
 
         if ($newImage = \imagecreatetruecolor($width, $height)) {
             // Set a White & Transparent Background Color
@@ -266,21 +266,27 @@ final class Filter
     /**
      * Rotate an image
      *
-     * @param resource     $image   Image GD resource
+     * @param \GdImage     $image   Image GD resource
      * @param int          $angle   -360 < x < 360
-     * @param string|array $bgColor Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
+     * @param array|string $bgColor Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
      *                              Where red, green, blue - integers 0-255, alpha - integer 0-127
-     * @return resource|false
+     * @return \GdImage
      * @throws \JBZoo\Utils\Exception
      */
-    public static function rotate($image, int $angle, $bgColor = self::DEFAULT_BACKGROUND)
-    {
+    public static function rotate(
+        \GdImage $image,
+        int $angle,
+        array|string $bgColor = self::DEFAULT_BACKGROUND
+    ): \GdImage {
         // Perform the rotation
         $angle = Helper::rotate($angle);
         $rgba = Helper::normalizeColor($bgColor);
 
         $newBgColor = (int)\imagecolorallocatealpha($image, $rgba[0], $rgba[1], $rgba[2], $rgba[3]);
         $newImage = \imagerotate($image, -($angle), $newBgColor);
+        if (!$newImage) {
+            throw new Exception("Image can't be rotated");
+        }
 
         Helper::addAlpha($newImage);
 
@@ -290,15 +296,15 @@ final class Filter
     /**
      * Flip an image horizontally or vertically
      *
-     * @param resource $image     GD resource
+     * @param \GdImage $image     GD resource
      * @param string   $direction Direction of flipping - x|y|yx|xy
-     * @return resource
+     * @return \GdImage
      */
-    public static function flip($image, string $direction)
+    public static function flip(\GdImage $image, string $direction): \GdImage
     {
         $direction = Helper::direction($direction);
-        $width = (int)\imagesx($image);
-        $height = (int)\imagesy($image);
+        $width = \imagesx($image);
+        $height = \imagesy($image);
 
         if ($newImage = \imagecreatetruecolor($width, $height)) {
             Helper::addAlpha($newImage);
@@ -325,15 +331,15 @@ final class Filter
     /**
      * Fill image with color
      *
-     * @param resource     $image GD resource
+     * @param \GdImage     $image GD resource
      * @param array|string $color Hex color string, array(red, green, blue) or array(red, green, blue, alpha).
      *                            Where red, green, blue - integers 0-255, alpha - integer 0-127
      * @throws \JBZoo\Utils\Exception
      */
-    public static function fill($image, $color = self::DEFAULT_BACKGROUND): void
+    public static function fill(\GdImage $image, array|string $color = self::DEFAULT_BACKGROUND): void
     {
-        $width = (int)\imagesx($image);
-        $height = (int)\imagesy($image);
+        $width = \imagesx($image);
+        $height = \imagesy($image);
 
         $rgba = Helper::normalizeColor($color);
         $fillColor = (int)\imagecolorallocatealpha($image, $rgba[0], $rgba[1], $rgba[2], $rgba[3]);
@@ -345,14 +351,14 @@ final class Filter
     /**
      * Add text to an image
      *
-     * @param resource $image    GD resource
+     * @param \GdImage $image    GD resource
      * @param string   $text     Some text to output on image as watermark
      * @param string   $fontFile TTF font file path
      * @param array    $params
      * @throws Exception
      * @throws \JBZoo\Utils\Exception
      */
-    public static function text($image, string $text, string $fontFile, array $params = []): void
+    public static function text(\GdImage $image, string $text, string $fontFile, array $params = []): void
     {
         Text::render($image, $text, $fontFile, $params);
     }
@@ -360,11 +366,11 @@ final class Filter
     /**
      * Add border to an image
      *
-     * @param resource $image  Image GD resource
+     * @param \GdImage $image  Image GD resource
      * @param array    $params Some
      * @throws \JBZoo\Utils\Exception
      */
-    public static function border($image, array $params = []): void
+    public static function border(\GdImage $image, array $params = []): void
     {
         $params = \array_merge([
             'color' => '#333',
@@ -373,8 +379,8 @@ final class Filter
 
         $size = Vars::range((int)$params['size'], 1, 1000);
         $rgba = Helper::normalizeColor((string)$params['color']);
-        $width = (int)\imagesx($image);
-        $height = (int)\imagesy($image);
+        $width = \imagesx($image);
+        $height = \imagesy($image);
 
         $posX1 = 0;
         $posY1 = 0;

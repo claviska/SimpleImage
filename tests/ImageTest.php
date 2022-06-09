@@ -27,7 +27,7 @@ use JBZoo\Utils\Sys;
  */
 class ImageTest extends PHPUnit
 {
-    protected $class = Image::class;
+    protected string $class = Image::class;
 
     public function testCreateInstance()
     {
@@ -209,7 +209,7 @@ class ImageTest extends PHPUnit
         $actual = TestHelper::getActual(__FUNCTION__ . '.qwerty');
 
         $img = new Image();
-        isTrue($img->loadFile($original)->saveAs($actual));
+        isTrue((bool)$img->loadFile($original)->saveAs($actual));
     }
 
     public function testConvertToUndefinedPath()

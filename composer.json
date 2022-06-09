@@ -24,7 +24,7 @@
     ],
 
     "require"      : {
-        "php"         : "^7.2",
+        "php"         : "^8.0",
         "ext-gd"      : "*",
         "ext-exif"    : "*",
         "ext-ctype"   : "*",
@@ -34,7 +34,7 @@
     },
 
     "require-dev"  : {
-        "jbzoo/toolbox-dev" : "^3.2|^4.0.1"
+        "jbzoo/toolbox-dev" : "^4.0.1"
     },
 
     "autoload"     : {
