@@ -46,9 +46,10 @@ class SimpleImage {
    * Creates a new SimpleImage object.
    *
    * @param string $image An image file or a data URI to load.
+   * @param boolean $sslVerify Set to false to skip SSL validation.
    * @throws \Exception Thrown if the GD library is not found; file|URI or image data is invalid.
    */
-  public function __construct($image = '') {
+  public function __construct($image = '', $sslVerify = true) {
     // Check for the required GD extension
     if(extension_loaded('gd')) {
       // Ignore JPEG warnings that cause imagecreatefromjpeg() to fail
@@ -61,7 +62,7 @@ class SimpleImage {
     if(preg_match('/^data:(.*?);/', $image)) {
       $this->fromDataUri($image);
     } elseif($image) {
-      $this->fromFile($image);
+      $this->fromFile($image, $sslVerify);
     }
   }
 
@@ -118,58 +119,36 @@ class SimpleImage {
    * Loads an image from a file.
    *
    * @param string $file The image file to load.
+   * @param boolean $sslVerify Set to false to skip SSL validation.
    * @throws \Exception Thrown if file or image data is invalid.
    * @return \claviska\SimpleImage
    */
-  public function fromFile($file) {
-    // Check if the file exists and is readable. We're using fopen() instead of file_exists()
-    // because not all URL wrappers support the latter.
-    $handle = @fopen($file, 'r');
-    if($handle === false) {
+  public function fromFile($file, $sslVerify = true) {
+    // Set fopen options for SSL certificate validation. Setting $sslVerify to false  won't  won't
+    // trigger OpenSSL warnings and errors for invalid certificates (self-signed etc.).
+    $opts = [
+      "ssl" => [
+        "verify_peer"      => $sslVerify,
+        "verify_peer_name" => $sslVerify
+      ]
+    ];
+
+    // Check if the file exists and is readable.
+    $file = @file_get_contents($file, false, stream_context_create($opts));
+    if($file === false) {
       throw new \Exception("File not found: $file", self::ERR_FILE_NOT_FOUND);
     }
-    fclose($handle);
+
+    // Create image object from string
+    $this->image = imagecreatefromstring($file);
 
     // Get image info
-    $info = @getimagesize($file);
+    $info = @getimagesizefromstring($file);
     if($info === false) {
       throw new \Exception("Invalid image file: $file", self::ERR_INVALID_IMAGE);
     }
     $this->mimeType = $info['mime'];
 
-    // Create image object from file
-    switch($this->mimeType) {
-    case 'image/gif':
-      // Load the gif
-      $gif = imagecreatefromgif($file);
-      if($gif) {
-        // Copy the gif over to a true color image to preserve its transparency. This is a
-        // workaround to prevent imagepalettetruecolor() from borking transparency.
-        $width = imagesx($gif);
-        $height = imagesy($gif);
-        $this->image = imagecreatetruecolor((int) $width, (int) $height);
-        $transparentColor = imagecolorallocatealpha($this->image, 0, 0, 0, 127);
-        imagecolortransparent($this->image, $transparentColor);
-        imagefill($this->image, 0, 0, $transparentColor);
-        imagecopy($this->image, $gif, 0, 0, 0, 0, $width, $height);
-        imagedestroy($gif);
-      }
-      break;
-    case 'image/jpeg':
-      $this->image = imagecreatefromjpeg($file);
-      break;
-    case 'image/png':
-      $this->image = imagecreatefrompng($file);
-      break;
-    case 'image/webp':
-      $this->image = imagecreatefromwebp($file);
-      break;
-    case 'image/bmp':
-    case 'image/x-ms-bmp':
-    case 'image/x-windows-bmp':
-      $this->image = imagecreatefrombmp($file);
-      break;
-    }
     if(!$this->image) {
       throw new \Exception("Unsupported format: " . $this->mimeType, self::ERR_UNSUPPORTED_FORMAT);
     }
@@ -179,7 +158,7 @@ class SimpleImage {
 
     // Load exif data from JPEG images
     if($this->mimeType === 'image/jpeg' && function_exists('exif_read_data')) {
-      $this->exif = @exif_read_data($file);
+      $this->exif = @exif_read_data("data://image/jpeg;base64," . base64_encode($file));
     }
 
     return $this;
