@@ -31,7 +31,8 @@ class SimpleImage {
     ERR_LIB_NOT_LOADED = 8,
     ERR_UNSUPPORTED_FORMAT = 9,
     ERR_WEBP_NOT_ENABLED = 10,
-    ERR_WRITE = 11;
+    ERR_WRITE = 11,
+    ERR_INVALID_FLAG = 12;
 
 
   protected $image;
@@ -46,10 +47,10 @@ class SimpleImage {
    * Creates a new SimpleImage object.
    *
    * @param string $image An image file or a data URI to load.
-   * @param boolean $sslVerify Set to false to skip SSL validation.
+   * @param array $flags Optional override of default flags.
    * @throws \Exception Thrown if the GD library is not found; file|URI or image data is invalid.
    */
-  public function __construct($image = '', $sslVerify = true) {
+  public function __construct($image = '', $flags = []) {
     // Check for the required GD extension
     if(extension_loaded('gd')) {
       // Ignore JPEG warnings that cause imagecreatefromjpeg() to fail
@@ -58,11 +59,21 @@ class SimpleImage {
       throw new \Exception('Required extension GD is not loaded.', self::ERR_GD_NOT_ENABLED);
     }
 
+    // Associative array of flags.
+    $this->flags = [
+      "sslVerify" => true // Skip SSL peer validation
+    ];
+    
+    // Override default flag values.
+    foreach($flags as $flag => $value) {
+      $this->setFlag($flag, $value);
+    }
+
     // Load an image through the constructor
     if(preg_match('/^data:(.*?);/', $image)) {
       $this->fromDataUri($image);
     } elseif($image) {
-      $this->fromFile($image, $sslVerify);
+      $this->fromFile($image);
     }
   }
 
@@ -76,6 +87,37 @@ class SimpleImage {
     if($this->image !== null && is_resource($this->image) && $type_check) {
       imagedestroy($this->image);
     }
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  // Helper functions
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Set flag value.
+   *
+   * @param string $flag Name of the flag to set.
+   * @param boolean $value State of the flag.
+   * @throws \Exception Thrown if flag does not exist (no default value).
+   */
+  public function setFlag($flag, $value) {
+    // Throw if flag does not exist
+    if(!in_array($flag, array_keys($this->flags))) {
+      throw new \Exception('Invalid flag.', self::ERR_INVALID_FLAG);
+    }
+
+    // Set flag value by name
+    $this->flags[$flag] = $value;
+  }
+
+  /**
+   * Get flag value.
+   *
+   * @param string $flag Name of the flag to get.
+   * @return boolean|null
+   */
+  public function getFlag($flag) {
+    return in_array($flag, array_keys($this->flags)) ? $this->flags[$flag] : null;
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -123,9 +165,9 @@ class SimpleImage {
    * @throws \Exception Thrown if file or image data is invalid.
    * @return \claviska\SimpleImage
    */
-  public function fromFile($file, $sslVerify = true) {
-    // Set fopen options for SSL certificate validation. Setting $sslVerify to false  won't  won't
-    // trigger OpenSSL warnings and errors for invalid certificates (self-signed etc.).
+  public function fromFile($file) {
+    // Set fopen options.
+    $sslVerify = $this->getFlag("sslVerify"); // Don't perform peer validation when true
     $opts = [
       "ssl" => [
         "verify_peer"      => $sslVerify,
