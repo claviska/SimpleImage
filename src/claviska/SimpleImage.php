@@ -195,13 +195,31 @@ class SimpleImage {
       throw new \Exception("Unsupported format: " . $this->mimeType, self::ERR_UNSUPPORTED_FORMAT);
     }
 
+    switch($this->mimeType) {
+      case 'image/gif':
+        // Copy the gif over to a true color image to preserve its transparency. This is a
+        // workaround to prevent imagepalettetotruecolor() from borking transparency.
+        $width = imagesx($this->image);
+        $height = imagesx($this->image);
+
+        $gif = imagecreatetruecolor((int) $width, (int) $height);
+        $alpha = imagecolorallocatealpha($gif, 0, 0, 0, 127);
+        imagecolortransparent($gif, $alpha);
+        imagefill($gif, 0, 0, $alpha);
+        
+        imagecopy($this->image, $gif, 0, 0, 0, 0, $width, $height);
+        imagedestroy($gif);
+        break;
+      case 'image/jpeg':
+        // Load exif data from JPEG images
+        if(function_exists('exif_read_data')) {
+          $this->exif = @exif_read_data("data://image/jpeg;base64," . base64_encode($file));
+        }
+        break;
+    }
+
     // Convert pallete images to true color images
     imagepalettetotruecolor($this->image);
-
-    // Load exif data from JPEG images
-    if($this->mimeType === 'image/jpeg' && function_exists('exif_read_data')) {
-      $this->exif = @exif_read_data("data://image/jpeg;base64," . base64_encode($file));
-    }
 
     return $this;
   }
