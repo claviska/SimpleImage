@@ -1088,9 +1088,9 @@ class SimpleImage {
   */
 
   public function textWithBackgroundColor($text, $options, $backgroundColor, &$boundary = null) {
-      text($text, $options, $boundary);
-      rectangle($boundary['x1'], $boundary['y1'], $boundary['x2'], $boundary['y2'], $backgroundColor, $thickness = 1);
-      text($text, $options, $boundary);
+      $this->text($text, $options, $boundary);
+      $this->rectangle($boundary['x1'], $boundary['y1'], $boundary['x2'], $boundary['y2'], $backgroundColor, $thickness = 1);
+      $this->text($text, $options, $boundary);
       return $this;
   }
   
