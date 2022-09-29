@@ -1079,6 +1079,20 @@ class SimpleImage {
     return $this;
   }
 
+   /**
+  * Creates Text with Requested Background Image
+  * Passes boundary by reference so boundary from text creation gets updated accordingly when calling text()
+  * Afterwards draws over text() with the correct backgroundColor requested using the rectangle function
+  * Calls text again to draw over the background where the text is supposed to be
+  * Final result shows a text with the backgroundColor requested
+  */
+
+  public function textWithBackgroundColor($text, $options, $backgroundColor, &$boundary = null) {
+      text($text, $options, $boundary);
+      rectangle($boundary['x1'], $boundary['y1'], $boundary['x2'], $boundary['y2'], $backgroundColor, $thickness = 1);
+      text($text, $options, $boundary);
+  }
+  
   /**
   * Adds text with a line break to the image.
   *
