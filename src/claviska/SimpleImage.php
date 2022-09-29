@@ -1091,6 +1091,7 @@ class SimpleImage {
       text($text, $options, $boundary);
       rectangle($boundary['x1'], $boundary['y1'], $boundary['x2'], $boundary['y2'], $backgroundColor, $thickness = 1);
       text($text, $options, $boundary);
+      return $this;
   }
   
   /**
