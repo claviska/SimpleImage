@@ -702,7 +702,7 @@ As a best practice, always use the defined constants instead of their integers v
 - `ERR_UNSUPPORTED_FORMAT` - The image format specified is not valid.
 - `ERR_WEBP_NOT_ENABLED` - WEBP support is not enabled in your version of PHP.
 - `ERR_WRITE` - Unable to write to the file system.
-- `ERR_INVALID_FAG` - The specified flag key does not exist.
+- `ERR_INVALID_FLAG` - The specified flag key does not exist.
 
 ### Useful Things To Know
 
