@@ -316,7 +316,18 @@ class SimpleImage {
           );
         }
         imageinterlace($this->image, true);
-        imagebmp($this->image, null, $quality);
+        imagebmp($this->image, null, $quality < 100);
+        break;
+      case 'image/avif':
+        // Not all versions of PHP support avif
+        if(!function_exists('imageavif')) {
+          throw new \Exception(
+            'AVIF support is not available in your version of PHP.',
+            self::ERR_UNSUPPORTED_FORMAT
+          );
+        }
+        imageinterlace($this->image, true);
+        imageavif($this->image, null, $quality);
         break;
       default:
         throw new \Exception('Unsupported format: ' . $mimeType, self::ERR_UNSUPPORTED_FORMAT);

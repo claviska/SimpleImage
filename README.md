@@ -42,7 +42,7 @@ try {
 
 ## Features
 
-- Supports reading, writing, and converting GIF, JPEG, PNG, WEBP, BMP formats.
+- Supports reading, writing, and converting GIF, JPEG, PNG, WEBP, BMP, AVIF formats.
 - Reads and writes files, data URIs, and image strings.
 - Manipulation: crop, resize, overlay/watermark, adding TTF text
 - Drawing: arc, border, dot, ellipse, line, polygon, rectangle, rounded rectangle
