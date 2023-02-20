@@ -18,5 +18,8 @@
     "psr-0": {
       "claviska": "src/"
     }
+  },
+  "require-dev": {
+    "laravel/pint": "^1.5"
   }
 }
