@@ -1,2 +1,14 @@
+# System files
+# ------------
 .DS_Store
-test/
+
+# Editors
+# (sensitive workspace files)
+# ---------------------------
+*.sublime-project
+*.sublime-workspace
+/.vscode
+/.idea
+/.nova
+
+vendor/
