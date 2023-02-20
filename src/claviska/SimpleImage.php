@@ -20,7 +20,7 @@ namespace claviska;
  */
 class SimpleImage {
 
-  const
+  public const
     ERR_FILE_NOT_FOUND = 1,
     ERR_FONT_FILE = 2,
     ERR_FREETYPE_NOT_ENABLED = 3,
@@ -82,7 +82,7 @@ class SimpleImage {
    */
   public function __destruct() {
     //Check for a valid GDimage instance
-    $type_check = (gettype($this->image) == "object" && get_class($this->image) == "GdImage");
+    $type_check = (gettype($this->image) == "object" && $this->image::class == "GdImage");
 
     if($this->image !== null && is_resource($this->image) && $type_check) {
       imagedestroy($this->image);
@@ -232,7 +232,7 @@ class SimpleImage {
    * @param string|array $color Optional fill color for the new image (default 'transparent').
    * @return \claviska\SimpleImage
    */
-  public function fromNew($width, $height, $color = 'transparent') {
+  public function fromNew($width, $height, string|array $color = 'transparent') {
     $this->image = imagecreatetruecolor((int) $width, (int) $height);
 
     // Use PNG for dynamically created images because it's lossless and supports transparency
@@ -431,16 +431,14 @@ class SimpleImage {
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // Utilities
   //////////////////////////////////////////////////////////////////////////////////////////////////
-
   /**
    * Ensures a numeric value is always within the min and max range.
    *
    * @param integer|float $value A numeric value to test.
    * @param integer|float $min The minimum allowed value.
    * @param integer|float $max The maximum allowed value.
-   * @return integer|float
    */
-  protected static function keepWithin($value, $min, $max) {
+  protected static function keepWithin(int|float $value, int|float $min, int|float $max): int|float {
     if($value < $min) return $min;
     if($value > $max) return $max;
     return $value;
@@ -461,7 +459,7 @@ class SimpleImage {
    * @return array|NULL Returns an array of exif data or null if no data is available.
    */
   public function getExif() {
-    return isset($this->exif) ? $this->exif : null;
+    return $this->exif ?? null;
   }
 
   /**
@@ -633,7 +631,7 @@ class SimpleImage {
    * @param integer|float $y2 Bottom right x coordinate.
    * @return \claviska\SimpleImage
    */
-  public function crop($x1, $y1, $x2, $y2) {
+  public function crop(int|float $x1, int|float $y1, int|float $x2, int|float $y2) {
     // Keep crop within image dimensions
     $x1 = self::keepWithin($x1, 0, $this->getWidth());
     $x2 = self::keepWithin($x2, 0, $this->getWidth());
@@ -672,7 +670,7 @@ class SimpleImage {
    * @param string|array $darkColor The darkest color in the duotone.
    * @return \claviska\SimpleImage
    */
-  function duotone($lightColor, $darkColor) {
+  function duotone(string|array $lightColor, string|array $darkColor) {
     $lightColor = self::normalizeColor($lightColor);
     $darkColor = self::normalizeColor($darkColor);
 
@@ -739,17 +737,12 @@ class SimpleImage {
    * @return \claviska\SimpleImage
    */
   public function flip($direction) {
-    switch($direction) {
-    case 'x':
-      imageflip($this->image, IMG_FLIP_HORIZONTAL);
-      break;
-    case 'y':
-      imageflip($this->image, IMG_FLIP_VERTICAL);
-      break;
-    case 'both':
-      imageflip($this->image, IMG_FLIP_BOTH);
-      break;
-    }
+    match ($direction) {
+        'x' => imageflip($this->image, IMG_FLIP_HORIZONTAL),
+        'y' => imageflip($this->image, IMG_FLIP_VERTICAL),
+        'both' => imageflip($this->image, IMG_FLIP_BOTH),
+        default => $this,
+    };
 
     return $this;
   }
@@ -778,7 +771,7 @@ class SimpleImage {
    * @param bool $calculateOffsetFromEdge Calculate Offset referring to the edges of the image (default false).
    * @return \claviska\SimpleImage
    */
-  public function overlay($overlay, $anchor = 'center', $opacity = 1, $xOffset = 0, $yOffset = 0, $calculateOffsetFromEdge = false) {
+  public function overlay(string|\claviska\SimpleImage $overlay, $anchor = 'center', $opacity = 1, $xOffset = 0, $yOffset = 0, $calculateOffsetFromEdge = false) {
     // Load overlay image
     if(!($overlay instanceof SimpleImage)) $overlay = new SimpleImage($overlay);
 
@@ -794,16 +787,16 @@ class SimpleImage {
     $y = ($spaceY / 2) + ($calculateOffsetFromEdge ? 0 : $yOffset);
 
     // Determine if top|bottom
-    if (strpos($anchor, 'top') !== false) {
+    if (str_contains($anchor, 'top')) {
       $y = $yOffset;
-    } elseif (strpos($anchor, 'bottom') !== false) {
+    } elseif (str_contains($anchor, 'bottom')) {
       $y = $spaceY + ($calculateOffsetFromEdge ? -$yOffset : $yOffset);
     }
 
     // Determine if left|right
-    if (strpos($anchor, 'left') !== false) {
+    if (str_contains($anchor, 'left')) {
       $x = $xOffset;
-    } elseif (strpos($anchor, 'right') !== false) {
+    } elseif (str_contains($anchor, 'right')) {
       $x = $spaceX + ($calculateOffsetFromEdge ? -$xOffset : $xOffset);
     }
 
@@ -896,7 +889,7 @@ class SimpleImage {
    * @param string|array $backgroundColor The background color to use for the uncovered zone area after rotation (default 'transparent').
    * @return \claviska\SimpleImage
    */
-  public function rotate($angle, $backgroundColor = 'transparent') {
+  public function rotate($angle, string|array $backgroundColor = 'transparent') {
     // Rotate the image on a canvas with the desired background color
     $backgroundColor = $this->allocateColor($backgroundColor);
 
@@ -989,8 +982,8 @@ class SimpleImage {
     // Calculate Offset referring to the edges of the image.
     // Just invert the value for bottom|right;
     if ($calculateOffsetFromEdge == true) {
-      if (strpos($anchor, 'bottom') !== false) $yOffset *= -1;
-      if (strpos($anchor, 'right') !== false) $xOffset *= -1;
+      if (str_contains($anchor, 'bottom')) $yOffset *= -1;
+      if (str_contains($anchor, 'right')) $xOffset *= -1;
     }
 
     // Align the text font with the baseline.
@@ -999,9 +992,9 @@ class SimpleImage {
       // Create a temporary box to obtain the maximum height that this font can use.
       $boxFull = imagettfbbox($size, $angle, $fontFile, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890');
       // Based on the maximum height, the text is aligned.
-      if (strpos($anchor, 'bottom') !== false) {
+      if (str_contains($anchor, 'bottom')) {
         $yOffset -= $boxFull[1];
-      } elseif (strpos($anchor, 'top') !== false) {
+      } elseif (str_contains($anchor, 'top')) {
         $yOffset += abs($boxFull[5]) - $boxHeight;
       } else { // center
         $boxFullHeight = abs($boxFull[1]) + abs($boxFull[5]);
@@ -1160,9 +1153,9 @@ class SimpleImage {
       $align = 'top left';
     }
 
-    list($lines, $isLastLine, $lastLineHeight) = self::textSeparateLines($text, $fontFile, $fontSize, $maxWidth);
+    [$lines, $isLastLine, $lastLineHeight] = self::textSeparateLines($text, $fontFile, $fontSize, $maxWidth);
 
-    $maxHeight = (count($lines) - 1) * ($fontSizePx * 1.2 + $leading) + $lastLineHeight;
+    $maxHeight = ((is_countable($lines) ? count($lines) : 0) - 1) * ($fontSizePx * 1.2 + $leading) + $lastLineHeight;
 
     $imageText = new SimpleImage();
     $imageText->fromNew($maxWidth, $maxHeight);
@@ -1171,16 +1164,7 @@ class SimpleImage {
     if ($align <> 'justify') {
       foreach ($lines as $key => $line) {
         if( $align == 'top' ) $line = trim($line); // If is justify = 'center'
-        $imageText->text($line, array(
-          'fontFile' => $fontFile,
-          'size' => $fontSizePx,
-          'color' => $color,
-          'anchor' => $align,
-          'xOffset' => 0,
-          'yOffset' => $key * ($fontSizePx * 1.2 + $leading),
-          'shadow' => $shadow,
-          'calculateOffsetFromEdge' => true
-        ));
+        $imageText->text($line, ['fontFile' => $fontFile, 'size' => $fontSizePx, 'color' => $color, 'anchor' => $align, 'xOffset' => 0, 'yOffset' => $key * ($fontSizePx * 1.2 + $leading), 'shadow' => $shadow, 'calculateOffsetFromEdge' => true]);
       }
 
     // Justify
@@ -1200,7 +1184,7 @@ class SimpleImage {
         $words[0] = str_repeat(' ', $spaces) . $words[0];
 
         // Calculates the space occupied by all words
-        $wordsSize = array();
+        $wordsSize = [];
         foreach ($words as $key => $word) {
           $wordBox = imagettfbbox($fontSize, 0, $fontFile, $word);
           $wordWidth = abs($wordBox[4] - $wordBox[0]);
@@ -1222,16 +1206,7 @@ class SimpleImage {
             if ($key < (count($words) - 1)) continue;
             $word = $line;
           }
-          $imageText->text($word, array(
-            'fontFile' => $fontFile,
-            'size' => $fontSizePx,
-            'color' => $color,
-            'anchor' => 'top left',
-            'xOffset' => $xOffsetJustify,
-            'yOffset' => $keyLine * ($fontSizePx * 1.2 + $leading),
-            'shadow' => $shadow,
-            'calculateOffsetFromEdge' => true,
-            )
+          $imageText->text($word, ['fontFile' => $fontFile, 'size' => $fontSizePx, 'color' => $color, 'anchor' => 'top left', 'xOffset' => $xOffsetJustify, 'yOffset' => $keyLine * ($fontSizePx * 1.2 + $leading), 'shadow' => $shadow, 'calculateOffsetFromEdge' => true]
           );
           // Calculate offset for next word
           $xOffsetJustify += $wordsSize[$key] + $wordSpacing;
@@ -1254,6 +1229,7 @@ class SimpleImage {
   * @return array
   */
   private function textSeparateLines($text, $fontFile, $fontSize, $maxWidth) {
+    $lines = [];
     $words = self::textSeparateWords($text);
     $countWords = count($words) - 1;
     $lines[0] = '';
@@ -1285,7 +1261,7 @@ class SimpleImage {
     // Height of last line = ascender of $boxFull + descender of $lineBox
     $lastLineHeight = abs($lineBox[1]) + abs($boxFull[5]);
 
-    return array($lines, $isLastLine, $lastLineHeight);
+    return [$lines, $isLastLine, $lastLineHeight];
   }
 
   /**
@@ -1298,7 +1274,7 @@ class SimpleImage {
     // Normalizes line break
     $text = preg_replace('/(\r\n|\n|\r)/', PHP_EOL, $text);
     $text = explode(PHP_EOL, $text);
-    $newText = array();
+    $newText = [];
     foreach ($text as $key => $line) {
       $newText = array_merge($newText, explode(' ', $line), [PHP_EOL]);
     }
@@ -1406,7 +1382,7 @@ class SimpleImage {
    * @param integer|string $thickness Line thickness in pixels or 'filled' (default 1).
    * @return \claviska\SimpleImage
    */
-  public function arc($x, $y, $width, $height, $start, $end, $color, $thickness = 1) {
+  public function arc($x, $y, $width, $height, $start, $end, string|array $color, int|string $thickness = 1) {
     // Allocate the color
     $tempColor = $this->allocateColor($color);
     imagesetthickness($this->image, 1);
@@ -1449,7 +1425,7 @@ class SimpleImage {
    * @param integer $thickness The thickness of the border (default 1).
    * @return \claviska\SimpleImage
    */
-  public function border($color, $thickness = 1) {
+  public function border(string|array $color, $thickness = 1) {
     $x1 = -1;
     $y1 = 0;
     $x2 = $this->getWidth();
@@ -1470,7 +1446,7 @@ class SimpleImage {
    * @param string|array $color The dot color.
    * @return \claviska\SimpleImage
    */
-  public function dot($x, $y, $color) {
+  public function dot($x, $y, string|array $color) {
     $color = $this->allocateColor($color);
     imagesetpixel($this->image, $x, $y, $color);
 
@@ -1488,7 +1464,7 @@ class SimpleImage {
    * @param integer|array $thickness Line thickness in pixels or 'filled' (default 1).
    * @return \claviska\SimpleImage
    */
-  public function ellipse($x, $y, $width, $height, $color, $thickness = 1) {
+  public function ellipse($x, $y, $width, $height, string|array $color, int|array $thickness = 1) {
     // Allocate the color
     $tempColor = $this->allocateColor($color);
     imagesetthickness($this->image, 1);
@@ -1530,7 +1506,7 @@ class SimpleImage {
    * @param string|array $color The fill color.
    * @return \claviska\SimpleImage
    */
-  public function fill($color) {
+  public function fill(string|array $color) {
     // Draw a filled rectangle over the entire image
     $this->rectangle(0, 0, $this->getWidth(), $this->getHeight(), 'white', 'filled');
 
@@ -1552,7 +1528,7 @@ class SimpleImage {
    * @param integer $thickness The line thickness (default 1).
    * @return \claviska\SimpleImage
    */
-  public function line($x1, $y1, $x2, $y2, $color, $thickness = 1) {
+  public function line($x1, $y1, $x2, $y2, string|array $color, $thickness = 1) {
     // Allocate the color
     $color = $this->allocateColor($color);
 
@@ -1578,7 +1554,7 @@ class SimpleImage {
    * @param integer|array $thickness Line thickness in pixels or 'filled' (default 1).
    * @return \claviska\SimpleImage
    */
-  public function polygon($vertices, $color, $thickness = 1) {
+  public function polygon($vertices, string|array $color, int|array $thickness = 1) {
     // Allocate the color
     $color = $this->allocateColor($color);
 
@@ -1612,7 +1588,7 @@ class SimpleImage {
    * @param integer|array $thickness Line thickness in pixels or 'filled' (default 1).
    * @return \claviska\SimpleImage
    */
-  public function rectangle($x1, $y1, $x2, $y2, $color, $thickness = 1) {
+  public function rectangle($x1, $y1, $x2, $y2, string|array $color, int|array $thickness = 1) {
     // Allocate the color
     $color = $this->allocateColor($color);
 
@@ -1640,7 +1616,7 @@ class SimpleImage {
    * @param integer|array $thickness Line thickness in pixels or 'filled' (default 1).
    * @return \claviska\SimpleImage
    */
-  public function roundedRectangle($x1, $y1, $x2, $y2, $radius, $color, $thickness = 1) {
+  public function roundedRectangle($x1, $y1, $x2, $y2, $radius, string|array $color, int|array $thickness = 1) {
     if($thickness === 'filled') {
       // Draw the filled rectangle without edges
       $this->rectangle($x1 + $radius + 1, $y1, $x2 - $radius - 1, $y2, $color, 'filled');
@@ -1701,7 +1677,7 @@ class SimpleImage {
    * @param number $y certer y of rectangle.
    * @param string|array $borderColor The color of border.
    */
-  private function excludeInsideColor($x, $y, $borderColor) {
+  private function excludeInsideColor($x, $y, string|array $borderColor) {
     $borderColor = $this->allocateColor($borderColor);
     $transparent = $this->allocateColor('transparent');
     imagefilltoborder($this->image, $x, $y, $borderColor, $transparent);
@@ -1749,7 +1725,7 @@ class SimpleImage {
    * @param string|array $color The filter color.
    * @return \claviska\SimpleImage
    */
-  public function colorize($color) {
+  public function colorize(string|array $color) {
     $color = self::normalizeColor($color);
 
     imagefilter(
@@ -1926,7 +1902,7 @@ class SimpleImage {
    * @param string|array $color The color to allocate.
    * @return integer
    */
-  protected function allocateColor($color) {
+  protected function allocateColor(string|array $color) {
     $color = self::normalizeColor($color);
 
     // Was this color already allocated?
@@ -1962,7 +1938,7 @@ class SimpleImage {
    * @param integer $alpha Alpha adjustment (-1 - 1).
    * @return integer[] An RGBA color array.
    */
-  public static function adjustColor($color, $red, $green, $blue, $alpha) {
+  public static function adjustColor(string|array $color, $red, $green, $blue, $alpha) {
     // Normalize to RGBA
     $color = self::normalizeColor($color);
 
@@ -1982,7 +1958,7 @@ class SimpleImage {
    * @param integer $amount Amount to darken (0 - 255).
    * @return integer[] An RGBA color array.
    */
-  public static function darkenColor($color, $amount) {
+  public static function darkenColor(string|array $color, $amount) {
     return self::adjustColor($color, -$amount, -$amount, -$amount, 0);
   }
 
@@ -2000,9 +1976,9 @@ class SimpleImage {
    * @throws \Exception Thrown if library \League\ColorExtractor is missing.
    * @return integer[] An array of RGBA colors arrays.
    */
-  public function extractColors($count = 5, $backgroundColor = null) {
+  public function extractColors($count = 5, string|array $backgroundColor = null) {
     // Check for required library
-    if(!class_exists('\League\ColorExtractor\ColorExtractor')) {
+    if(!class_exists('\\' . \League\ColorExtractor\ColorExtractor::class)) {
       throw new \Exception(
         'Required library \League\ColorExtractor is missing.',
         self::ERR_LIB_NOT_LOADED
@@ -2060,7 +2036,7 @@ class SimpleImage {
    * @param integer $amount Amount to lighten (0 - 255).
    * @return integer[] An RGBA color array.
    */
-  public static function lightenColor($color, $amount) {
+  public static function lightenColor(string|array $color, $amount) {
     return self::adjustColor($color, $amount, $amount, $amount, 0);
   }
 
@@ -2075,7 +2051,7 @@ class SimpleImage {
    * @throws \Exception Thrown if color value is invalid.
    * @return array [red, green, blue, alpha].
    */
-  public static function normalizeColor($color) {
+  public static function normalizeColor(string|array $color) {
     // 140 CSS color names and hex values
     $cssColors = [
       'aliceblue' => '#f0f8ff', 'antiquewhite' => '#faebd7', 'aqua' => '#00ffff',
@@ -2153,13 +2129,13 @@ class SimpleImage {
 
       // Support short and standard hex codes
       if(strlen($hex) === 3) {
-        list($red, $green, $blue) = [
+        [$red, $green, $blue] = [
           $hex[0] . $hex[0],
           $hex[1] . $hex[1],
           $hex[2] . $hex[2]
         ];
       } elseif(strlen($hex) === 6) {
-        list($red, $green, $blue) = [
+        [$red, $green, $blue] = [
           $hex[0] . $hex[1],
           $hex[2] . $hex[3],
           $hex[4] . $hex[5]
@@ -2180,12 +2156,12 @@ class SimpleImage {
     // Enforce color value ranges
     if(is_array($color)) {
       // RGB default to 0
-      $color['red'] = isset($color['red']) ? $color['red'] : 0;
-      $color['green'] = isset($color['green']) ? $color['green'] : 0;
-      $color['blue'] = isset($color['blue']) ? $color['blue'] : 0;
+      $color['red'] ??= 0;
+      $color['green'] ??= 0;
+      $color['blue'] ??= 0;
 
       // Alpha defaults to 1
-      $color['alpha'] = isset($color['alpha']) ? $color['alpha'] : 1;
+      $color['alpha'] ??= 1;
 
       return [
         'red' => (int) self::keepWithin((int) $color['red'], 0, 255),
