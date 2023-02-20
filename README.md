@@ -37,7 +37,7 @@ try {
 
 ## Requirements
 
-- PHP 5.6+
+- PHP 8.0+
 - [GD extension](http://php.net/manual/en/book.image.php)
 
 ## Features
@@ -50,7 +50,7 @@ try {
 - Utilities: color adjustment, darken/lighten color, extract colors
 - Properties: exif data, height/width, mime type, orientation
 - Color arguments can be passed in as any CSS color (e.g. `LightBlue`), a hex color, or an RGB(A) array.
-- Support for alpha-transparency (GIF, PNG, WEBP)
+- Support for alpha-transparency (GIF, PNG, WEBP, AVIF)
 - Chainable methods
 - Uses exceptions
 - Load with Composer or manually (just one file)
