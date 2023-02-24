@@ -304,15 +304,27 @@ class SimpleImage
      * Generates an image.
      *
      * @param  string  $mimeType The image format to output as a mime type (defaults to the original mime type).
-     * @param  int  $quality Image quality as a percentage (default 100).
+     * @param  array|int  $options Array or Image quality as a percentage (default 100).
      * @return array Returns an array containing the image data and mime type ['data' => '', 'mimeType' => ''].
      *
      * @throws \Exception Thrown when WEBP support is not enabled or unsupported format.
      */
-    protected function generate($mimeType = null, $quality = 100)
+    protected function generate($mimeType = null, $options = [])
     {
         // Format defaults to the original mime type
         $mimeType = $mimeType ?: $this->mimeType;
+
+        $quality = null;
+        // allow $options to be an int for backwards compatibility to v3
+        if (is_int($options)) {
+            $quality = $options;
+            $options = [];
+        }
+
+        // get quality if passed as an option
+        if (is_array($options) && array_key_exists('quality', $options)) {
+            $quality = intval($options['quality']);
+        }
 
         // Ensure quality is a valid integer
         if ($quality === null) {
@@ -320,22 +332,52 @@ class SimpleImage
         }
         $quality = self::keepWithin((int) $quality, 0, 100);
 
+        $alpha = true;
+        // get alpha if passed as an option
+        if (is_array($options) && array_key_exists('alpha', $options)) {
+            $alpha = boolval($options['alpha']);
+        }
+
+        $interlace = null; // keep the same
+        // get interlace if passed as an option
+        if (is_array($options) && array_key_exists('interlace', $options)) {
+            $interlace = boolval($options['interlace']);
+        }
+
+        // get raw stream from image* functions in providing no path
+        $file = null;
+
         // Capture output
         ob_start();
 
         // Generate the image
         switch($mimeType) {
             case 'image/gif':
-                imagesavealpha($this->image, true);
-                imagegif($this->image, null);
+                imagesavealpha($this->image, $alpha);
+                imagegif($this->image, $file);
                 break;
             case 'image/jpeg':
-                imageinterlace($this->image, true);
-                imagejpeg($this->image, null, $quality);
+                imageinterlace($this->image, $interlace);
+                imagejpeg($this->image, $file, $quality);
                 break;
             case 'image/png':
-                imagesavealpha($this->image, true);
-                imagepng($this->image);
+                $filters = -1; // imagepng default
+                // get filters if passed as an option
+                if (is_array($options) && array_key_exists('filters', $options)) {
+                    $filters = intval($options['filters']);
+                }
+                // compression param is called quality in imagepng but that would be
+                // misleading in context of SimpleImage
+                $compression = -1; // defaults to zlib default which is 6
+                // get compression if passed as an option
+                if (is_array($options) && array_key_exists('compression', $options)) {
+                    $compression = intval($options['compression']);
+                }
+                if ($compression !== -1) {
+                    $compression = self::keepWithin($compression, 0, 10);
+                }
+                imagesavealpha($this->image, $alpha);
+                imagepng($this->image, $file, $compression, $filters);
                 break;
             case 'image/webp':
                 // Not all versions of PHP will have webp support enabled
@@ -345,8 +387,9 @@ class SimpleImage
                         self::ERR_WEBP_NOT_ENABLED
                     );
                 }
-                imagesavealpha($this->image, true);
-                imagewebp($this->image, null, $quality);
+                // useless but recommended, see https://www.php.net/manual/en/function.imagesavealpha.php
+                imagesavealpha($this->image, $alpha);
+                imagewebp($this->image, $file, $quality);
                 break;
             case 'image/bmp':
             case 'image/x-ms-bmp':
@@ -358,8 +401,14 @@ class SimpleImage
                         self::ERR_UNSUPPORTED_FORMAT
                     );
                 }
-                imageinterlace($this->image, true);
-                imagebmp($this->image, null, $quality < 100);
+                $compression = true; // imagebmp default
+                // get compression if passed as an option
+                if (is_array($options) && array_key_exists('compression', $options)) {
+                    $compression = is_int($options['compression']) ?
+                        $options['compression'] > 0 : boolval($options['compression']);
+                }
+                imageinterlace($this->image, $interlace);
+                imagebmp($this->image, $file, $compression);
                 break;
             case 'image/avif':
                 // Not all versions of PHP support avif
@@ -369,8 +418,15 @@ class SimpleImage
                         self::ERR_UNSUPPORTED_FORMAT
                     );
                 }
-                imageinterlace($this->image, true);
-                imageavif($this->image, null, $quality);
+                $speed = -1; // imageavif default
+                // get speed if passed as an option
+                if (is_array($options) && array_key_exists('speed', $options)) {
+                    $speed = intval($options['speed']);
+                    $speed = self::keepWithin($speed, 0, 10);
+                }
+                // useless but recommended, see https://www.php.net/manual/en/function.imagesavealpha.php
+                imagesavealpha($this->image, $alpha);
+                imageavif($this->image, $file, $quality, $speed);
                 break;
             default:
                 throw new \Exception('Unsupported format: '.$mimeType, self::ERR_UNSUPPORTED_FORMAT);
@@ -390,12 +446,12 @@ class SimpleImage
      * Generates a data URI.
      *
      * @param  string  $mimeType The image format to output as a mime type (defaults to the original mime type).
-     * @param  int  $quality Image quality as a percentage (default 100).
+     * @param  array|int  $options Array or Image quality as a percentage (default 100).
      * @return string Returns a string containing a data URI.
      */
-    public function toDataUri($mimeType = null, $quality = 100)
+    public function toDataUri($mimeType = null, $options = 100)
     {
-        $image = $this->generate($mimeType, $quality);
+        $image = $this->generate($mimeType, $options);
 
         return 'data:'.$image['mimeType'].';base64,'.base64_encode($image['data']);
     }
@@ -405,12 +461,12 @@ class SimpleImage
      *
      * @param  string  $filename The filename (without path) to send to the client (e.g. 'image.jpeg').
      * @param  string  $mimeType The image format to output as a mime type (defaults to the original mime type).
-     * @param  int  $quality Image quality as a percentage (default 100).
+     * @param  array|int  $options Array or Image quality as a percentage (default 100).
      * @return \claviska\SimpleImage
      */
-    public function toDownload($filename, $mimeType = null, $quality = 100)
+    public function toDownload($filename, $mimeType = null, $options = 100)
     {
-        $image = $this->generate($mimeType, $quality);
+        $image = $this->generate($mimeType, $options);
 
         // Set download headers
         header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
@@ -430,14 +486,14 @@ class SimpleImage
      *
      * @param  string  $file The image format to output as a mime type (defaults to the original mime type).
      * @param  string  $mimeType Image quality as a percentage (default 100).
-     * @param  int  $quality Image quality as a percentage (default 100).
+     * @param  array|int  $options Array or Image quality as a percentage (default 100).
      * @return \claviska\SimpleImage
      *
      * @throws \Exception Thrown if failed write to file.
      */
-    public function toFile($file, $mimeType = null, $quality = 100)
+    public function toFile($file, $mimeType = null, $options = 100)
     {
-        $image = $this->generate($mimeType, $quality);
+        $image = $this->generate($mimeType, $options);
 
         // Save the image to file
         if (! file_put_contents($file, $image['data'])) {
@@ -451,12 +507,12 @@ class SimpleImage
      * Outputs the image to the screen. Must be called before any output is sent to the screen.
      *
      * @param  string  $mimeType The image format to output as a mime type (defaults to the original mime type).
-     * @param  int  $quality Image quality as a percentage (default 100).
+     * @param  array|int  $options Array or Image quality as a percentage (default 100).
      * @return \claviska\SimpleImage
      */
-    public function toScreen($mimeType = null, $quality = 100)
+    public function toScreen($mimeType = null, $options = 100)
     {
-        $image = $this->generate($mimeType, $quality);
+        $image = $this->generate($mimeType, $options);
 
         // Output the image to stdout
         header('Content-Type: '.$image['mimeType']);
@@ -469,12 +525,12 @@ class SimpleImage
      * Generates an image string.
      *
      * @param  string  $mimeType The image format to output as a mime type (defaults to the original mime type).
-     * @param  int  $quality Image quality as a percentage (default 100).
+     * @param  array|int  $options Array or Image quality as a percentage (default 100).
      * @return string
      */
-    public function toString($mimeType = null, $quality = 100)
+    public function toString($mimeType = null, $options = 100)
     {
-        return $this->generate($mimeType, $quality)['data'];
+        return $this->generate($mimeType, $options)['data'];
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2140,7 +2196,7 @@ class SimpleImage
      *
      * @param  int  $x The horizontal position of the pixel.
      * @param  int  $y The vertical position of the pixel.
-     * @return int[] An RGBA color array or false if the x/y position is off the canvas.
+     * @return bool|int[] An RGBA color array or false if the x/y position is off the canvas.
      */
     public function getColorAt($x, $y)
     {
