@@ -68,7 +68,7 @@ class SimpleImage
 
     protected string $mimeType;
 
-    protected ?array $exif;
+    protected null|array|false $exif;
 
     //////////////////////////////////////////////////////////////////////////////////////////////////
     // Magic methods
@@ -87,7 +87,7 @@ class SimpleImage
         // Check for the required GD extension
         if (extension_loaded('gd')) {
             // Ignore JPEG warnings that cause imagecreatefromjpeg() to fail
-            ini_set('gd.jpeg_ignore_warning', 1);
+            ini_set('gd.jpeg_ignore_warning', '1');
         } else {
             throw new Exception('Required extension GD is not loaded.', self::ERR_GD_NOT_ENABLED);
         }
@@ -186,7 +186,7 @@ class SimpleImage
         }
 
         // Get image data
-        $uri = base64_decode(preg_replace('/^data:(.*?);base64,/', '', $uri));
+        $uri = base64_decode(strval(preg_replace('/^data:(.*?);base64,/', '', $uri)));
         $this->image = imagecreatefromstring($uri);
         if (! $this->image) {
             throw new Exception('Invalid image data.', self::ERR_INVALID_IMAGE);
@@ -243,7 +243,7 @@ class SimpleImage
 
                 $gif = imagecreatetruecolor((int) $width, (int) $height);
                 $alpha = imagecolorallocatealpha($gif, 0, 0, 0, 127);
-                imagecolortransparent($gif, $alpha);
+                imagecolortransparent($gif, $alpha ?: null);
                 imagefill($gif, 0, 0, $alpha);
 
                 imagecopy($this->image, $gif, 0, 0, 0, 0, $width, $height);
@@ -336,7 +336,7 @@ class SimpleImage
         if ($quality === null) {
             $quality = 100;
         }
-        $quality = self::keepWithin((int) $quality, 0, 100);
+        $quality = (int) round(self::keepWithin((int) $quality, 0, 100));
 
         $alpha = true;
         // get alpha if passed as an option
@@ -380,7 +380,7 @@ class SimpleImage
                     $compression = intval($options['compression']);
                 }
                 if ($compression !== -1) {
-                    $compression = self::keepWithin($compression, 0, 10);
+                    $compression = (int) round(self::keepWithin($compression, 0, 10));
                 }
                 imagesavealpha($this->image, $alpha);
                 imagepng($this->image, $file, $compression, $filters);
@@ -735,22 +735,22 @@ class SimpleImage
         // Calculate max width or height based on orientation
         if ($this->getOrientation() === 'portrait') {
             $height = $maxHeight;
-            $width = $maxHeight * $this->getAspectRatio();
+            $width = (int) round($maxHeight * $this->getAspectRatio());
         } else {
             $width = $maxWidth;
-            $height = $maxWidth / $this->getAspectRatio();
+            $height = (int) round($maxWidth / $this->getAspectRatio());
         }
 
         // Reduce to max width
         if ($width > $maxWidth) {
             $width = $maxWidth;
-            $height = $width / $this->getAspectRatio();
+            $height = (int) round($width / $this->getAspectRatio());
         }
 
         // Reduce to max height
         if ($height > $maxHeight) {
             $height = $maxHeight;
-            $width = $height * $this->getAspectRatio();
+            $width = (int) round($height * $this->getAspectRatio());
         }
 
         return $this->resize($width, $height);
@@ -778,14 +778,17 @@ class SimpleImage
         $dstH = abs($y2 - $y1);
         $newImage = imagecreatetruecolor((int) $dstW, (int) $dstH);
         $transparentColor = imagecolorallocatealpha($newImage, 0, 0, 0, 127);
-        imagecolortransparent($newImage, $transparentColor);
+        imagecolortransparent($newImage, $transparentColor ?: null);
         imagefill($newImage, 0, 0, $transparentColor);
 
         // Crop it
         imagecopyresampled(
             $newImage,
             $this->image,
-            0, 0, min($x1, $x2), min($y1, $y2),
+            0,
+            0,
+            (int) round(min($x1, $x2)),
+            (int) round(min($y1, $y2)),
             (int) $dstW,
             (int) $dstH,
             (int) $dstW,
@@ -910,15 +913,15 @@ class SimpleImage
         }
 
         // Convert opacity
-        $opacity = self::keepWithin($opacity, 0, 1) * 100;
+        $opacity = (int) round(self::keepWithin($opacity, 0, 1) * 100);
 
         // Get available space
         $spaceX = $this->getWidth() - $overlay->getWidth();
         $spaceY = $this->getHeight() - $overlay->getHeight();
 
         // Set default center
-        $x = ($spaceX / 2) + ($calculateOffsetFromEdge ? 0 : $xOffset);
-        $y = ($spaceY / 2) + ($calculateOffsetFromEdge ? 0 : $yOffset);
+        $x = (int) round(($spaceX / 2) + ($calculateOffsetFromEdge ? 0 : $xOffset));
+        $y = (int) round(($spaceY / 2) + ($calculateOffsetFromEdge ? 0 : $yOffset));
 
         // Determine if top|bottom
         if (str_contains($anchor, 'top')) {
@@ -957,14 +960,14 @@ class SimpleImage
      */
     public function resize(int $width = null, int $height = null): static
     {
-        // No dimentions specified
+        // No dimensions specified
         if (! $width && ! $height) {
             return $this;
         }
 
         // Resize to width
         if ($width && ! $height) {
-            $height = $width / $this->getAspectRatio();
+            $height = (int) round($width / $this->getAspectRatio());
         }
 
         // Resize to height
@@ -980,7 +983,7 @@ class SimpleImage
         // We can't use imagescale because it doesn't seem to preserve transparency properly. The
         // workaround is to create a new truecolor image, allocate a transparent color, and copy the
         // image over to it using imagecopyresampled.
-        $newImage = imagecreatetruecolor((int) $width, (int) $height);
+        $newImage = imagecreatetruecolor($width, $height);
         $transparentColor = imagecolorallocatealpha($newImage, 0, 0, 0, 127);
         imagecolortransparent($newImage, $transparentColor);
         imagefill($newImage, 0, 0, $transparentColor);
@@ -988,8 +991,8 @@ class SimpleImage
             $newImage,
             $this->image,
             0, 0, 0, 0,
-            (int) $width,
-            (int) $height,
+            $width,
+            $height,
             $this->getWidth(),
             $this->getHeight()
         );
@@ -1284,7 +1287,7 @@ class SimpleImage
         $yOffset = $options['yOffset'];
         $shadow = $options['shadow'];
         $calculateOffsetFromEdge = $options['calculateOffsetFromEdge'];
-        $maxWidth = $options['width'];
+        $maxWidth = intval($options['width']);
         $leading = $options['leading'];
         $leading = self::keepWithin($leading, ($fontSizePx * -1), $leading);
         $opacity = $options['opacity'];
@@ -1302,7 +1305,7 @@ class SimpleImage
 
         [$lines, $isLastLine, $lastLineHeight] = self::textSeparateLines($text, $fontFile, $fontSize, $maxWidth);
 
-        $maxHeight = ((is_countable($lines) ? count($lines) : 0) - 1) * ($fontSizePx * 1.2 + $leading) + $lastLineHeight;
+        $maxHeight = (int) round(((is_countable($lines) ? count($lines) : 0) - 1) * ($fontSizePx * 1.2 + $leading) + $lastLineHeight);
 
         $imageText = new SimpleImage();
         $imageText->fromNew($maxWidth, $maxHeight);
@@ -1373,7 +1376,7 @@ class SimpleImage
     /**
      * Receives a text and breaks into LINES.
      */
-    private function textSeparateLines(int $text, string $fontFile, int $fontSize, int $maxWidth): array
+    private function textSeparateLines(string $text, string $fontFile, int $fontSize, int $maxWidth): array
     {
         $lines = [];
         $words = self::textSeparateWords($text);
@@ -1414,10 +1417,10 @@ class SimpleImage
     /**
      * Receives a text and breaks into WORD / SPACE / NEW LINE.
      */
-    private function textSeparateWords(int $text): array
+    private function textSeparateWords(string $text): array
     {
         // Normalizes line break
-        $text = preg_replace('/(\r\n|\n|\r)/', PHP_EOL, $text);
+        $text = strval(preg_replace('/(\r\n|\n|\r)/', PHP_EOL, $text));
         $text = explode(PHP_EOL, $text);
         $newText = [];
         foreach ($text as $line) {
@@ -1711,12 +1714,12 @@ class SimpleImage
      *            ['x' => xN, 'y' => yN]
      *        ]
      * @param  string|array  $color The polygon color.
-     * @param  int|array  $thickness Line thickness in pixels or 'filled' (default 1).
+     * @param  string|int|array  $thickness Line thickness in pixels or 'filled' (default 1).
      * @return SimpleImage
      *
      * @throws Exception
      */
-    public function polygon(array $vertices, string|array $color, int|array $thickness = 1): static
+    public function polygon(array $vertices, string|array $color, string|int|array $thickness = 1): static
     {
         // Allocate the color
         $color = $this->allocateColor($color);
@@ -1748,12 +1751,12 @@ class SimpleImage
      * @param  int  $x2 The bottom right x coordinate.
      * @param  int  $y2 The bottom right y coordinate.
      * @param  string|array  $color The rectangle color.
-     * @param  int|array  $thickness Line thickness in pixels or 'filled' (default 1).
+     * @param  string|int|array  $thickness Line thickness in pixels or 'filled' (default 1).
      * @return SimpleImage
      *
      * @throws Exception
      */
-    public function rectangle(int $x1, int $y1, int $x2, int $y2, string|array $color, int|array $thickness = 1): static
+    public function rectangle(int $x1, int $y1, int $x2, int $y2, string|array $color, string|int|array $thickness = 1): static
     {
         // Allocate the color
         $color = $this->allocateColor($color);
@@ -1779,12 +1782,12 @@ class SimpleImage
      * @param  int  $y2 The bottom right y coordinate.
      * @param  int  $radius The border radius in pixels.
      * @param  string|array  $color The rectangle color.
-     * @param  int|array  $thickness Line thickness in pixels or 'filled' (default 1).
+     * @param  string|int|array  $thickness Line thickness in pixels or 'filled' (default 1).
      * @return SimpleImage
      *
      * @throws Exception
      */
-    public function roundedRectangle(int $x1, int $y1, int $x2, int $y2, int $radius, string|array $color, int|array $thickness = 1): static
+    public function roundedRectangle(int $x1, int $y1, int $x2, int $y2, int $radius, string|array $color, string|int|array $thickness = 1): static
     {
         if ($thickness == 'filled') {
             // Draw the filled rectangle without edges
@@ -1804,7 +1807,7 @@ class SimpleImage
             $y1 -= $offset;
             $y2 += $offset;
             $radius = self::keepWithin($radius, 0, min(($x2 - $x1) / 2, ($y2 - $y1) / 2) - 1);
-            $radius = floor($radius);
+            $radius = (int) floor($radius);
             $thickness = self::keepWithin($thickness, 1, min(($x2 - $x1) / 2, ($y2 - $y1) / 2));
 
             // New temp image
@@ -1842,13 +1845,13 @@ class SimpleImage
      * Exclude inside color.
      * Used for roundedRectangle(), ellipse() and arc()
      *
-     * @param  number  $x certer x of rectangle.
-     * @param  number  $y certer y of rectangle.
+     * @param  int  $x certer x of rectangle.
+     * @param  int  $y certer y of rectangle.
      * @param  string|array  $borderColor The color of border.
      *
      * @throws Exception
      */
-    private function excludeInsideColor($x, $y, string|array $borderColor): static
+    private function excludeInsideColor(int $x, int $y, string|array $borderColor): static
     {
         $borderColor = $this->allocateColor($borderColor);
         $transparent = $this->allocateColor('transparent');
@@ -2016,7 +2019,7 @@ class SimpleImage
             0, 0,
             $this->getWidth(),
             $this->getHeight(),
-            self::keepWithin($opacity, 0, 1) * 100
+            (int) round(self::keepWithin($opacity, 0, 1) * 100)
         );
 
         return $this;
@@ -2332,7 +2335,7 @@ class SimpleImage
         // Convert hex values to RGBA
         if (is_string($color)) {
             // Remove #
-            $hex = preg_replace('/^#/', '', $color);
+            $hex = strval(preg_replace('/^#/', '', $color));
 
             // Support short and standard hex codes
             if (strlen($hex) === 3) {
