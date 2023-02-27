@@ -37,12 +37,12 @@ try {
 
 ## Requirements
 
-- PHP 5.6+
+- PHP 8.0+
 - [GD extension](http://php.net/manual/en/book.image.php)
 
 ## Features
 
-- Supports reading, writing, and converting GIF, JPEG, PNG, WEBP, BMP formats.
+- Supports reading, writing, and converting GIF, JPEG, PNG, WEBP, BMP, AVIF formats.
 - Reads and writes files, data URIs, and image strings.
 - Manipulation: crop, resize, overlay/watermark, adding TTF text
 - Drawing: arc, border, dot, ellipse, line, polygon, rectangle, rounded rectangle
@@ -50,7 +50,7 @@ try {
 - Utilities: color adjustment, darken/lighten color, extract colors
 - Properties: exif data, height/width, mime type, orientation
 - Color arguments can be passed in as any CSS color (e.g. `LightBlue`), a hex color, or an RGB(A) array.
-- Support for alpha-transparency (GIF, PNG, WEBP)
+- Support for alpha-transparency (GIF, PNG, WEBP, AVIF)
 - Chainable methods
 - Uses exceptions
 - Load with Composer or manually (just one file)
@@ -141,51 +141,116 @@ Returns a SimpleImage object.
 
 ### Savers
 
-#### `toDataUri($mimeType, $quality)`
+#### `toDataUri($mimeType, $options)`
 
 Generates a data URI.
 
 - `$mimeType` (string) - The image format to output as a mime type (defaults to the original mime type).
-- `$quality` (int) - Image quality as a percentage (default 100). This argument has no effect on PNG images, since the format is lossless.
+- `$options` (array|int) - Array of options or Image quality as a percentage (default 100).
 
 Returns a string containing a data URI.
 
-#### `toDownload($filename, $mimeType, $quality)`
+#### `toDownload($filename, $mimeType, $options)`
 
 Forces the image to be downloaded to the clients machine. Must be called before any output is sent to the screen.
 
 - `$filename`* (string) - The filename (without path) to send to the client (e.g. 'image.jpeg').
 - `$mimeType` (string) - The image format to output as a mime type (defaults to the original mime type).
-- `$quality` (int) - Image quality as a percentage (default 100). This argument has no effect on PNG images, since the format is lossless.
+- `$options` (array|int) - Array of options or Image quality as a percentage (default 100).
 
 Returns a SimpleImage object.
 
-#### `toFile($file, $mimeType, $quality)`
+#### `toFile($file, $mimeType, $options)`
 
 Writes the image to a file.
 
 - `$mimeType` (string) - The image format to output as a mime type (defaults to the original mime type).
-- `$quality` (int) - Image quality as a percentage (default 100). This argument has no effect on PNG images, since the format is lossless.
+- `$options` (array|int) - Array of options or Image quality as a percentage (default 100).
 
 Returns a SimpleImage object.
 
-#### `toScreen($mimeType, $quality)`
+#### `toScreen($mimeType, $options)`
 
 Outputs the image to the screen. Must be called before any output is sent to the screen.
 
 - `$mimeType` (string) - The image format to output as a mime type (defaults to the original mime type).
-- `$quality` (int) - Image quality as a percentage (default 100). This argument has no effect on PNG images, since the format is lossless.
+- `$options` (array|int) - Array of options or Image quality as a percentage (default 100).
 
 Returns a SimpleImage object.
 
-#### `toString($mimeType, $quality)`
+#### `toString($mimeType, $options)`
 
 Generates an image string.
 
 - `$mimeType` (string) - The image format to output as a mime type (defaults to the original mime type).
-- `$quality` (int) - Image quality as a percentage (default 100). This argument has no effect on PNG images, since the format is lossless.
+- `$options` (array|int) - Array of options or Image quality as a percentage (default 100).
 
 Returns a SimpleImage object.
+
+#### Options array
+
+Instead of providing the quality as an integer as the last function parameter you can also set various options depending on the targeted Mime type using an associative array.
+
+```php
+$image->toFile($file, 'image/avif', [
+    // JPG, WEBP, AVIF (default 100)
+    'quality' => 100,
+
+    // AVIF (default -1 which is 6)
+    // range of slow and small file 0 to 10 fast but big file
+    'speed' => -1,
+]);
+```
+
+```php
+$image->toFile($file, 'image/bmp', [
+    // BMP: boolean (default true)
+    'compression' => true,
+
+    // BMP, JPG (default null, keep the same)
+    'interlace' => null,
+]);
+```
+
+```php
+$image->toFile($file, 'image/gif', [
+    // GIF, PNG (default true)
+    'alpha' => true,
+]);
+```
+
+```php
+$image->toFile($file, 'image/jpeg', [
+    // BMP, JPG (default null, keep the same)
+    'interlace' => null,
+
+    // JPG, WEBP, AVIF (default 100)
+    'quality' => 100,
+]);
+```
+
+```php
+$image->toFile($file, 'image/png', [
+    // GIF, PNG (default true)
+    'alpha' => true,
+
+    // PNG: 0-10, defaults to zlib (default 6)
+    'compression' => -1,
+
+    // PNG (default -1)
+    'filters' => -1,
+
+    // has no effect on PNG images, since the format is lossless
+    // 'quality' => 100,
+]);
+```
+
+```php
+$image->toFile($file, 'image/webp', [
+    // JPG, WEBP, AVIF (default 100)
+    'quality' => 100,
+]);
+```
 
 ### Utilities
 
