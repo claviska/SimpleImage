@@ -1,10 +1,20 @@
 {
-    "name"         : "jbzoo/image",
-    "type"         : "library",
-    "description"  : "A PHP class that simplifies working with images",
-    "license"      : "MIT",
-    "keywords"     : ["image", "resize", "images", "jbzoo", "crop", "filters", "thumbnail", "watermark", "gd"],
-    "authors"      : [
+    "name"              : "jbzoo/image",
+    "type"              : "library",
+    "description"       : "A PHP class that simplifies working with images",
+    "license"           : "MIT",
+    "keywords"          : [
+        "image",
+        "resize",
+        "images",
+        "jbzoo",
+        "crop",
+        "filters",
+        "thumbnail",
+        "watermark",
+        "gd"
+    ],
+    "authors"           : [
         {
             "name"  : "Denis Smetannikov",
             "email" : "admin@jbzoo.com",
@@ -23,40 +33,39 @@
         }
     ],
 
-    "require"      : {
-        "php"         : "^8.0",
+    "minimum-stability" : "dev",
+    "prefer-stable"     : true,
+
+    "require"           : {
+        "php"         : "^8.1",
         "ext-gd"      : "*",
         "ext-exif"    : "*",
         "ext-ctype"   : "*",
 
-        "jbzoo/utils" : "^4.5|^5.0",
-        "jbzoo/data"  : "^4.3|^5.0"
+        "jbzoo/utils" : "7.x-dev",
+        "jbzoo/data"  : "7.x-dev"
     },
 
-    "require-dev"  : {
-        "jbzoo/toolbox-dev" : "^4.0.1"
+    "require-dev"       : {
+        "jbzoo/toolbox-dev" : "7.x-dev"
     },
 
-    "autoload"     : {
-        "psr-4" : {
-            "JBZoo\\Image\\" : "src"
-        }
+    "autoload"          : {
+        "psr-4" : {"JBZoo\\Image\\" : "src"}
     },
 
-    "autoload-dev" : {
-        "classmap" : ["tests"]
+    "autoload-dev"      : {
+        "psr-4" : {"JBZoo\\PHPUnit\\" : "tests"}
     },
 
-    "config"       : {
+    "config"            : {
         "optimize-autoloader" : true,
-        "allow-plugins"       : {
-            "composer/package-versions-deprecated" : true
-        }
+        "allow-plugins"       : {"composer/package-versions-deprecated" : true}
     },
 
-    "extra"        : {
+    "extra"             : {
         "branch-alias" : {
-            "dev-master" : "5.x-dev"
+            "dev-master" : "7.x-dev"
         }
     }
 }

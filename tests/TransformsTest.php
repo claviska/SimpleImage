@@ -1,16 +1,15 @@
 <?php
 
 /**
- * JBZoo Toolbox - Image
+ * JBZoo Toolbox - Image.
  *
  * This file is part of the JBZoo Toolbox project.
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package    Image
  * @license    MIT
  * @copyright  Copyright (C) JBZoo.com, All rights reserved.
- * @link       https://github.com/JBZoo/Image
+ * @see        https://github.com/JBZoo/Image
  */
 
 declare(strict_types=1);
@@ -19,16 +18,12 @@ namespace JBZoo\PHPUnit;
 
 use JBZoo\Image\Image;
 
-/**
- * Class TransformsTest
- * @package JBZoo\PHPUnit
- */
 class TransformsTest extends PHPUnit
 {
-    public function testFlipX()
+    public function testFlipX(): void
     {
         $excepted = TestHelper::getExpected(__FUNCTION__ . '.jpg');
-        $actual = TestHelper::getActual(__FUNCTION__ . '.jpg');
+        $actual   = TestHelper::getActual(__FUNCTION__ . '.jpg');
         $original = TestHelper::getOrig('butterfly.jpg');
 
         $img = new Image();
@@ -39,10 +34,10 @@ class TransformsTest extends PHPUnit
         TestHelper::isFileEq($excepted, $actual);
     }
 
-    public function testFlipY()
+    public function testFlipY(): void
     {
         $excepted = TestHelper::getExpected(__FUNCTION__ . '.jpg');
-        $actual = TestHelper::getActual(__FUNCTION__ . '.jpg');
+        $actual   = TestHelper::getActual(__FUNCTION__ . '.jpg');
         $original = TestHelper::getOrig('butterfly.jpg');
 
         $img = new Image();
@@ -53,10 +48,10 @@ class TransformsTest extends PHPUnit
         TestHelper::isFileEq($excepted, $actual);
     }
 
-    public function testFlipXY()
+    public function testFlipXY(): void
     {
         $excepted = TestHelper::getExpected(__FUNCTION__ . '.jpg');
-        $actual = TestHelper::getActual(__FUNCTION__ . '.jpg');
+        $actual   = TestHelper::getActual(__FUNCTION__ . '.jpg');
         $original = TestHelper::getOrig('butterfly.jpg');
 
         $img = new Image();
@@ -67,10 +62,10 @@ class TransformsTest extends PHPUnit
         TestHelper::isFileEq($excepted, $actual);
     }
 
-    public function testFlipYX()
+    public function testFlipYX(): void
     {
         $excepted = TestHelper::getExpected(__FUNCTION__ . '.jpg');
-        $actual = TestHelper::getActual(__FUNCTION__ . '.jpg');
+        $actual   = TestHelper::getActual(__FUNCTION__ . '.jpg');
         $original = TestHelper::getOrig('butterfly.jpg');
 
         $img = new Image();
@@ -81,10 +76,10 @@ class TransformsTest extends PHPUnit
         TestHelper::isFileEq($excepted, $actual);
     }
 
-    public function testAutoOrient()
+    public function testAutoOrient(): void
     {
         $excepted = TestHelper::getExpected(__FUNCTION__ . '.jpg');
-        $actual = TestHelper::getActual(__FUNCTION__ . '.jpg');
+        $actual   = TestHelper::getActual(__FUNCTION__ . '.jpg');
         $original = TestHelper::getOrig('butterfly.jpg');
 
         $img = new Image();

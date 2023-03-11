@@ -1,16 +1,15 @@
 <?php
 
 /**
- * JBZoo Toolbox - Image
+ * JBZoo Toolbox - Image.
  *
  * This file is part of the JBZoo Toolbox project.
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package    Image
  * @license    MIT
  * @copyright  Copyright (C) JBZoo.com, All rights reserved.
- * @link       https://github.com/JBZoo/Image
+ * @see        https://github.com/JBZoo/Image
  */
 
 declare(strict_types=1);
@@ -19,18 +18,14 @@ namespace JBZoo\PHPUnit;
 
 use JBZoo\Image\Image;
 
-/**
- * Class WatermarkTest
- * @package JBZoo\PHPUnit
- */
 class WatermarkTest extends PHPUnit
 {
-    public function testWatermarkTopLeft()
+    public function testWatermarkTopLeft(): void
     {
         $excepted = TestHelper::getExpected(__FUNCTION__ . '.png');
-        $actual = TestHelper::getActual(__FUNCTION__ . '.png');
+        $actual   = TestHelper::getActual(__FUNCTION__ . '.png');
         $original = TestHelper::getOrig('butterfly.jpg');
-        $overlay = TestHelper::getOrig('overlay.png');
+        $overlay  = TestHelper::getOrig('overlay.png');
 
         $img = new Image();
         $img->loadFile($original)
@@ -40,12 +35,12 @@ class WatermarkTest extends PHPUnit
         TestHelper::isFileEq($excepted, $actual);
     }
 
-    public function testWatermarkTopRight()
+    public function testWatermarkTopRight(): void
     {
         $excepted = TestHelper::getExpected(__FUNCTION__ . '.png');
-        $actual = TestHelper::getActual(__FUNCTION__ . '.png');
+        $actual   = TestHelper::getActual(__FUNCTION__ . '.png');
         $original = TestHelper::getOrig('butterfly.jpg');
-        $overlay = TestHelper::getOrig('overlay.png');
+        $overlay  = TestHelper::getOrig('overlay.png');
 
         $img = new Image();
         $img->loadFile($original)
@@ -55,12 +50,12 @@ class WatermarkTest extends PHPUnit
         TestHelper::isFileEq($excepted, $actual);
     }
 
-    public function testWatermarkTop()
+    public function testWatermarkTop(): void
     {
         $excepted = TestHelper::getExpected(__FUNCTION__ . '.png');
-        $actual = TestHelper::getActual(__FUNCTION__ . '.png');
+        $actual   = TestHelper::getActual(__FUNCTION__ . '.png');
         $original = TestHelper::getOrig('butterfly.jpg');
-        $overlay = TestHelper::getOrig('overlay.png');
+        $overlay  = TestHelper::getOrig('overlay.png');
 
         $img = new Image();
         $img->loadFile($original)
@@ -70,12 +65,12 @@ class WatermarkTest extends PHPUnit
         TestHelper::isFileEq($excepted, $actual);
     }
 
-    public function testWatermarkBottomLeft()
+    public function testWatermarkBottomLeft(): void
     {
         $excepted = TestHelper::getExpected(__FUNCTION__ . '.png');
-        $actual = TestHelper::getActual(__FUNCTION__ . '.png');
+        $actual   = TestHelper::getActual(__FUNCTION__ . '.png');
         $original = TestHelper::getOrig('butterfly.jpg');
-        $overlay = TestHelper::getOrig('overlay.png');
+        $overlay  = TestHelper::getOrig('overlay.png');
 
         $img = new Image();
         $img->loadFile($original)
@@ -85,12 +80,12 @@ class WatermarkTest extends PHPUnit
         TestHelper::isFileEq($excepted, $actual);
     }
 
-    public function testWatermarkBottomRight()
+    public function testWatermarkBottomRight(): void
     {
         $excepted = TestHelper::getExpected(__FUNCTION__ . '.png');
-        $actual = TestHelper::getActual(__FUNCTION__ . '.png');
+        $actual   = TestHelper::getActual(__FUNCTION__ . '.png');
         $original = TestHelper::getOrig('butterfly.jpg');
-        $overlay = TestHelper::getOrig('overlay.png');
+        $overlay  = TestHelper::getOrig('overlay.png');
 
         $img = new Image();
         $img->loadFile($original)
@@ -100,12 +95,12 @@ class WatermarkTest extends PHPUnit
         TestHelper::isFileEq($excepted, $actual);
     }
 
-    public function testWatermarkBottom()
+    public function testWatermarkBottom(): void
     {
         $excepted = TestHelper::getExpected(__FUNCTION__ . '.png');
-        $actual = TestHelper::getActual(__FUNCTION__ . '.png');
+        $actual   = TestHelper::getActual(__FUNCTION__ . '.png');
         $original = TestHelper::getOrig('butterfly.jpg');
-        $overlay = TestHelper::getOrig('overlay.png');
+        $overlay  = TestHelper::getOrig('overlay.png');
 
         $img = new Image();
         $img->loadFile($original)
@@ -115,12 +110,12 @@ class WatermarkTest extends PHPUnit
         TestHelper::isFileEq($excepted, $actual);
     }
 
-    public function testWatermarkLeft()
+    public function testWatermarkLeft(): void
     {
         $excepted = TestHelper::getExpected(__FUNCTION__ . '.png');
-        $actual = TestHelper::getActual(__FUNCTION__ . '.png');
+        $actual   = TestHelper::getActual(__FUNCTION__ . '.png');
         $original = TestHelper::getOrig('butterfly.jpg');
-        $overlay = TestHelper::getOrig('overlay.png');
+        $overlay  = TestHelper::getOrig('overlay.png');
 
         $img = new Image();
         $img->loadFile($original)
@@ -130,12 +125,12 @@ class WatermarkTest extends PHPUnit
         TestHelper::isFileEq($excepted, $actual);
     }
 
-    public function testWatermarkRight()
+    public function testWatermarkRight(): void
     {
         $excepted = TestHelper::getExpected(__FUNCTION__ . '.png');
-        $actual = TestHelper::getActual(__FUNCTION__ . '.png');
+        $actual   = TestHelper::getActual(__FUNCTION__ . '.png');
         $original = TestHelper::getOrig('butterfly.jpg');
-        $overlay = TestHelper::getOrig('overlay.png');
+        $overlay  = TestHelper::getOrig('overlay.png');
 
         $img = new Image();
         $img->loadFile($original)
@@ -145,12 +140,12 @@ class WatermarkTest extends PHPUnit
         TestHelper::isFileEq($excepted, $actual);
     }
 
-    public function testWatermarkCenter()
+    public function testWatermarkCenter(): void
     {
         $excepted = TestHelper::getExpected(__FUNCTION__ . '.png');
-        $actual = TestHelper::getActual(__FUNCTION__ . '.png');
+        $actual   = TestHelper::getActual(__FUNCTION__ . '.png');
         $original = TestHelper::getOrig('butterfly.jpg');
-        $overlay = TestHelper::getOrig('overlay.png');
+        $overlay  = TestHelper::getOrig('overlay.png');
 
         $img = new Image();
         $img->loadFile($original)
@@ -160,12 +155,12 @@ class WatermarkTest extends PHPUnit
         TestHelper::isFileEq($excepted, $actual);
     }
 
-    public function testWatermarkOpacity()
+    public function testWatermarkOpacity(): void
     {
         $excepted = TestHelper::getExpected(__FUNCTION__ . '.png');
-        $actual = TestHelper::getActual(__FUNCTION__ . '.png');
+        $actual   = TestHelper::getActual(__FUNCTION__ . '.png');
         $original = TestHelper::getOrig('butterfly.jpg');
-        $overlay = TestHelper::getOrig('overlay.png');
+        $overlay  = TestHelper::getOrig('overlay.png');
 
         $img = new Image();
         $img->loadFile($original)
@@ -175,12 +170,12 @@ class WatermarkTest extends PHPUnit
         TestHelper::isFileEq($excepted, $actual);
     }
 
-    public function testWatermark()
+    public function testWatermark(): void
     {
         $excepted = TestHelper::getExpected(__FUNCTION__ . '.png');
-        $actual = TestHelper::getActual(__FUNCTION__ . '.png');
+        $actual   = TestHelper::getActual(__FUNCTION__ . '.png');
         $original = TestHelper::getOrig('butterfly.jpg');
-        $overlay = TestHelper::getOrig('overlay.png');
+        $overlay  = TestHelper::getOrig('overlay.png');
 
         $img = new Image();
         $img->loadFile($original)
@@ -189,5 +184,4 @@ class WatermarkTest extends PHPUnit
 
         TestHelper::isFileEq($excepted, $actual);
     }
-
 }

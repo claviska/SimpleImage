@@ -1,16 +1,15 @@
 <?php
 
 /**
- * JBZoo Toolbox - Image
+ * JBZoo Toolbox - Image.
  *
  * This file is part of the JBZoo Toolbox project.
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package    Image
  * @license    MIT
  * @copyright  Copyright (C) JBZoo.com, All rights reserved.
- * @link       https://github.com/JBZoo/Image
+ * @see        https://github.com/JBZoo/Image
  */
 
 declare(strict_types=1);
@@ -20,13 +19,9 @@ namespace JBZoo\PHPUnit;
 use JBZoo\Image\Filter;
 use JBZoo\Image\Image;
 
-/**
- * Class FilterTest
- * @package JBZoo\PHPUnit
- */
 class FilterTest extends PHPUnit
 {
-    public function testFilterUndefined()
+    public function testFilterUndefined(): void
     {
         $this->expectException(\JBZoo\Image\Exception::class);
 
@@ -34,10 +29,10 @@ class FilterTest extends PHPUnit
         $img->addFilter('undefined');
     }
 
-    public function testFilterSepia()
+    public function testFilterSepia(): void
     {
         $excepted = TestHelper::getExpected(__FUNCTION__ . '.png');
-        $actual = TestHelper::getActual(__FUNCTION__ . '.png');
+        $actual   = TestHelper::getActual(__FUNCTION__ . '.png');
         $original = TestHelper::getOrig('butterfly.jpg');
 
         $img = new Image();
@@ -48,10 +43,10 @@ class FilterTest extends PHPUnit
         TestHelper::isFileEq($excepted, $actual);
     }
 
-    public function testFilterPixelate()
+    public function testFilterPixelate(): void
     {
         $excepted = TestHelper::getExpected(__FUNCTION__ . '.png');
-        $actual = TestHelper::getActual(__FUNCTION__ . '.png');
+        $actual   = TestHelper::getActual(__FUNCTION__ . '.png');
         $original = TestHelper::getOrig('butterfly.jpg');
 
         $img = new Image();
@@ -62,26 +57,26 @@ class FilterTest extends PHPUnit
         TestHelper::isFileEq($excepted, $actual);
     }
 
-    public function testFilterCustom()
+    public function testFilterCustom(): void
     {
         $excepted = TestHelper::getExpected(__FUNCTION__ . '.png');
-        $actual = TestHelper::getActual(__FUNCTION__ . '.png');
+        $actual   = TestHelper::getActual(__FUNCTION__ . '.png');
         $original = TestHelper::getOrig('butterfly.jpg');
 
         $img = new Image();
         $img->loadFile($original)
-            ->addFilter(function ($image, $blockSize) {
-                imagefilter($image, IMG_FILTER_PIXELATE, $blockSize, true);
+            ->addFilter(static function ($image, $blockSize): void {
+                \imagefilter($image, \IMG_FILTER_PIXELATE, $blockSize, true);
             }, 2)
             ->saveAs($actual);
 
         TestHelper::isFileEq($excepted, $actual);
     }
 
-    public function testFilterEdges()
+    public function testFilterEdges(): void
     {
         $excepted = TestHelper::getExpected(__FUNCTION__ . '.jpg');
-        $actual = TestHelper::getActual(__FUNCTION__ . '.jpg');
+        $actual   = TestHelper::getActual(__FUNCTION__ . '.jpg');
         $original = TestHelper::getOrig('butterfly.jpg');
 
         $img = new Image();
@@ -92,10 +87,10 @@ class FilterTest extends PHPUnit
         TestHelper::isFileEq($excepted, $actual);
     }
 
-    public function testFilterEmboss()
+    public function testFilterEmboss(): void
     {
         $excepted = TestHelper::getExpected(__FUNCTION__ . '.jpg');
-        $actual = TestHelper::getActual(__FUNCTION__ . '.jpg');
+        $actual   = TestHelper::getActual(__FUNCTION__ . '.jpg');
         $original = TestHelper::getOrig('butterfly.jpg');
 
         $img = new Image();
@@ -106,10 +101,10 @@ class FilterTest extends PHPUnit
         TestHelper::isFileEq($excepted, $actual);
     }
 
-    public function testFilterInvert()
+    public function testFilterInvert(): void
     {
         $excepted = TestHelper::getExpected(__FUNCTION__ . '.jpg');
-        $actual = TestHelper::getActual(__FUNCTION__ . '.jpg');
+        $actual   = TestHelper::getActual(__FUNCTION__ . '.jpg');
         $original = TestHelper::getOrig('butterfly.jpg');
 
         $img = new Image();
@@ -120,10 +115,10 @@ class FilterTest extends PHPUnit
         TestHelper::isFileEq($excepted, $actual);
     }
 
-    public function testFilterBlurGaussian()
+    public function testFilterBlurGaussian(): void
     {
         $excepted = TestHelper::getExpected(__FUNCTION__ . '.jpg');
-        $actual = TestHelper::getActual(__FUNCTION__ . '.jpg');
+        $actual   = TestHelper::getActual(__FUNCTION__ . '.jpg');
         $original = TestHelper::getOrig('butterfly.jpg');
 
         $img = new Image();
@@ -134,10 +129,10 @@ class FilterTest extends PHPUnit
         TestHelper::isFileEq($excepted, $actual);
     }
 
-    public function testFilterBlurSelective()
+    public function testFilterBlurSelective(): void
     {
         $excepted = TestHelper::getExpected(__FUNCTION__ . '.jpg');
-        $actual = TestHelper::getActual(__FUNCTION__ . '.jpg');
+        $actual   = TestHelper::getActual(__FUNCTION__ . '.jpg');
         $original = TestHelper::getOrig('butterfly.jpg');
 
         $img = new Image();
@@ -148,10 +143,10 @@ class FilterTest extends PHPUnit
         TestHelper::isFileEq($excepted, $actual);
     }
 
-    public function testFilterBrightness100()
+    public function testFilterBrightness100(): void
     {
         $excepted = TestHelper::getExpected(__FUNCTION__ . '.jpg');
-        $actual = TestHelper::getActual(__FUNCTION__ . '.jpg');
+        $actual   = TestHelper::getActual(__FUNCTION__ . '.jpg');
         $original = TestHelper::getOrig('butterfly.jpg');
 
         $img = new Image();
@@ -162,10 +157,10 @@ class FilterTest extends PHPUnit
         TestHelper::isFileEq($excepted, $actual);
     }
 
-    public function testFilterBrightnessN100()
+    public function testFilterBrightnessN100(): void
     {
         $excepted = TestHelper::getExpected(__FUNCTION__ . '.jpg');
-        $actual = TestHelper::getActual(__FUNCTION__ . '.jpg');
+        $actual   = TestHelper::getActual(__FUNCTION__ . '.jpg');
         $original = TestHelper::getOrig('butterfly.jpg');
 
         $img = new Image();
@@ -176,10 +171,10 @@ class FilterTest extends PHPUnit
         TestHelper::isFileEq($excepted, $actual);
     }
 
-    public function testFilterContrast()
+    public function testFilterContrast(): void
     {
         $excepted = TestHelper::getExpected(__FUNCTION__ . '.jpg');
-        $actual = TestHelper::getActual(__FUNCTION__ . '.jpg');
+        $actual   = TestHelper::getActual(__FUNCTION__ . '.jpg');
         $original = TestHelper::getOrig('butterfly.jpg');
 
         $img = new Image();
@@ -190,10 +185,10 @@ class FilterTest extends PHPUnit
         TestHelper::isFileEq($excepted, $actual);
     }
 
-    public function testFilterColorize()
+    public function testFilterColorize(): void
     {
         $excepted = TestHelper::getExpected(__FUNCTION__ . '.jpg');
-        $actual = TestHelper::getActual(__FUNCTION__ . '.jpg');
+        $actual   = TestHelper::getActual(__FUNCTION__ . '.jpg');
         $original = TestHelper::getOrig('butterfly.jpg');
 
         $img = new Image();
@@ -204,10 +199,10 @@ class FilterTest extends PHPUnit
         TestHelper::isFileEq($excepted, $actual);
     }
 
-    public function testFilterMeanRemove()
+    public function testFilterMeanRemove(): void
     {
         $excepted = TestHelper::getExpected(__FUNCTION__ . '.jpg');
-        $actual = TestHelper::getActual(__FUNCTION__ . '.jpg');
+        $actual   = TestHelper::getActual(__FUNCTION__ . '.jpg');
         $original = TestHelper::getOrig('butterfly.jpg');
 
         $img = new Image();
@@ -218,10 +213,10 @@ class FilterTest extends PHPUnit
         TestHelper::isFileEq($excepted, $actual);
     }
 
-    public function testFilterSmooth()
+    public function testFilterSmooth(): void
     {
         $excepted = TestHelper::getExpected(__FUNCTION__ . '.jpg');
-        $actual = TestHelper::getActual(__FUNCTION__ . '.jpg');
+        $actual   = TestHelper::getActual(__FUNCTION__ . '.jpg');
         $original = TestHelper::getOrig('butterfly.jpg');
 
         $img = new Image();
@@ -232,10 +227,10 @@ class FilterTest extends PHPUnit
         TestHelper::isFileEq($excepted, $actual);
     }
 
-    public function testFilterDesaturate100()
+    public function testFilterDesaturate100(): void
     {
         $excepted = TestHelper::getExpected(__FUNCTION__ . '.jpg');
-        $actual = TestHelper::getActual(__FUNCTION__ . '.jpg');
+        $actual   = TestHelper::getActual(__FUNCTION__ . '.jpg');
         $original = TestHelper::getOrig('butterfly.jpg');
 
         $img = new Image();
@@ -246,10 +241,10 @@ class FilterTest extends PHPUnit
         TestHelper::isFileEq($excepted, $actual);
     }
 
-    public function testFilterDesaturate50()
+    public function testFilterDesaturate50(): void
     {
         $excepted = TestHelper::getExpected(__FUNCTION__ . '.jpg');
-        $actual = TestHelper::getActual(__FUNCTION__ . '.jpg');
+        $actual   = TestHelper::getActual(__FUNCTION__ . '.jpg');
         $original = TestHelper::getOrig('butterfly.jpg');
 
         $img = new Image();
@@ -260,10 +255,10 @@ class FilterTest extends PHPUnit
         TestHelper::isFileEq($excepted, $actual);
     }
 
-    public function testOpacity_05()
+    public function testOpacity05(): void
     {
         $excepted = TestHelper::getExpected(__FUNCTION__ . '.png');
-        $actual = TestHelper::getActual(__FUNCTION__ . '.png');
+        $actual   = TestHelper::getActual(__FUNCTION__ . '.png');
         $original = TestHelper::getOrig('butterfly.jpg');
 
         $img = new Image();
@@ -274,10 +269,10 @@ class FilterTest extends PHPUnit
         TestHelper::isFileEq($excepted, $actual);
     }
 
-    public function testOpacity_50()
+    public function testOpacity50(): void
     {
         $excepted = TestHelper::getExpected(__FUNCTION__ . '.png');
-        $actual = TestHelper::getActual(__FUNCTION__ . '.png');
+        $actual   = TestHelper::getActual(__FUNCTION__ . '.png');
         $original = TestHelper::getOrig('butterfly.jpg');
 
         $img = new Image();
@@ -288,10 +283,10 @@ class FilterTest extends PHPUnit
         TestHelper::isFileEq($excepted, $actual);
     }
 
-    public function testOpacity_0()
+    public function testOpacity0(): void
     {
         $excepted = TestHelper::getExpected(__FUNCTION__ . '.png');
-        $actual = TestHelper::getActual(__FUNCTION__ . '.png');
+        $actual   = TestHelper::getActual(__FUNCTION__ . '.png');
         $original = TestHelper::getOrig('butterfly.jpg');
 
         $img = new Image();
@@ -302,10 +297,10 @@ class FilterTest extends PHPUnit
         TestHelper::isFileEq($excepted, $actual);
     }
 
-    public function testOpacity_100()
+    public function testOpacity100(): void
     {
         $excepted = TestHelper::getExpected(__FUNCTION__ . '.png');
-        $actual = TestHelper::getActual(__FUNCTION__ . '.png');
+        $actual   = TestHelper::getActual(__FUNCTION__ . '.png');
         $original = TestHelper::getOrig('butterfly.jpg');
 
         $img = new Image();
@@ -316,10 +311,10 @@ class FilterTest extends PHPUnit
         TestHelper::isFileEq($excepted, $actual);
     }
 
-    public function testFlipRorate90()
+    public function testFlipRorate90(): void
     {
         $excepted = TestHelper::getExpected(__FUNCTION__ . '.jpg');
-        $actual = TestHelper::getActual(__FUNCTION__ . '.jpg');
+        $actual   = TestHelper::getActual(__FUNCTION__ . '.jpg');
         $original = TestHelper::getOrig('butterfly.jpg');
 
         $img = new Image();
@@ -330,10 +325,10 @@ class FilterTest extends PHPUnit
         TestHelper::isFileEq($excepted, $actual);
     }
 
-    public function testFlipRorate45()
+    public function testFlipRorate45(): void
     {
         $excepted = TestHelper::getExpected(__FUNCTION__ . '.jpg');
-        $actual = TestHelper::getActual(__FUNCTION__ . '.jpg');
+        $actual   = TestHelper::getActual(__FUNCTION__ . '.jpg');
         $original = TestHelper::getOrig('butterfly.jpg');
 
         $img = new Image();
@@ -344,10 +339,10 @@ class FilterTest extends PHPUnit
         TestHelper::isFileEq($excepted, $actual);
     }
 
-    public function testFlipRorateRevert275White()
+    public function testFlipRorateRevert275White(): void
     {
         $excepted = TestHelper::getExpected(__FUNCTION__ . '.png');
-        $actual = TestHelper::getActual(__FUNCTION__ . '.png');
+        $actual   = TestHelper::getActual(__FUNCTION__ . '.png');
         $original = TestHelper::getOrig('butterfly.jpg');
 
         $img = new Image();
@@ -358,10 +353,10 @@ class FilterTest extends PHPUnit
         TestHelper::isFileEq($excepted, $actual);
     }
 
-    public function testBorder()
+    public function testBorder(): void
     {
         $excepted = TestHelper::getExpected(__FUNCTION__ . '.png');
-        $actual = TestHelper::getActual(__FUNCTION__ . '.png');
+        $actual   = TestHelper::getActual(__FUNCTION__ . '.png');
         $original = TestHelper::getOrig('butterfly.jpg');
 
         $img = new Image();
@@ -372,10 +367,10 @@ class FilterTest extends PHPUnit
         TestHelper::isFileEq($excepted, $actual);
     }
 
-    public function testBorderColor()
+    public function testBorderColor(): void
     {
         $excepted = TestHelper::getExpected(__FUNCTION__ . '.png');
-        $actual = TestHelper::getActual(__FUNCTION__ . '.png');
+        $actual   = TestHelper::getActual(__FUNCTION__ . '.png');
         $original = TestHelper::getOrig('butterfly.jpg');
 
         $img = new Image();
@@ -386,10 +381,10 @@ class FilterTest extends PHPUnit
         TestHelper::isFileEq($excepted, $actual);
     }
 
-    public function testBorderSize()
+    public function testBorderSize(): void
     {
         $excepted = TestHelper::getExpected(__FUNCTION__ . '.png');
-        $actual = TestHelper::getActual(__FUNCTION__ . '.png');
+        $actual   = TestHelper::getActual(__FUNCTION__ . '.png');
         $original = TestHelper::getOrig('butterfly.jpg');
 
         $img = new Image();
@@ -400,10 +395,10 @@ class FilterTest extends PHPUnit
         TestHelper::isFileEq($excepted, $actual);
     }
 
-    public function testBorderColorSize()
+    public function testBorderColorSize(): void
     {
         $excepted = TestHelper::getExpected(__FUNCTION__ . '.png');
-        $actual = TestHelper::getActual(__FUNCTION__ . '.png');
+        $actual   = TestHelper::getActual(__FUNCTION__ . '.png');
         $original = TestHelper::getOrig('butterfly.jpg');
 
         $img = new Image();

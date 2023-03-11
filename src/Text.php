@@ -1,16 +1,15 @@
 <?php
 
 /**
- * JBZoo Toolbox - Image
+ * JBZoo Toolbox - Image.
  *
  * This file is part of the JBZoo Toolbox project.
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package    Image
  * @license    MIT
  * @copyright  Copyright (C) JBZoo.com, All rights reserved.
- * @link       https://github.com/JBZoo/Image
+ * @see        https://github.com/JBZoo/Image
  */
 
 declare(strict_types=1);
@@ -20,16 +19,11 @@ namespace JBZoo\Image;
 use JBZoo\Utils\FS;
 use JBZoo\Utils\Image as Helper;
 
-/**
- * Class Text
- * @package JBZoo\Image
- */
+use function JBZoo\Utils\isStrEmpty;
+
 final class Text
 {
-    /**
-     * @var array
-     */
-    protected static array $default = [
+    private static array $default = [
         'position'       => 'bottom',
         'angle'          => 0,
         'font-size'      => 32,
@@ -42,23 +36,19 @@ final class Text
     ];
 
     /**
-     * Add text to an image
-     *
+     * Add text to an image.
      * @param \GdImage $image    GD resource
      * @param string   $text     Some text to output on image as watermark
      * @param string   $fontFile TTF font file path
      * @param array    $params   Additional render params
-     *
-     * @throws Exception
-     * @throws \JBZoo\Utils\Exception
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
     public static function render(\GdImage $image, string $text, string $fontFile, array $params = []): void
     {
         // Set vars
-        $params = \array_merge(self::$default, $params);
-        $angle = Helper::rotate((float)$params['angle']);
+        $params   = \array_merge(self::$default, $params);
+        $angle    = Helper::rotate((float)$params['angle']);
         $position = Helper::position((string)$params['position']);
 
         $fSize = (int)$params['font-size'];
@@ -66,32 +56,37 @@ final class Text
         $offsetX = (int)$params['offset-x'];
         $offsetY = (int)$params['offset-y'];
 
-        $strokeSize = (int)$params['stroke-size'];
+        $strokeSize    = (int)$params['stroke-size'];
         $strokeSpacing = (int)$params['stroke-spacing'];
 
-        $imageWidth = \imagesx($image);
+        $imageWidth  = \imagesx($image);
         $imageHeight = \imagesy($image);
 
-        $color = \is_string($params['color']) ? $params['color'] : (array)$params['color'];
+        $color       = \is_string($params['color']) ? $params['color'] : (array)$params['color'];
         $strokeColor = \is_string($params['stroke-color']) ? $params['stroke-color'] : (array)$params['stroke-color'];
 
         $colorArr = self::getColor($image, $color);
+
         [$textWidth, $textHeight] = self::getTextBoxSize($fSize, $angle, $fontFile, $text);
+
         $textCoords = Helper::getInnerCoords(
             $position,
             [$imageWidth, $imageHeight],
             [$textWidth, $textHeight],
-            [$offsetX, $offsetY]
+            [$offsetX, $offsetY],
         );
 
         $textX = (int)($textCoords[0] ?? null);
         $textY = (int)($textCoords[1] ?? null);
 
-        if ($strokeColor && $strokeSize) {
+        if (
+            $strokeSize > 0
+            && (\is_array($strokeColor) || !isStrEmpty($strokeColor))
+        ) {
             if (\is_array($color) || \is_array($strokeColor)) {
                 // Multi colored text and/or multi colored stroke
                 $strokeColor = self::getColor($image, $strokeColor);
-                $chars = \str_split($text);
+                $chars       = \str_split($text);
 
                 foreach ($chars as $key => $char) {
                     if ($key > 0) {
@@ -108,7 +103,7 @@ final class Text
                         $char,
                         [$fontFile, $fSize, \current($colorArr), $angle],
                         [$textX, $textY],
-                        [$strokeSize, \current($strokeColor)]
+                        [$strokeSize, \current($strokeColor)],
                     );
 
                     // #000 is 0, black will reset the array, so we write it this way
@@ -122,18 +117,19 @@ final class Text
                     }
                 }
             } else {
-                $rgba = Helper::normalizeColor($strokeColor);
+                $rgba        = Helper::normalizeColor($strokeColor);
                 $strokeColor = \imagecolorallocatealpha($image, $rgba[0], $rgba[1], $rgba[2], $rgba[3]);
                 self::renderStroke(
                     $image,
                     $text,
                     [$fontFile, $fSize, \current($colorArr), $angle],
                     [$textX, $textY],
-                    [$strokeSize, $strokeColor]
+                    [$strokeSize, $strokeColor],
                 );
             }
         } elseif (\is_array($color)) { // Multi colored text
             $chars = \str_split($text);
+
             foreach ($chars as $key => $char) {
                 if ($key > 0) {
                     $textX = self::getStrokeX($fSize, $angle, $fontFile, $chars, $key, $strokeSpacing, $textX);
@@ -158,20 +154,17 @@ final class Text
     }
 
     /**
-     * Determine text color
-     *
-     * @param \GdImage     $image GD resource
-     * @param array|string $colors
-     * @return array
-     * @throws \JBZoo\Utils\Exception
+     * Determine text color.
+     * @param \GdImage $image GD resource
      */
-    protected static function getColor(\GdImage $image, array|string $colors): array
+    private static function getColor(\GdImage $image, array|string $colors): array
     {
         $colors = (array)$colors;
 
         $result = [];
+
         foreach ($colors as $color) {
-            $rgba = Helper::normalizeColor($color);
+            $rgba     = Helper::normalizeColor($color);
             $result[] = \imagecolorallocatealpha($image, $rgba[0], $rgba[1], $rgba[2], $rgba[3]);
         }
 
@@ -179,17 +172,9 @@ final class Text
     }
 
     /**
-     * Determine textbox size
-     *
-     * @param int    $fontSize
-     * @param int    $angle
-     * @param string $fontFile
-     * @param string $text
-     * @return array
-     *
-     * @throws Exception
+     * Determine textbox size.
      */
-    protected static function getTextBoxSize(int $fontSize, int $angle, string $fontFile, string $text): array
+    private static function getTextBoxSize(int $fontSize, int $angle, string $fontFile, string $text): array
     {
         // Determine textbox size
         $fontPath = FS::clean($fontFile);
@@ -199,8 +184,8 @@ final class Text
         }
 
         $box = \imagettfbbox($fontSize, $angle, $fontFile, $text);
-        if ($box) {
-            $boxWidth = (int)\abs($box[6] - $box[2]);
+        if ($box !== false) {
+            $boxWidth  = (int)\abs($box[6] - $box[2]);
             $boxHeight = (int)\abs($box[7] - $box[1]);
         } else {
             throw new Exception("Can't get box size for {$fontSize}; {$angle}; {$fontFile}; {$text}");
@@ -210,40 +195,38 @@ final class Text
     }
 
     /**
-     * Compact args for imagettftext()
-     *
+     * Compact args for imagettftext().
      * @param \GdImage $image  A GD image object
      * @param string   $text   The text to output
      * @param array    $font   [$fontfile, $fontsize, $color, $angle]
      * @param array    $coords [X,Y] Coordinate of the starting position
      */
-    protected static function internalRender(\GdImage $image, string $text, array $font, array $coords): void
+    private static function internalRender(\GdImage $image, string $text, array $font, array $coords): void
     {
-        [$coordX, $coordY] = $coords;
+        [$coordX, $coordY]             = $coords;
         [$file, $size, $color, $angle] = $font;
 
         \imagettftext($image, $size, $angle, $coordX, $coordY, $color, $file, $text);
     }
 
     /**
-     *  Same as imagettftext(), but allows for a stroke color and size
-     *
+     * Same as imagettftext(), but allows for a stroke color and size.
      * @param \GdImage $image  A GD image object
      * @param string   $text   The text to output
      * @param array    $font   [$fontfile, $fontsize, $color, $angle]
      * @param array    $coords [X,Y] Coordinate of the starting position
      * @param array    $stroke [$strokeSize, $strokeColor]
      */
-    protected static function renderStroke(
+    private static function renderStroke(
         \GdImage $image,
         string $text,
         array $font,
         array $coords,
-        array $stroke
+        array $stroke,
     ): void {
-        [$coordX, $coordY] = $coords;
+        [$coordX, $coordY]             = $coords;
         [$file, $size, $color, $angle] = $font;
-        [$strokeSize, $strokeColor] = $stroke;
+        [$strokeSize, $strokeColor]    = $stroke;
 
         for ($x = ($coordX - \abs($strokeSize)); $x <= ($coordX + \abs($strokeSize)); $x++) {
             for ($y = ($coordY - \abs($strokeSize)); $y <= ($coordY + \abs($strokeSize)); $y++) {
@@ -255,29 +238,20 @@ final class Text
     }
 
     /**
-     * Get X offset for stroke rendering mode
-     *
-     * @param float  $fontSize
-     * @param int    $angle
-     * @param string $fontFile
-     * @param array  $letters
-     * @param int    $charKey
-     * @param int    $strokeSpacing
-     * @param int    $textX
-     * @return int
+     * Get X offset for stroke rendering mode.
      * @noinspection PhpTooManyParametersInspection
      */
-    protected static function getStrokeX(
+    private static function getStrokeX(
         float $fontSize,
         int $angle,
         string $fontFile,
         array $letters,
         int $charKey,
         int $strokeSpacing,
-        int $textX
+        int $textX,
     ): int {
         $charSize = \imagettfbbox($fontSize, $angle, $fontFile, $letters[$charKey - 1]);
-        if (!$charSize) {
+        if ($charSize === false) {
             throw new Exception("Can't get StrokeX");
         }
 
