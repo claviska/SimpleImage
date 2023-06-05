@@ -68,7 +68,7 @@ class SimpleImage
 
     protected string $mimeType;
 
-    protected null|array|false $exif;
+    protected null|array|false $exif = null;
 
     //////////////////////////////////////////////////////////////////////////////////////////////////
     // Magic methods
@@ -585,7 +585,8 @@ class SimpleImage
      */
     public function getExif(): ?array
     {
-        return $this->exif ?? null;
+        // returns null if exif value is falsy: null, false or empty array.
+        return $this->exif ?: null;
     }
 
     /**
