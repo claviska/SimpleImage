@@ -1616,12 +1616,12 @@ class SimpleImage
      * @param  int  $width The ellipse width.
      * @param  int  $height The ellipse height.
      * @param  string|array  $color The ellipse color.
-     * @param  int|array  $thickness Line thickness in pixels or 'filled' (default 1).
+     * @param  string|int|array  $thickness Line thickness in pixels or 'filled' (default 1).
      * @return SimpleImage
      *
      * @throws Exception
      */
-    public function ellipse(int $x, int $y, int $width, int $height, string|array $color, int|array $thickness = 1): static
+    public function ellipse(int $x, int $y, int $width, int $height, string|array $color, string|int|array $thickness = 1): static
     {
         // Allocate the color
         $tempColor = $this->allocateColor($color);
