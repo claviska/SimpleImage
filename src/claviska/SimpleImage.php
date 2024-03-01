@@ -2337,18 +2337,24 @@ class SimpleImage
             $hex = strval(preg_replace('/^#/', '', $color));
 
             // Support short and standard hex codes
-            if (strlen($hex) === 3) {
+            if (strlen($hex) === 3 || strlen($hex) === 4) {
                 [$red, $green, $blue] = [
                     $hex[0].$hex[0],
                     $hex[1].$hex[1],
                     $hex[2].$hex[2],
                 ];
-            } elseif (strlen($hex) === 6) {
+                if (strlen($hex) === 4) {
+                    $alpha = hexdec($hex[3]) / 256;
+                }
+            } elseif (strlen($hex) === 6 || strlen($hex) === 8) {
                 [$red, $green, $blue] = [
                     $hex[0].$hex[1],
                     $hex[2].$hex[3],
                     $hex[4].$hex[5],
                 ];
+                if (strlen($hex) === 8) {
+                    $alpha = hexdec($hex[6].$hex[7]) / 256;
+                }
             } else {
                 throw new Exception("Invalid color value: $color", self::ERR_INVALID_COLOR);
             }
