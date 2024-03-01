@@ -2344,7 +2344,7 @@ class SimpleImage
                     $hex[2].$hex[2],
                 ];
                 if (strlen($hex) === 4) {
-                    $alpha = hexdec($hex[3]) / 256;
+                    $alpha = hexdec($hex[3]) / 255;
                 }
             } elseif (strlen($hex) === 6 || strlen($hex) === 8) {
                 [$red, $green, $blue] = [
@@ -2353,7 +2353,7 @@ class SimpleImage
                     $hex[4].$hex[5],
                 ];
                 if (strlen($hex) === 8) {
-                    $alpha = hexdec($hex[6].$hex[7]) / 256;
+                    $alpha = hexdec($hex[6].$hex[7]) / 255;
                 }
             } else {
                 throw new Exception("Invalid color value: $color", self::ERR_INVALID_COLOR);
