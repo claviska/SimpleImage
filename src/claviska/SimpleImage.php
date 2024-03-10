@@ -603,6 +603,28 @@ class SimpleImage
         return $this->mimeType;
     }
 
+	/**
+	 * Gets the corresponding extension for the current MIME type
+	 *
+	 * @throws Exception Thrown if invalid MIME type found (edge case)
+	 */
+	public function getExtension(): string
+	{
+		return match (strtolower($this->mimeType)) {
+			'image/jpeg' => 'jpg',
+			'image/png' => 'png',
+			'image/gif' => 'gif',
+			'image/webp' => 'webp',
+			'image/avif' => 'avif',
+			'image/bmp', 'image/x-ms-bmp', 'image/x-windows-bmp' => 'bmp',
+			//other image types supported are WAP BMP and GD's internal pics
+			default => throw new \Exception(
+				'Unsupported format: '.$this->mimeType,
+				self::ERR_UNSUPPORTED_FORMAT
+			)
+		};
+	}
+
     /**
      * Gets the image's current orientation.
      *
