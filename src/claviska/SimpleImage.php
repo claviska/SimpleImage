@@ -328,7 +328,7 @@ class SimpleImage
      *
      * @throws Exception Thrown when WEBP support is not enabled or unsupported format.
      */
-    protected function generate(string $mimeType = null, array|int $options = []): array
+    public function generate(string $mimeType = null, array|int $options = []): array
     {
         // Format defaults to the original mime type
         $mimeType = $mimeType ?: $this->mimeType;
