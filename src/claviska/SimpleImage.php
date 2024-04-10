@@ -116,14 +116,29 @@ class SimpleImage
      */
     public function __destruct()
     {
-        if ($this->image instanceof GdImage) {
-            imagedestroy($this->image);
-        }
+        $this->reset();
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////
     // Helper functions
     //////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function hasImage(): bool
+    {
+        return $this->image instanceof GdImage;
+    }
+
+    /**
+     * Destroys the image resource
+     */
+    public function reset(): static
+    {
+        if ($this->hasImage()) {
+            imagedestroy($this->image);
+        }
+
+        return $this;
+    }
 
     /**
      * Set flag value.
