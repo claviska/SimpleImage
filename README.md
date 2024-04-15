@@ -187,6 +187,15 @@ Generates an image string.
 
 Returns a SimpleImage object.
 
+#### `generate($mimeType, $options)`
+
+Generates an image.
+
+- `$mimeType` (string) - The image format to output as a mime type (defaults to the original mime type).
+- `$options` (array|int) - Array of options or Image quality as a percentage (default 100).
+
+Returns an array: [mimeType, data]
+
 #### Options array
 
 Instead of providing the quality as an integer as the last function parameter you can also set various options depending on the targeted Mime type using an associative array.
@@ -295,6 +304,18 @@ Returns an array of integers: [0 => 96, 1 => 96]
 Gets the image's current width.
 
 Returns the width as an integer.
+
+#### `hasImage()`
+
+Checks if the SimpleImage object has loaded an image.
+
+Returns a boolean.
+
+#### `reset()`
+
+Destroys the image resource.
+
+Returns a SimpleImage object.
 
 ### Manipulation
 

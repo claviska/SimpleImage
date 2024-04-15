@@ -123,13 +123,16 @@ class SimpleImage
     // Helper functions
     //////////////////////////////////////////////////////////////////////////////////////////////////
 
+    /**
+     * Checks if the SimpleImage object has loaded an image.
+     */
     public function hasImage(): bool
     {
         return $this->image instanceof GdImage;
     }
 
     /**
-     * Destroys the image resource
+     * Destroys the image resource.
      */
     public function reset(): static
     {
@@ -328,7 +331,7 @@ class SimpleImage
      *
      * @throws Exception Thrown when WEBP support is not enabled or unsupported format.
      */
-    public function generate(string $mimeType = null, array|int $options = []): array
+    public function generate(string $mimeType = null, array|int $options = 100): array
     {
         // Format defaults to the original mime type
         $mimeType = $mimeType ?: $this->mimeType;
