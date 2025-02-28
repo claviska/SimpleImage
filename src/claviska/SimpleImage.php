@@ -247,7 +247,7 @@ class SimpleImage
      * @return SimpleImage
      * @throws Exception
      */
-    private function fromString(string $data, ?string $mimeType = null): static
+    public function fromString(string $data, ?string $mimeType = null): static
     {
 
         if($mimeType === null) {
