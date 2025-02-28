@@ -193,10 +193,10 @@ class SimpleImage
         }
 
         // Determine mime type
-        $this->mimeType = $matches[1];
-        if (! preg_match('/^image\/(gif|jpeg|png)$/', $this->mimeType)) {
+        $mimeType = $matches[1];
+        if (! preg_match('/^image\/(gif|jpeg|png)$/', $mimeType)) {
             throw new Exception(
-                'Unsupported format: '.$this->mimeType,
+                'Unsupported format: '.$mimeType,
                 self::ERR_UNSUPPORTED_FORMAT
             );
         }
@@ -204,7 +204,7 @@ class SimpleImage
         // Get image data
         $data = base64_decode(strval(preg_replace('/^data:(.*?);base64,/', '', $uri)));
 
-        $this->fromString($data, $this->mimeType);
+        $this->fromString($data, $mimeType);
 
         return $this;
     }
@@ -250,13 +250,15 @@ class SimpleImage
     private function fromString(string $data, ?string $mimeType = null): static
     {
 
-        if($mimeType === null || $mimeType !== $this->mimeType) {
+        if($mimeType === null) {
             // Get image info
             $info = @getimagesizefromstring($data);
             if ($info === false) {
                 throw new Exception("Invalid image data", self::ERR_INVALID_IMAGE);
             }
             $this->mimeType = $info['mime'];
+        } else {
+            $this->mimeType = $mimeType;
         }
 
         // Create image object from string
