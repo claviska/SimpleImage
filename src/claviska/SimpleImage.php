@@ -116,14 +116,32 @@ class SimpleImage
      */
     public function __destruct()
     {
-        if ($this->image instanceof GdImage) {
-            imagedestroy($this->image);
-        }
+        $this->reset();
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////
     // Helper functions
     //////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Checks if the SimpleImage object has loaded an image.
+     */
+    public function hasImage(): bool
+    {
+        return $this->image instanceof GdImage;
+    }
+
+    /**
+     * Destroys the image resource.
+     */
+    public function reset(): static
+    {
+        if ($this->hasImage()) {
+            imagedestroy($this->image);
+        }
+
+        return $this;
+    }
 
     /**
      * Set flag value.
@@ -313,7 +331,7 @@ class SimpleImage
      *
      * @throws Exception Thrown when WEBP support is not enabled or unsupported format.
      */
-    protected function generate(string $mimeType = null, array|int $options = []): array
+    public function generate(string|null $mimeType = null, array|int $options = 100): array
     {
         // Format defaults to the original mime type
         $mimeType = $mimeType ?: $this->mimeType;
@@ -455,7 +473,7 @@ class SimpleImage
      *
      * @throws Exception
      */
-    public function toDataUri(string $mimeType = null, array|int $options = 100): string
+    public function toDataUri(string|null $mimeType = null, array|int $options = 100): string
     {
         $image = $this->generate($mimeType, $options);
 
@@ -472,7 +490,7 @@ class SimpleImage
      *
      * @throws Exception
      */
-    public function toDownload(string $filename, string $mimeType = null, array|int $options = 100): static
+    public function toDownload(string $filename, string|null $mimeType = null, array|int $options = 100): static
     {
         $image = $this->generate($mimeType, $options);
 
@@ -499,7 +517,7 @@ class SimpleImage
      *
      * @throws Exception Thrown if failed write to file.
      */
-    public function toFile(string $file, string $mimeType = null, array|int $options = 100): static
+    public function toFile(string $file, string|null $mimeType = null, array|int $options = 100): static
     {
         $image = $this->generate($mimeType, $options);
 
@@ -520,7 +538,7 @@ class SimpleImage
      *
      * @throws Exception
      */
-    public function toScreen(string $mimeType = null, array|int $options = 100): static
+    public function toScreen(string|null $mimeType = null, array|int $options = 100): static
     {
         $image = $this->generate($mimeType, $options);
 
@@ -539,7 +557,7 @@ class SimpleImage
      *
      * @throws Exception
      */
-    public function toString(string $mimeType = null, array|int $options = 100): string
+    public function toString(string|null $mimeType = null, array|int $options = 100): string
     {
         return $this->generate($mimeType, $options)['data'];
     }
@@ -979,7 +997,7 @@ class SimpleImage
      * @param  int|null  $height The new image height.
      * @return SimpleImage
      */
-    public function resize(int $width = null, int $height = null): static
+    public function resize(int|null $width = null, int|null $height = null): static
     {
         // No dimensions specified
         if (! $width && ! $height) {
@@ -1031,7 +1049,7 @@ class SimpleImage
      * @param  int|null  $res_y The vertical resolution in DPI
      * @return SimpleImage
      */
-    public function resolution(int $res_x, int $res_y = null): static
+    public function resolution(int $res_x, int|null $res_y = null): static
     {
         if (is_null($res_y)) {
             imageresolution($this->image, $res_x);
@@ -1091,7 +1109,7 @@ class SimpleImage
      *
      * @throws Exception
      */
-    public function text(string $text, array $options, array &$boundary = null): static
+    public function text(string $text, array $options, array|null &$boundary = null): static
     {
         // Check for freetype support
         if (! function_exists('imagettftext')) {
@@ -2200,7 +2218,7 @@ class SimpleImage
      *
      * @throws Exception Thrown if library \League\ColorExtractor is missing.
      */
-    public function extractColors(int $count = 5, string|array $backgroundColor = null): array
+    public function extractColors(int $count = 5, string|array|null $backgroundColor = null): array
     {
         // Check for required library
         if (! class_exists('\\'.ColorExtractor::class)) {
@@ -2359,18 +2377,24 @@ class SimpleImage
             $hex = strval(preg_replace('/^#/', '', $color));
 
             // Support short and standard hex codes
-            if (strlen($hex) === 3) {
+            if (strlen($hex) === 3 || strlen($hex) === 4) {
                 [$red, $green, $blue] = [
                     $hex[0].$hex[0],
                     $hex[1].$hex[1],
                     $hex[2].$hex[2],
                 ];
-            } elseif (strlen($hex) === 6) {
+                if (strlen($hex) === 4) {
+                    $alpha = hexdec($hex[3]) / 255;
+                }
+            } elseif (strlen($hex) === 6 || strlen($hex) === 8) {
                 [$red, $green, $blue] = [
                     $hex[0].$hex[1],
                     $hex[2].$hex[3],
                     $hex[4].$hex[5],
                 ];
+                if (strlen($hex) === 8) {
+                    $alpha = hexdec($hex[6].$hex[7]) / 255;
+                }
             } else {
                 throw new Exception("Invalid color value: $color", self::ERR_INVALID_COLOR);
             }
