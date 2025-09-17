@@ -40,6 +40,8 @@ try {
 - PHP 8.0+
 - [GD extension](http://php.net/manual/en/book.image.php)
 
+For PHP versions below 7.0, please use [SimpleImage v3.7.2](https://github.com/claviska/SimpleImage/releases/tag/3.7.2)
+
 ## Features
 
 - Supports reading, writing, and converting GIF, JPEG, PNG, WEBP, BMP, AVIF formats.
