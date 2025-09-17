@@ -196,7 +196,7 @@ class SimpleImage
         $mimeType = $matches[1];
         if (! preg_match('/^image\/(gif|jpeg|png)$/', $mimeType)) {
             throw new Exception(
-                'Unsupported format: '.$mimeType,
+                'Unsupported format: ' . $mimeType,
                 self::ERR_UNSUPPORTED_FORMAT
             );
         }
