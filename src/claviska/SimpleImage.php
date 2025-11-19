@@ -132,14 +132,10 @@ class SimpleImage
     }
 
     /**
-     * Destroys the image resource.
+     * @deprecated 4.4.0 Has no effect anymore
      */
     public function reset(): static
     {
-        if ($this->hasImage()) {
-            imagedestroy($this->image);
-        }
-
         return $this;
     }
 
