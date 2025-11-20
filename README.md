@@ -315,6 +315,9 @@ Returns a boolean.
 
 #### `reset()`
 
+> [!NOTE]  
+> The `reset()` method has been deprecated in SimpleImage 4.4.0. Calling the method has no effect.
+
 Destroys the image resource.
 
 Returns a SimpleImage object.
