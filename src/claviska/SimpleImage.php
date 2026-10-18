@@ -277,7 +277,6 @@ class SimpleImage
                 imagefill($gif, 0, 0, $alpha);
 
                 imagecopy($this->image, $gif, 0, 0, 0, 0, $width, $height);
-                imagedestroy($gif);
                 break;
             case 'image/jpeg':
                 // Load exif data from JPEG images
